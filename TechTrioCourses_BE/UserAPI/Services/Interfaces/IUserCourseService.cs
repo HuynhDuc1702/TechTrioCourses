@@ -1,0 +1,17 @@
+using UserAPI.DTOs.Request;
+using UserAPI.DTOs.Response;
+
+namespace UserAPI.Services.Interfaces
+{
+    public interface IUserCourseService
+    {
+        Task<UserCourseResponse?> GetUserCourseByIdAsync(Guid id);
+        Task<IEnumerable<UserCourseResponse>> GetAllUserCoursesAsync();
+        Task<IEnumerable<UserCourseResponse>> GetUserCoursesByUserIdAsync(Guid userId);
+        Task<IEnumerable<UserCourseResponse>> GetUserCoursesByCourseIdAsync(Guid courseId);
+        Task<UserCourseResponse?> GetUserCourseByUserAndCourseAsync(Guid userId, Guid courseId);
+        Task<UserCourseResponse?> CreateUserCourseAsync(CreateUserCourseRequest request);
+        Task<UserCourseResponse?> UpdateUserCourseAsync(Guid id, UpdateUserCourseRequest request);
+        Task<bool> DeleteUserCourseAsync(Guid id);
+    }
+}
