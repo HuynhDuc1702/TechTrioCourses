@@ -1,14 +1,12 @@
-import axios from 'axios';
-import { API_URLS, API_ENDPOINTS } from '@/constants/apiURL';
-
-const API_BASE_URL = API_URLS.USER;
+import { API_ENDPOINTS } from '@/constants/apiURL';
+import { userAxios } from '@/middleware/axiosMiddleware';
 
 // ==================== INTERFACES ====================
 
 export enum UserRoleEnum {
-  Student = 0,
-  Instructor = 1,
-  Admin = 2
+  Admin = 0,
+  Student = 1,
+  Instructor = 2
 }
 
 export interface UserResponse {
@@ -33,38 +31,6 @@ export interface UpdateUserRequest {
   role?: UserRoleEnum;
 }
 
-// ==================== AXIOS INSTANCE ====================
-
-const axiosInstance = axios.create({
-  baseURL: API_BASE_URL,
-});
-
-// Request interceptor
-axiosInstance.interceptors.request.use(
-  (config: any) => {
-    const token = localStorage.getItem('accessToken');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error: any) => Promise.reject(error)
-);
-
-// Response interceptor
-axiosInstance.interceptors.response.use(
-  (response: any) => response,
-  async (error: any) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
-      localStorage.removeItem('user');
-      window.location.href = '/login';
-    }
-    return Promise.reject(error);
-  }
-);
-
 // ==================== USER SERVICE ====================
 
 export const userService = {
@@ -73,7 +39,7 @@ export const userService = {
    * GET: /api/Users
    */
   getAllUsers: async (): Promise<UserResponse[]> => {
-    const response = await axiosInstance.get<UserResponse[]>(API_ENDPOINTS.USERS.BASE);
+    const response = await userAxios.get<UserResponse[]>(API_ENDPOINTS.USERS.BASE);
     return response.data;
   },
 
@@ -82,7 +48,7 @@ export const userService = {
    * GET: /api/Users/{id}
    */
   getUserById: async (id: string): Promise<UserResponse> => {
-    const response = await axiosInstance.get<UserResponse>(
+    const response = await userAxios.get<UserResponse>(
       `${API_ENDPOINTS.USERS.BASE}/${id}`
     );
     return response.data;
@@ -93,7 +59,7 @@ export const userService = {
    * GET: /api/Users/by-account/{accountId}
    */
   getUserByAccountId: async (accountId: string): Promise<UserResponse> => {
-    const response = await axiosInstance.get<UserResponse>(
+    const response = await userAxios.get<UserResponse>(
       `${API_ENDPOINTS.USERS.BASE}/by-account/${accountId}`
     );
     return response.data;
@@ -104,7 +70,7 @@ export const userService = {
    * POST: /api/Users/get-by-ids
    */
   getUsersByIds: async (ids: string[]): Promise<UserResponse[]> => {
-    const response = await axiosInstance.post<UserResponse[]>(
+    const response = await userAxios.post<UserResponse[]>(
       `${API_ENDPOINTS.USERS.BASE}/get-by-ids`,
       ids
     );
@@ -116,7 +82,7 @@ export const userService = {
    * POST: /api/Users
    */
   createUser: async (data: CreateUserRequest): Promise<UserResponse> => {
-    const response = await axiosInstance.post<UserResponse>(
+    const response = await userAxios.post<UserResponse>(
       API_ENDPOINTS.USERS.BASE,
       data
     );
@@ -128,7 +94,7 @@ export const userService = {
    * PUT: /api/Users/{id}
    */
   updateUser: async (id: string, data: UpdateUserRequest): Promise<UserResponse> => {
-    const response = await axiosInstance.put<UserResponse>(
+    const response = await userAxios.put<UserResponse>(
       `${API_ENDPOINTS.USERS.BASE}/${id}`,
       data
     );

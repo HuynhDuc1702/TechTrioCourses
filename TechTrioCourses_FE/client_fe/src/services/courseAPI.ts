@@ -1,5 +1,5 @@
-import { API_URLS, API_ENDPOINTS } from '@/constants/apiURL';
-const API_BASE_URL = API_URLS.COURSE;
+import { API_ENDPOINTS } from '@/constants/apiURL';
+import { courseAxios } from '@/middleware/axiosMiddleware';
 
 export interface Course {
   id: string;
@@ -20,59 +20,35 @@ export interface Course {
 export const courseAPI = {
   // Lấy danh sách tất cả courses
   async getAllCourses(): Promise<Course[]> {
-    const response = await fetch(`${API_BASE_URL}${API_ENDPOINTS.COURSES.BASE}`);
-    if (!response.ok) {
-      throw new Error(`Error: ${response.statusText}`);
-    }
-    return response.json();
+    const response = await courseAxios.get<Course[]>(API_ENDPOINTS.COURSES.BASE);
+    return response.data;
   },
 
   // Lấy chi tiết một course theo ID
   async getCourseById(id: string): Promise<Course> {
-    const response = await fetch(`${API_BASE_URL}${API_ENDPOINTS.COURSES.BASE}/${id}`);
-    if (!response.ok) {
-      throw new Error(`Error: ${response.statusText}`);
-    }
-    return response.json();
+    const response = await courseAxios.get<Course>(`${API_ENDPOINTS.COURSES.BASE}/${id}`);
+    return response.data;
   },
 
   // Tạo course mới
   async createCourse(course: Partial<Course>): Promise<Course> {
-    const response = await fetch(`${API_BASE_URL}${API_ENDPOINTS.COURSES.BASE}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(course),
-    });
-    if (!response.ok) {
-      throw new Error(`Error: ${response.statusText}`);
-    }
-    return response.json();
+    const response = await courseAxios.post<Course>(API_ENDPOINTS.COURSES.BASE, course);
+    return response.data;
   },
 
   // Cập nhật course
   async updateCourse(id: string, course: Partial<Course>): Promise<Course> {
-    const response = await fetch(`${API_BASE_URL}${API_ENDPOINTS.COURSES.BASE}/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(course),
-    });
-    if (!response.ok) {
-      throw new Error(`Error: ${response.statusText}`);
-    }
-    return response.json();
+    const response = await courseAxios.put<Course>(`${API_ENDPOINTS.COURSES.BASE}/${id}`, course);
+    return response.data;
   },
 
-  // Xóa course
+  // Xóa course (hard delete)
   async deleteCourse(id: string): Promise<void> {
-    const response = await fetch(`${API_BASE_URL}${API_ENDPOINTS.COURSES.BASE}/${id}`, {
-      method: "DELETE",
-    });
-    if (!response.ok) {
-      throw new Error(`Error: ${response.statusText}`);
-    }
+    await courseAxios.delete(`${API_ENDPOINTS.COURSES.BASE}/${id}`);
+  },
+
+  // Disable course (soft delete)
+  async disableCourse(id: string): Promise<void> {
+    await courseAxios.put(`${API_ENDPOINTS.COURSES.BASE}/${id}/disable`);
   },
 };
