@@ -2,13 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { courseAPI, Course } from "@/services/courseAPI";
+import { courseAPI, CourseResponse } from "@/services/courseAPI";
 import Link from "next/link";
 
 export default function CourseDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const [course, setCourse] = useState<Course | null>(null);
+  const [course, setCourse] = useState<CourseResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 

@@ -263,3 +263,7 @@ export const userAxios = createAxiosInstance(API_URLS.USER);
  * Axios instance for Course API
  */
 export const courseAxios = createAxiosInstance(API_URLS.COURSE);
+/**
+ * Axios instance for Category API
+ */
+export const categoryAxios = createAxiosInstance(API_URLS.CATEGORY);

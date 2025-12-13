@@ -19,14 +19,11 @@ export const metadata: Metadata = {
   description: "Learn and grow with TechTrio Courses",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body
+        suppressHydrationWarning
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <AuthProvider>
@@ -37,3 +34,4 @@ export default function RootLayout({
     </html>
   );
 }
+

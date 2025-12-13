@@ -73,7 +73,7 @@ export const accountService = {
     );
     
     if (response.data.accessToken) {
-      TokenManager.setTokens(response.data.accessToken, response.data.refreshToken);
+      TokenManager.setTokens(response.data.accessToken, response.data.refreshToken,response.data.accessTokenExpiresAt, response.data.refreshTokenExpiresAt);
     }
     
     return response.data;
@@ -102,7 +102,7 @@ export const accountService = {
     );
     
     if (response.data.accessToken) {
-      TokenManager.setTokens(response.data.accessToken, response.data.refreshToken);
+      TokenManager.setTokens(response.data.accessToken, response.data.refreshToken,response.data.accessTokenExpiresAt, response.data.refreshTokenExpiresAt);
     }
     
     return response.data;

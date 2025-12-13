@@ -1,28 +1,57 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { courseAPI, Course } from '@/services/courseAPI';
+import { courseAPI, CourseResponse } from '@/services/courseAPI';
+import { categoryAPI, CategoryResponse } from '@/services/categoryAPI';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { UserRoleEnum } from '@/services/userAPI';
+import { CourseCreateRequest } from '@/services/courseAPI';
+import { CourseUpdateRequest } from '@/services/courseAPI';
+import CourseModal from '@/components/course/CourseModal';
+import { CourseStatusEnum } from '@/services/courseAPI';
 
 export default function InstructorCoursesPage() {
-  const [courses, setCourses] = useState<Course[]>([]);
+  const [courses, setCourses] = useState<CourseResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [modalMode, setModalMode] = useState<'create' | 'edit'>('create');
-  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
+  const [selectedCourse, setSelectedCourse] = useState<CourseResponse | null>(null);
+  const [categories, setCategories] = useState<CategoryResponse[]>([]);
+  const [loadingCategories, setLoadingCategories] = useState(false);
   const { user } = useAuth();
   const router = useRouter();
 
   // Form state
-  const [formData, setFormData] = useState({
+  type CourseFormData = {
+    title: string;
+    description?: string;
+    categoryId?: string; // optional
+  };
+
+  const [formData, setFormData] = useState<CourseFormData>({
     title: '',
-    description: '',
-    categoryId: '',
+    description: undefined,
+    categoryId: undefined, 
   });
+  //Load categories for selection
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        setLoadingCategories(true);
+        const data = await categoryAPI.getAllCategories();
+        setCategories(data);
+      } catch (error) {
+        console.error('Failed to load categories', error);
+      } finally {
+        setLoadingCategories(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
     // Check if user is instructor or admin
@@ -54,7 +83,7 @@ export default function InstructorCoursesPage() {
     setShowModal(true);
   };
 
-  const openEditModal = (course: Course) => {
+  const openEditModal = (course: CourseResponse) => {
     setModalMode('edit');
     setFormData({
       title: course.title,
@@ -65,68 +94,7 @@ export default function InstructorCoursesPage() {
     setShowModal(true);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    setSubmitting(true);
-
-    console.log('Form submitted with data:', formData);
-    console.log('User ID:', user?.userId);
-
-    try {
-      if (modalMode === 'create') {
-        console.log('Creating course...');
-        const courseData = {
-          title: formData.title,
-          description: formData.description || null,
-          categoryId: formData.categoryId || null,
-          creatorId: user?.userId || null,
-          status: 0, // Draft status
-        };
-        console.log('Sending course data:', courseData);
-        const result = await courseAPI.createCourse(courseData);
-        console.log('Course created successfully:', result);
-      } else if (selectedCourse) {
-        console.log('Updating course:', selectedCourse.id);
-        const updateData = {
-          title: formData.title,
-          description: formData.description || null,
-          categoryId: formData.categoryId || null,
-        };
-        const result = await courseAPI.updateCourse(selectedCourse.id, updateData);
-        console.log('Course updated successfully:', result);
-      }
-      
-      setShowModal(false);
-      await loadCourses();
-    } catch (err: any) {
-      console.error('Error submitting form:', err);
-      console.error('Error response:', err.response?.data);
-      console.error('Validation errors:', err.response?.data?.errors);
-      
-      let errorMessage = 'Operation failed';
-      
-      // Handle validation errors from ASP.NET Core
-      if (err.response?.data?.errors) {
-        const errors = err.response.data.errors;
-        const errorMessages = Object.entries(errors).map(([field, messages]: [string, any]) => {
-          return `${field}: ${Array.isArray(messages) ? messages.join(', ') : messages}`;
-        });
-        errorMessage = errorMessages.join('\n');
-      } else if (err.response?.data?.title) {
-        errorMessage = err.response.data.title;
-      } else if (err.response?.data?.message) {
-        errorMessage = err.response.data.message;
-      } else if (err.message) {
-        errorMessage = err.message;
-      }
-      
-      setError(errorMessage);
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
+ 
   const handleDisable = async (id: string) => {
     if (!confirm('Are you sure you want to disable this course? Students will no longer be able to access it.')) {
       return;
@@ -140,13 +108,27 @@ export default function InstructorCoursesPage() {
     }
   };
 
-  const getStatusBadge = (status: number) => {
-    const statusMap: { [key: number]: { label: string; color: string } } = {
-      0: { label: 'Draft', color: 'bg-gray-100 text-gray-700' },
-      1: { label: 'Published', color: 'bg-green-100 text-green-700' },
-      2: { label: 'Disabled', color: 'bg-red-100 text-red-700' },
+  const getStatusBadge = (status: CourseStatusEnum) => {
+    const statusMap: Record<
+      CourseStatusEnum,
+      { label: string; color: string }
+    > = {
+      [CourseStatusEnum.Hidden]: {
+        label: 'Hidden',
+        color: 'bg-gray-100 text-gray-700',
+      },
+      [CourseStatusEnum.Published]: {
+        label: 'Published',
+        color: 'bg-green-100 text-green-700',
+      },
+      [CourseStatusEnum.Archived]: {
+        label: 'Archived',
+        color: 'bg-red-100 text-red-700',
+      },
     };
-    const statusInfo = statusMap[status] || { label: 'Unknown', color: 'bg-gray-100 text-gray-700' };
+
+    const statusInfo = statusMap[status];
+
     return (
       <span className={`px-3 py-1 rounded-full text-xs font-medium ${statusInfo.color}`}>
         {statusInfo.label}
@@ -196,7 +178,7 @@ export default function InstructorCoursesPage() {
                   <h3 className="text-xl font-semibold text-gray-900 flex-1">{course.title}</h3>
                   {getStatusBadge(course.status)}
                 </div>
-                
+
                 <p className="text-gray-600 text-sm mb-4 line-clamp-3">
                   {course.description || 'No description'}
                 </p>
@@ -233,85 +215,29 @@ export default function InstructorCoursesPage() {
           </div>
         )}
 
-        {/* Modal */}
-        {showModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-2xl shadow-xl max-w-2xl w-full p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">
-                {modalMode === 'create' ? 'Create New Course' : 'Edit Course'}
-              </h2>
+      <CourseModal
+          open={showModal}
+          mode={modalMode}
+          course={selectedCourse}
+          courseStatus={selectedCourse ? selectedCourse.status : CourseStatusEnum.Hidden}
+          categories={categories}
+          loadingCategories={loadingCategories}
+          submitting={submitting}
+          onClose={() => setShowModal(false)}
+          onSubmit={async (data) => {
+            if (modalMode === 'create') {
+              await courseAPI.createCourse({
+                ...data,
+                creatorId: user?.userId || null,
+              });
+            } else if (selectedCourse) {
+              await courseAPI.updateCourse(selectedCourse.id, data);
+            }
 
-              {error && (
-                <div className="mb-4 bg-red-50 border-l-4 border-red-500 p-4 rounded">
-                  <p className="text-red-700 text-sm">{error}</p>
-                </div>
-              )}
-
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div>
-                  <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
-                    Course Title *
-                  </label>
-                  <input
-                    id="title"
-                    type="text"
-                    value={formData.title}
-                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                    required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900"
-                    placeholder="Enter course title"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
-                    Description
-                  </label>
-                  <textarea
-                    id="description"
-                    value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    rows={4}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900"
-                    placeholder="Enter course description"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="categoryId" className="block text-sm font-medium text-gray-700 mb-2">
-                    Category ID (Optional)
-                  </label>
-                  <input
-                    id="categoryId"
-                    type="text"
-                    value={formData.categoryId}
-                    onChange={(e) => setFormData({ ...formData, categoryId: e.target.value })}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900"
-                    placeholder="Enter category ID"
-                  />
-                </div>
-
-                <div className="flex gap-4">
-                  <button
-                    type="button"
-                    onClick={() => setShowModal(false)}
-                    disabled={submitting}
-                    className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={submitting}
-                    className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-lg hover:from-blue-600 hover:to-indigo-700 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {submitting ? 'Saving...' : (modalMode === 'create' ? 'Create Course' : 'Update Course')}
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
+            setShowModal(false);
+            await loadCourses();
+          }}
+        />
       </div>
     </div>
   );

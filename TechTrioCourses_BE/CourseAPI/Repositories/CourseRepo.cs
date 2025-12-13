@@ -21,6 +21,7 @@ namespace CourseAPI.Repositories
                 .ToListAsync();
         }
 
+
         public async Task<Course?> GetByIdAsync(Guid id)
         {
             return await _context.Courses

@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { courseAPI, Course } from "@/services/courseAPI";
+import { courseAPI, CourseResponse } from "@/services/courseAPI";
 import Link from "next/link";
 
 export default function CoursesPage() {
-  const [courses, setCourses] = useState<Course[]>([]);
+  const [courses, setCourses] = useState<CourseResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -13,7 +13,8 @@ export default function CoursesPage() {
     const fetchCourses = async () => {
       try {
         const data = await courseAPI.getAllCourses();
-        setCourses(data);
+          const myCourses = data.filter(course => course.status == 1);
+        setCourses(myCourses);
       } catch (err) {
         setError(err instanceof Error ? err.message : "An unknown error occurred");
       } finally {
