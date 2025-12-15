@@ -49,7 +49,7 @@ export const userService = {
    */
   getUserById: async (id: string): Promise<UserResponse> => {
     const response = await userAxios.get<UserResponse>(
-      `${API_ENDPOINTS.USERS.BASE}/${id}`
+      API_ENDPOINTS.USERS.GET_BY_ID(id)
     );
     return response.data;
   },

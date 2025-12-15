@@ -37,12 +37,11 @@ export interface RefreshTokenRequest {
 }
 export type OtpPurpose =
   | 'Registration'
-  | 'PasswordReset'
-  | 'EmailVerification';
+  | 'PasswordReset';
   
 export interface SendOtpRequest {
   email: string;
-  purpose: OtpPurpose; // "Registration", "PasswordReset", "EmailVerification"
+  purpose: OtpPurpose; // "Registration", "PasswordReset"
 }
 
 export interface VerifyOtpRequest {

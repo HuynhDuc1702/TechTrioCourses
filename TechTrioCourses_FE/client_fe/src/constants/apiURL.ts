@@ -26,6 +26,7 @@ export const API_ENDPOINTS = {
         BASE: '/api/Users',
         BY_ACCOUNT: (accountId: string) => `/api/Users/by-account/${accountId}`,
         GET_BY_IDS: '/api/Users/get-by-ids',
+        GET_BY_ID: (id: string) => `/api/Users/${id}`,
     },
     CATEGORIES:{
         BASE: '/api/Categories',
