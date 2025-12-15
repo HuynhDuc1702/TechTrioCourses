@@ -35,21 +35,30 @@ export interface AccountResponse {
 export interface RefreshTokenRequest {
   refreshToken: string;
 }
-
+export type OtpPurpose =
+  | 'Registration'
+  | 'PasswordReset'
+  | 'EmailVerification';
+  
 export interface SendOtpRequest {
   email: string;
-  purpose: string; // "Registration", "PasswordReset", "EmailVerification"
+  purpose: OtpPurpose; // "Registration", "PasswordReset", "EmailVerification"
 }
 
 export interface VerifyOtpRequest {
   email: string;
   code: string;
+  purpose: OtpPurpose; // "Registration", "PasswordReset", "EmailVerification"
 }
 
 export interface ChangePasswordRequest {
   email: string;
   oldPassword: string;
   newPassword: string;
+}
+export interface ResetPasswordRequest {
+  email: string;
+  password: string;
 }
 
 export interface OtpResponse {
@@ -114,7 +123,7 @@ export const accountService = {
    */
   sendOtp: async (data: SendOtpRequest): Promise<OtpResponse> => {
     const response = await accountAxios.post<OtpResponse>(
-      '/Accounts/send-otp',
+      API_ENDPOINTS.ACCOUNTS.SEND_OTP,
       data
     );
     return response.data;
@@ -126,7 +135,7 @@ export const accountService = {
    */
   verifyOtp: async (data: VerifyOtpRequest): Promise<{ message: string }> => {
     const response = await accountAxios.post<{ message: string }>(
-      '/Accounts/verify-otp',
+      API_ENDPOINTS.ACCOUNTS.VERIFY_OTP,
       data
     );
     return response.data;
@@ -138,12 +147,21 @@ export const accountService = {
    */
   changePassword: async (data: ChangePasswordRequest): Promise<{ message: string }> => {
     const response = await accountAxios.post<{ message: string }>(
-      '/Accounts/change-password',
+      API_ENDPOINTS.ACCOUNTS.CHANGE_PASSWORD,
       data
     );
     return response.data;
   },
-
+/**   * Reset password
+   * POST: /api/Accounts/reset-password
+   */
+  resetPassword: async (data: ResetPasswordRequest): Promise<{ message: string }> => {
+    const response = await accountAxios.post<{ message: string }>(
+      API_ENDPOINTS.ACCOUNTS.RESET_PASSWORD,  
+      data
+    );
+    return response.data;
+  },
   /**
    * Logout user
    */

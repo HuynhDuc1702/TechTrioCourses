@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import axios from 'axios';
 import { API_URLS, API_ENDPOINTS } from '@/constants/apiURL';
+import accountService, { OtpPurpose } from '@/services/accountAPI';
 
 export default function VerifyOtpPage() {
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
@@ -55,11 +56,25 @@ export default function VerifyOtpPage() {
 
     const newOtp = pastedData.split('').concat(Array(6 - pastedData.length).fill(''));
     setOtp(newOtp.slice(0, 6));
-    
+
     // Focus the next empty input or the last one
     const nextIndex = Math.min(pastedData.length, 5);
     inputRefs.current[nextIndex]?.focus();
   };
+  const [purpose, setPurpose] = useState<string>('Registration');
+
+  useEffect(() => {
+    const emailParam = searchParams.get('email');
+    const purposeParam = searchParams.get('purpose');
+
+    if (!emailParam || !purposeParam) {
+      router.push('/auth/login');
+      return;
+    }
+
+    setEmail(emailParam);
+    setPurpose(purposeParam);
+  }, [searchParams, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -75,22 +90,17 @@ export default function VerifyOtpPage() {
 
     try {
       console.log('🔍 [DEBUG] Verifying OTP:', { email, code: otpCode });
-      const response = await axios.post(
-        `${API_URLS.ACCOUNT}${API_ENDPOINTS.ACCOUNTS.VERIFY_OTP}`, 
-        {
-          email,
-          code: otpCode
-        },
-        {
-          withCredentials: true // Important: Send cookies with request
-        }
-      );
+      const response = await accountService.verifyOtp({ email, code: otpCode, purpose: purpose as OtpPurpose });
 
-      console.log('✅ [DEBUG] OTP verification successful:', response.data);
+      console.log('✅ [DEBUG] OTP verification successful:', response);
       setSuccess(true);
       // Redirect to login after 2 seconds
       setTimeout(() => {
-        router.push('/auth/login');
+        if (purpose === 'Registration') {
+          router.push('/auth/login');
+        } else if (purpose === 'PasswordReset') {
+          router.push('/auth/reset-passwords?email=' + encodeURIComponent(email));
+        }
       }, 2000);
     } catch (err: any) {
       console.error('❌ [DEBUG] OTP verification failed:', err.response?.data);
@@ -109,16 +119,7 @@ export default function VerifyOtpPage() {
 
     try {
       console.log('🔍 [DEBUG] Resending OTP to:', email);
-      await axios.post(
-        `${API_URLS.ACCOUNT}${API_ENDPOINTS.ACCOUNTS.SEND_OTP}`, 
-        {
-          email,
-          purpose: 'Registration'
-        },
-        {
-          withCredentials: true // Important: Send cookies with request
-        }
-      );
+      await accountService.sendOtp({ email, purpose: purpose as OtpPurpose });
 
       console.log('✅ [DEBUG] OTP resent successfully');
       setResendSuccess(true);
@@ -145,7 +146,14 @@ export default function VerifyOtpPage() {
             </div>
             <h2 className="text-2xl font-bold text-gray-800 mb-2">Verification Successful!</h2>
             <p className="text-gray-600 mb-4">Your account has been verified.</p>
-            <p className="text-sm text-gray-500">Redirecting to login...</p>
+
+            <p className="text-sm text-gray-500">
+              {purpose === 'Registration'
+                ? 'Redirecting to login...'
+                : 'Redirecting to password reset...'}
+            </p>
+
+
           </div>
         </div>
       </div>
