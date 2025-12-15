@@ -158,6 +158,22 @@ namespace AccountAPI.Controllers
             return Ok(new { message = "Password changed successfully" });
         }
 
+        // POST: api/Accounts/reset-password
+        [HttpPost("reset-password")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
+        {
+            // Reset password
+            var result = await _accountService.ResetPasswordAsync(request.Email, request);
+
+            if (!result)
+            {
+                return BadRequest(new { message = "Failed to reset password. Account not found." });
+            }
+
+            return Ok(new { message = "Password reset successfully" });
+        }
+
         // Helper method to create safe cookie names
         private string CreateSafeCookieName(string email)
         {

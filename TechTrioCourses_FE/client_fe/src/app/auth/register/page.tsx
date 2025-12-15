@@ -26,12 +26,29 @@ export default function RegisterPage() {
       return;
     }
 
-    // Validate password length
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters');
+   const validatePassword = (password: string): string | null => {
+    if (password.length < 8) {
+      return 'Password must be at least 8 characters long';
+    }
+    if (!/[A-Z]/.test(password)) {
+      return 'Password must contain at least one uppercase letter';
+    }
+    if (!/[a-z]/.test(password)) {
+      return 'Password must contain at least one lowercase letter';
+    }
+    if (!/[0-9]/.test(password)) {
+      return 'Password must contain at least one number';
+    }
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+      return 'Password must contain at least one special character';
+    }
+    return null;
+  };
+   const passwordError = validatePassword(password);
+    if (passwordError) {
+      setError(passwordError);
       return;
     }
-
     setLoading(true);
 
     try {
@@ -97,7 +114,7 @@ export default function RegisterPage() {
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-gray-900"
                 placeholder="John Doe"
               />
             </div>
@@ -112,7 +129,7 @@ export default function RegisterPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-gray-900"
                 placeholder="you@example.com"
               />
             </div>
@@ -128,7 +145,7 @@ export default function RegisterPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={6}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-gray-900"
                 placeholder="••••••••"
               />
             </div>
@@ -144,7 +161,7 @@ export default function RegisterPage() {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
                 minLength={6}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-gray-900"
                 placeholder="••••••••"
               />
             </div>

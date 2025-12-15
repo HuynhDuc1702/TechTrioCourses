@@ -11,3 +11,4 @@ namespace CourseAPI.DTOs.Request
         public CourseStatusEnum Status { get; set; }
     }
 }
+    

@@ -250,6 +250,22 @@ namespace AccountAPI.Services
             return await _accountRepo.UpdateAccountAsync(account);
         }
 
+        public async Task<bool> ResetPasswordAsync(string email, ResetPasswordRequest request)
+        {
+            // Get account by email
+            var account = await _accountRepo.GetByEmailAsync(email);
+
+            if (account == null)
+            {
+                return false;
+            }
+
+            // Update password directly (no old password verification needed for reset)
+            account.PasswordHash = HashPassword(request.Password);
+
+            return await _accountRepo.UpdateAccountAsync(account);
+        }
+
         // Helper Methods
         public string GenerateOtp()
         {
