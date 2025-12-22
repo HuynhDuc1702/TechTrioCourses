@@ -4,13 +4,13 @@ namespace LessonAPI.Enums
 {
     public enum LessonStatusEnum
     {
-       
+   
         [Description("Hidden")]
-        Hidden = 0,
+     Hidden = 1,
         [Description("Published")]
-        Published = 1,
-        [Description("Archived")]
-        Archived = 2,
+        Published = 2,
+   [Description("Archived")]
+        Archived = 3,
        
     }
 }

@@ -4,10 +4,10 @@ namespace AccountAPI.Enums
     public enum AccountStatusEnum
     {
         [Description("Disabled")]
-        Disable = 0,
+        Disable = 1,
         [Description("Active")]
-        Active = 1,
+        Active = 2,
         [Description("Banned")]
-        Banned = 2,
+        Banned = 3,
     }
 }

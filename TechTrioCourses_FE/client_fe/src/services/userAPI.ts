@@ -4,9 +4,9 @@ import { userAxios } from '@/middleware/axiosMiddleware';
 // ==================== INTERFACES ====================
 
 export enum UserRoleEnum {
-  Admin = 0,
-  Student = 1,
-  Instructor = 2
+  Admin = 1,
+  Student = 2,
+  Instructor = 3
 }
 
 export interface UserResponse {

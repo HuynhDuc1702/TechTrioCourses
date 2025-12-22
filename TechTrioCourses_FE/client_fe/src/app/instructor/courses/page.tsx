@@ -10,6 +10,7 @@ import { CourseCreateRequest } from '@/services/courseAPI';
 import { CourseUpdateRequest } from '@/services/courseAPI';
 import CourseModal from '@/components/course/CourseModal';
 import { CourseStatusEnum } from '@/services/courseAPI';
+import Link from 'next/link';
 
 export default function InstructorCoursesPage() {
   const [courses, setCourses] = useState<CourseResponse[]>([]);
@@ -28,7 +29,7 @@ export default function InstructorCoursesPage() {
   type CourseFormData = {
     title: string;
     description?: string;
-    categoryId?: string; // optional
+    categoryId?: string; 
   };
 
   const [formData, setFormData] = useState<CourseFormData>({
@@ -95,18 +96,7 @@ export default function InstructorCoursesPage() {
   };
 
  
-  const handleDisable = async (id: string) => {
-    if (!confirm('Are you sure you want to disable this course? Students will no longer be able to access it.')) {
-      return;
-    }
-
-    try {
-      await courseAPI.disableCourse(id);
-      await loadCourses();
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to disable course');
-    }
-  };
+ 
 
   const getStatusBadge = (status: CourseStatusEnum) => {
     const statusMap: Record<
@@ -121,10 +111,7 @@ export default function InstructorCoursesPage() {
         label: 'Published',
         color: 'bg-green-100 text-green-700',
       },
-      [CourseStatusEnum.Archived]: {
-        label: 'Archived',
-        color: 'bg-red-100 text-red-700',
-      },
+     
     };
 
     const statusInfo = statusMap[status];
@@ -201,14 +188,12 @@ export default function InstructorCoursesPage() {
                   >
                     Edit
                   </button>
-                  {course.status !== 2 && (
-                    <button
-                      onClick={() => handleDisable(course.id)}
-                      className="flex-1 px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors font-medium"
-                    >
-                      Disable
-                    </button>
-                  )}
+                  <Link 
+                  href={`/instructor/courses/${course.id}/lessons`}
+                  className="block w-full text-center bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:from-blue-600 hover:to-indigo-700 transition-all duration-300"
+                >
+                  View Details
+                </Link>
                 </div>
               </div>
             ))}
@@ -227,11 +212,19 @@ export default function InstructorCoursesPage() {
           onSubmit={async (data) => {
             if (modalMode === 'create') {
               await courseAPI.createCourse({
-                ...data,
+                title: data.title!,
+                description: data.description || null,
+                categoryId: data.categoryId || null,
                 creatorId: user?.userId || null,
+                status: data.status!,
               });
             } else if (selectedCourse) {
-              await courseAPI.updateCourse(selectedCourse.id, data);
+              await courseAPI.updateCourse(selectedCourse.id, {
+                title: data.title,
+                description: data.description || null,
+                categoryId: data.categoryId || null,
+                status: data.status!,
+              });
             }
 
             setShowModal(false);

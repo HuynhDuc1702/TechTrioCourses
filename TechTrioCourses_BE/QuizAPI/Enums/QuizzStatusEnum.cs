@@ -4,13 +4,13 @@ namespace QuizAPI.Enums
 {
     public enum QuizzStatusEnum
     {
-       
+ 
         [Description("Hidden")]
-        Hidden = 0,
+        Hidden = 1,
         [Description("Published")]
-        Published = 1,
+        Published = 2,
         [Description("Archived")]
-        Archived = 2,
+        Archived = 3,
        
     }
 }

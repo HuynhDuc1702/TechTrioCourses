@@ -6,11 +6,11 @@ namespace UserAPI.Enums
         public enum UserRoleEnum
         {
             [Description("Admin")]
-            Admin = 0,
+            Admin = 1,
             [Description("Student")]
-            Student = 1,
+            Student = 2,
             [Description("Instructor")]
-            Instructor = 2,
+            Instructor = 3,
         }
     
 }

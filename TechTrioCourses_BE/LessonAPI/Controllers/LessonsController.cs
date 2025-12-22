@@ -10,6 +10,7 @@ using LessonAPI.Models;
 using LessonAPI.Services.Interfaces;
 using LessonAPI.DTOs.Response;
 using LessonAPI.DTOs.Request;
+using Microsoft.AspNetCore.Authorization;
 
 namespace LessonAPI.Controllers
 {
@@ -57,7 +58,7 @@ namespace LessonAPI.Controllers
 
         // PUT: api/Lessons/5
         [HttpPut("{id}")]
-       
+        [Authorize(Roles = "Instructor,Admin")]
         public async Task<IActionResult> PutLesson(Guid id, UpdateLessonRequest request)
         {
             var updatedLesson = await _lessonsService.UpdateLessonAsync(id, request);
@@ -71,7 +72,7 @@ namespace LessonAPI.Controllers
         }
 
         // POST: api/Lessons
-        //[Authorize(Roles = "Instructor,Admin")]
+        [Authorize(Roles = "Instructor,Admin")]
         [HttpPost]
         public async Task<ActionResult<LessonResponse>> PostLesson(CreateLessonRequest request)
         {
@@ -81,7 +82,7 @@ namespace LessonAPI.Controllers
 
         // DELETE: api/Lessons/5
         [HttpDelete("{id}")]
-        // [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteLesson(Guid id)
         {
             var result = await _lessonsService.DeleteLessonAsync(id);
@@ -95,7 +96,7 @@ namespace LessonAPI.Controllers
         }
         // DISABLE: api/Lessons/5/disable
         [HttpPut("{id}/disable")]
-        // [Authorize(Roles = "Instructor,Admin")]
+        [Authorize(Roles = "Instructor,Admin")]
         public async Task<IActionResult> DisableLesson(Guid id)
         {
             var result = await _lessonsService.DisableLessonAsync(id);

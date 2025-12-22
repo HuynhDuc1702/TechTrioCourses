@@ -4,6 +4,8 @@ export const API_URLS = {
     COURSE: process.env.NEXT_PUBLIC_COURSE_API_URL || "https://localhost:7102",
     USER: process.env.NEXT_PUBLIC_USER_API_URL || "https://localhost:7012",
     CATEGORY: process.env.NEXT_PUBLIC_CATEGORY_API_URL || "https://localhost:7273",
+    LESSON: process.env.NEXT_PUBLIC_LESSON_API_URL || "https://localhost:7088",
+
 }
 
 // API endpoints (paths only, base URL comes from API_URLS)
@@ -28,7 +30,10 @@ export const API_ENDPOINTS = {
         GET_BY_IDS: '/api/Users/get-by-ids',
         GET_BY_ID: (id: string) => `/api/Users/${id}`,
     },
-    CATEGORIES:{
+    CATEGORIES: {
         BASE: '/api/Categories',
-    }
+    },
+    LESSONS: {
+        BASE: '/api/Lessons',
+    },
 }

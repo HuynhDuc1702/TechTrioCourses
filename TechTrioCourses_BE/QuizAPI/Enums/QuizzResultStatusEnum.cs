@@ -6,11 +6,11 @@ namespace QuizAPI.Enums
     {
 
         [Description("Pending")]
-        Pending = 0,
+        Pending = 1,
         [Description("In_Progress")]
-        In_Progress = 1,
+        In_Progress = 2,
         [Description("Completed")]
-        Completed = 2,
+        Completed = 3,
 
     }
 }
