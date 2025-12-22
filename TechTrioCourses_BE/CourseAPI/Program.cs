@@ -29,6 +29,18 @@ builder.Services.AddHttpClient("CategoryAPI", client =>
     var baseUrl = config["ApiSettings:CategoryAPI"];
     client.BaseAddress = new Uri(baseUrl);
 });
+builder.Services.AddHttpClient("LessonAPI", client =>
+{
+    var config = builder.Configuration;
+    var baseUrl = config["ApiSettings:LessonAPI"];
+    client.BaseAddress = new Uri(baseUrl);
+});
+builder.Services.AddHttpClient("QuizAPI", client =>
+{
+    var config = builder.Configuration;
+    var baseUrl = config["ApiSettings:QuizAPI"];
+    client.BaseAddress = new Uri(baseUrl);
+});
 
 builder.Services.AddScoped<ICourseRepo, CourseRepo>();
 builder.Services.AddScoped<ICourseService, CourseService>();

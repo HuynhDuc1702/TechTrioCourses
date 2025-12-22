@@ -7,7 +7,7 @@ export interface CourseResponse {
   description: string | null;
   categoryId: string | null;
   creatorId: string | null;
-  status: number;
+  status: CourseStatusEnum;
   createdAt: string | null;
   updatedAt: string | null;
   categoryName: string | null;
@@ -17,9 +17,9 @@ export interface CourseResponse {
   averageRating: number;
 }
 export enum CourseStatusEnum {
-  Hidden = 0,
-  Published = 1,
-  Archived = 2
+  Hidden = 1,
+  Published = 2
+
 }
 export interface CourseCreateRequest {
   title: string;
@@ -49,13 +49,13 @@ export const courseAPI = {
   },
 
   // Tạo course mới
-  async createCourse(course: Partial<CourseCreateRequest>): Promise<CourseResponse> {
+  async createCourse(course: CourseCreateRequest): Promise<CourseResponse> {
     const response = await courseAxios.post<CourseResponse>(API_ENDPOINTS.COURSES.BASE, course);
     return response.data;
   },
 
   // Cập nhật course
-  async updateCourse(id: string, course: Partial<CourseUpdateRequest>): Promise<CourseResponse> {
+  async updateCourse(id: string, course: CourseUpdateRequest): Promise<CourseResponse> {
     const response = await courseAxios.put<CourseResponse>(`${API_ENDPOINTS.COURSES.BASE}/${id}`, course);
     return response.data;
   },

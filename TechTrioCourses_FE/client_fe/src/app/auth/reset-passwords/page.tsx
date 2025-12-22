@@ -93,9 +93,9 @@ export default function ForgotPasswordPage() {
                                 </svg>
                             </div>
                         </div>
-                        <h2 className="text-2xl font-bold mb-2">OTP Sent Successfully!</h2>
-                        <p className="text-gray-600 mb-4">Please check your email for the OTP code.</p>
-                        <p className="text-sm text-gray-500">Redirecting to verification page...</p>
+                        <h2 className="text-2xl font-bold mb-2">Password Reset Successfully!</h2>
+                        <p className="text-gray-600 mb-4">Your password has been updated.</p>
+                        <p className="text-sm text-gray-500">Redirecting to login page...</p>
                     </div>
                 </div>
             </div>

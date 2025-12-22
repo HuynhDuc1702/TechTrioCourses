@@ -5,10 +5,10 @@ namespace UserAPI.Enums
     public enum UserCourseStatus
     {
         [Description("Dropped")]
-        Dropped = 0,
+        Dropped = 1,
         [Description("In_progress")]
-        In_progress = 1,
+        In_progress = 2,
         [Description("Completed")]
-        Completed = 2,
+        Completed = 3,
     }
 }

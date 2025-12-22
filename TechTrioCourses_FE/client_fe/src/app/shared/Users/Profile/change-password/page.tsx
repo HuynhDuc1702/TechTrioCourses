@@ -132,8 +132,12 @@ export default function ChangePasswordPage() {
         router.push('/shared/Users/Profile');
       }, 2000);
     } catch (err: any) {
-      console.error('Error changing password:', err);
-      setError(err.response?.data?.message || 'Failed to change password');
+  console.log('Full error response:', err.response);
+  setError(
+    err.response?.data?.message ||
+    err.response?.data ||
+    'Failed to change password'
+  );
     } finally {
       setLoading(false);
     }

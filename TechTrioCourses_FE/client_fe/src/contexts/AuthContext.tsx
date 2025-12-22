@@ -70,6 +70,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       };
       
       localStorage.setItem('user', JSON.stringify(userData));
+      // Set cookie for middleware access
+      document.cookie = `user=${JSON.stringify(userData)}; path=/; max-age=${60 * 60 * 24 * 7}`; // 7 days
+      document.cookie = `accessTokenFromStorage=true; path=/; max-age=${60 * 60 * 24 * 7}`;
+      
       setUser(userData);
       console.log('✅ [DEBUG] Login complete, user data saved');
     } catch (error: any) {

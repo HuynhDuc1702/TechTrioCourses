@@ -4,7 +4,7 @@ namespace LessonAPI.DTOs.Request
 {
     public class UpdateLessonRequest
     {
-        public Guid? CourseId { get; set; } 
+      
 
         public string? Title { get; set; } 
 

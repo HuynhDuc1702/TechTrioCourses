@@ -409,9 +409,9 @@ namespace AccountAPI.Services
         {
             return role switch
             {
-                0 => "Admin",
-                1 => "Student",
-                2 => "Instructor",
+                1 => "Admin",
+                2 => "Student",
+                3 => "Instructor",
                 _ => "Student" // Default to Student
             };
         }

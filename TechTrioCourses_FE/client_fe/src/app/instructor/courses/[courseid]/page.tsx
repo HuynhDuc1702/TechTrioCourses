@@ -15,7 +15,7 @@ export default function CourseDetailPage() {
   useEffect(() => {
     const fetchCourse = async () => {
       try {
-        const id = params.id as string;
+        const id = params.courseid as string;
         const data = await courseAPI.getCourseById(id);
         
         setCourse(data);
@@ -30,6 +30,7 @@ export default function CourseDetailPage() {
       fetchCourse();
     }
   }, [params.id]);
+
 
   if (loading) {
     return (
@@ -133,11 +134,13 @@ export default function CourseDetailPage() {
             )}
 
             <div className="mt-8">
-              <button 
-                className="w-full md:w-auto bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-bold py-3 px-8 rounded-lg hover:from-blue-600 hover:to-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl"
-              >
-                Enroll Now
-              </button>
+              
+               <Link 
+                href={`/courses/${course.id}/lessons`}
+                  className="block w-full text-center bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:from-blue-600 hover:to-indigo-700 transition-all duration-300"
+                >
+                  Manage Lessons
+                </Link>
             </div>
           </div>
         </div>

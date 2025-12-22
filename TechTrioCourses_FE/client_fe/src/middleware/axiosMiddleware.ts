@@ -174,6 +174,25 @@ const responseInterceptor = (response: any) => {
 const responseErrorInterceptor = async (error: AxiosError): Promise<any> => {
   const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
+  // ✅ AUTH ENDPOINTS - SKIP REFRESH & REDIRECT
+  const authEndpoints = [
+    API_ENDPOINTS.ACCOUNTS.LOGIN,
+    API_ENDPOINTS.ACCOUNTS.REGISTER,
+    API_ENDPOINTS.ACCOUNTS.SEND_OTP,
+    API_ENDPOINTS.ACCOUNTS.VERIFY_OTP,
+    API_ENDPOINTS.ACCOUNTS.RESET_PASSWORD,
+    API_ENDPOINTS.ACCOUNTS.CHANGE_PASSWORD,
+  ];
+
+  // Check if this is an auth endpoint - if yes, just reject without refresh/redirect
+  const isAuthEndpoint = authEndpoints.some(endpoint => 
+    originalRequest.url?.includes(endpoint)
+  );
+
+  if (isAuthEndpoint) {
+    return Promise.reject(error);
+  }
+
   // If error is 401 and we haven't retried yet
   if (error.response?.status === 401 && !originalRequest._retry) {
     if (isRefreshing) {
@@ -267,3 +286,7 @@ export const courseAxios = createAxiosInstance(API_URLS.COURSE);
  * Axios instance for Category API
  */
 export const categoryAxios = createAxiosInstance(API_URLS.CATEGORY);
+/**
+ * Axios instance for Lesson API
+ */
+export const lessonAxios = createAxiosInstance(API_URLS.LESSON);

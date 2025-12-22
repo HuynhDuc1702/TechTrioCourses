@@ -36,6 +36,7 @@ export default function CourseModal({
   categories,
   loadingCategories,
   course,
+  courseStatus,
   submitting,
   onClose,
   onSubmit,
@@ -54,17 +55,17 @@ export default function CourseModal({
         title: course.title ?? '',
         description: course.description ?? '',
         categoryId: course.categoryId ?? undefined,
-        courseStatus: course.status ?? CourseStatusEnum.Hidden,
+        courseStatus: course.status,
       });
     } else if (open && mode === 'create') {
       setFormData({
         title: '',
         description: '',
         categoryId: undefined,
-        courseStatus: CourseStatusEnum.Hidden,
+        courseStatus: courseStatus,
       });
     }
-  }, [open, mode, course]);
+  }, [open, mode, course, courseStatus]);
 
   if (!open) return null;
 
@@ -155,7 +156,7 @@ export default function CourseModal({
               onChange={(e) =>
                 setFormData({
                   ...formData,
-                  courseStatus: Number(e.target.value) as CourseStatusEnum,
+                  courseStatus: parseInt(e.target.value) as CourseStatusEnum,
                 })
               }
               className="w-full px-4 py-3 border border-gray-300 rounded-lg text-black
@@ -163,7 +164,6 @@ export default function CourseModal({
             >
               <option value={CourseStatusEnum.Hidden}>Hidden</option>
               <option value={CourseStatusEnum.Published}>Published</option>
-              <option value={CourseStatusEnum.Archived}>Archived</option>
             </select>
           </div>
 

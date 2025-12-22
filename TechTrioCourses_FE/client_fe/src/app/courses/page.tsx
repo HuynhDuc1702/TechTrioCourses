@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { courseAPI, CourseResponse } from "@/services/courseAPI";
+import { courseAPI, CourseResponse, CourseStatusEnum } from "@/services/courseAPI";
 import Link from "next/link";
 
 export default function CoursesPage() {
@@ -13,7 +13,7 @@ export default function CoursesPage() {
     const fetchCourses = async () => {
       try {
         const data = await courseAPI.getAllCourses();
-          const myCourses = data.filter(course => course.status == 1);
+          const myCourses = data.filter(course => course.status === CourseStatusEnum.Published);
         setCourses(myCourses);
       } catch (err) {
         setError(err instanceof Error ? err.message : "An unknown error occurred");
