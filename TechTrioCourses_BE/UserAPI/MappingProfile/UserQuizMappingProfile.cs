@@ -1,0 +1,29 @@
+using AutoMapper;
+using UserAPI.DTOs.Request;
+using UserAPI.DTOs.Response;
+using UserAPI.Enums;
+using UserAPI.Models;
+
+namespace UserAPI.MappingProfile
+{
+    public class UserQuizMappingProfile : Profile
+    {
+        public UserQuizMappingProfile()
+        {
+   // Map CreateUserQuizRequest -> UserQuiz
+       CreateMap<CreateUserQuizRequest, UserQuiz>()
+ .ForMember(dest => dest.Id, opt => opt.Ignore())
+     .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore())
+         .ForMember(dest => dest.FirstAttemptAt, opt => opt.Ignore())
+       .ForMember(dest => dest.LastAttemptAt, opt => opt.Ignore())
+       .ForMember(dest => dest.PassedAt, opt => opt.Ignore());
+
+   // Map UpdateUserQuizRequest -> UserQuiz (for updating existing user quiz)
+   CreateMap<UpdateUserQuizRequest, UserQuiz>()
+   .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+
+ // Map UserQuiz -> UserQuizResponse
+   CreateMap<UserQuiz, UserQuizResponse>();
+        }
+}
+}

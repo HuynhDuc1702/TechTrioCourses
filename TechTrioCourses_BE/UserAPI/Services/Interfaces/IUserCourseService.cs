@@ -11,7 +11,7 @@ namespace UserAPI.Services.Interfaces
         Task<IEnumerable<UserCourseResponse>> GetUserCoursesByCourseIdAsync(Guid courseId);
         Task<UserCourseResponse?> GetUserCourseByUserAndCourseAsync(Guid userId, Guid courseId);
         Task<UserCourseResponse?> CreateUserCourseAsync(CreateUserCourseRequest request);
-        Task<UserCourseResponse?> UpdateUserCourseAsync(Guid id, UpdateUserCourseRequest request);
+        Task<UserCourseResponse?> UpdateUserCourseAsync(Guid id);
         Task<bool> DeleteUserCourseAsync(Guid id);
     }
 }

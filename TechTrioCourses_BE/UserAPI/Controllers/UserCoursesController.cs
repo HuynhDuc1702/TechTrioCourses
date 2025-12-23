@@ -72,6 +72,7 @@ namespace UserAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<UserCourseResponse>> CreateUserCourse([FromBody] CreateUserCourseRequest request)
         {
+            
             var userCourse = await _userCourseService.CreateUserCourseAsync(request);
 
             if (userCourse == null)
@@ -84,9 +85,9 @@ namespace UserAPI.Controllers
 
         // PUT: api/UserCourses/{id}
         [HttpPut("{id}")]
-        public async Task<ActionResult<UserCourseResponse>> UpdateUserCourse(Guid id, [FromBody] UpdateUserCourseRequest request)
+        public async Task<ActionResult<UserCourseResponse>> RecalculateCourseProgress(Guid id)
         {
-            var userCourse = await _userCourseService.UpdateUserCourseAsync(id, request);
+            var userCourse = await _userCourseService.UpdateUserCourseAsync(id);
 
             if (userCourse == null)
             {

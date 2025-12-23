@@ -17,13 +17,29 @@ builder.Services.AddDbContext<TechTrioUsersContext>(options =>
 // Register repositories
 builder.Services.AddScoped<IUserRepo, UserRepo>();
 builder.Services.AddScoped<IUserCourseRepo, UserCourseRepo>();
+builder.Services.AddScoped<IUserLessonRepo, UserLessonRepo>();
+builder.Services.AddScoped<IUserQuizRepo, UserQuizRepo>();
 
 // Register services
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserCourseService, UserCourseService>();
+builder.Services.AddScoped<IUserLessonService, UserLessonService>();
+builder.Services.AddScoped<IUserQuizService, UserQuizService>();
 
 // Add AutoMapper
 builder.Services.AddAutoMapper(typeof(Program));
+builder.Services.AddHttpClient("LessonAPI", client =>
+{
+    var config = builder.Configuration;
+    var baseUrl = config["ApiSettings:LessonAPI"];
+    client.BaseAddress = new Uri(baseUrl);
+});
+builder.Services.AddHttpClient("QuizAPI", client =>
+{
+    var config = builder.Configuration;
+    var baseUrl = config["ApiSettings:QuizAPI"];
+    client.BaseAddress = new Uri(baseUrl);
+});
 
 // Add CORS
 builder.Services.AddCors(options =>
