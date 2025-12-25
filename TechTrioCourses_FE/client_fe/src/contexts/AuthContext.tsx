@@ -2,7 +2,7 @@
 
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { accountService, AuthResult, AccountResponse } from '@/services/accountAPI';
-import { userService, UserResponse } from '@/services/userAPI';
+import { userAPI, UserResponse } from '@/services/userAPI';
 
 interface User {
   accountId: string;
@@ -57,7 +57,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.log('🔍 [DEBUG] Decoded accountId from token:', accountId);
       
       // After login, fetch user details
-      const userInfo = await userService.getUserByAccountId(accountId);
+      const userInfo = await userAPI.getUserByAccountId(accountId);
       console.log('✅ [DEBUG] User info fetched:', userInfo);
       
       const userData: User = {

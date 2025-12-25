@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { userService, UserResponse, UpdateUserRequest } from '@/services/userAPI';
+import { userAPI, UserResponse, UpdateUserRequest } from '@/services/userAPI';
 import { accountService } from '@/services/accountAPI';
 
 export default function EditProfilePage() {
@@ -32,7 +32,7 @@ export default function EditProfilePage() {
         return;
       }
 
-      const profile = await userService.getCurrentUserProfile();
+      const profile = await userAPI.getCurrentUserProfile();
       if (profile) {
         setUser(profile);
         setFormData({
@@ -80,7 +80,7 @@ export default function EditProfilePage() {
         updateData.avatarUrl = formData.avatarUrl.trim();
       }
 
-      const updatedUser = await userService.updateCurrentUserProfile(updateData);
+      const updatedUser = await userAPI.updateCurrentUserProfile(updateData);
       
       if (updatedUser) {
         setUser(updatedUser);

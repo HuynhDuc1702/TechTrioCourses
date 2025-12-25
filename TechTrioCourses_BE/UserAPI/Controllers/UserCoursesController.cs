@@ -29,7 +29,7 @@ namespace UserAPI.Controllers
 
             return Ok(userCourse);
         }
-
+        
         // GET: api/UserCourses
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserCourseResponse>>> GetAllUserCourses()
@@ -66,6 +66,14 @@ namespace UserAPI.Controllers
             }
 
             return Ok(userCourse);
+        }
+        // GET: api/UserCourses/by-user-and-course/{userId}/{courseId}
+        [HttpGet("is-enrolled/{userId}/{courseId}")]
+        public async Task<ActionResult> CheckIsEnrolled(Guid userId, Guid courseId)
+        {
+            var userCourse = await _userCourseService.GetUserCourseByUserAndCourseAsync(userId, courseId);
+
+            return Ok(new { isEnrolled=userCourse !=null });
         }
 
         // POST: api/UserCourses

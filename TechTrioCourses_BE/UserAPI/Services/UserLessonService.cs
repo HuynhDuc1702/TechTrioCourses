@@ -52,13 +52,19 @@ namespace UserAPI.Services
         public async Task<UserLessonResponse?> CreateUserLessonAsync(CreateUserLessonRequest request)
         {
             // Check if user lesson already exists
-            if (await _userLessonRepo.UserLessonExistsAsync(request.UserId, request.LessonId))
+            var existingUserLesson = await _userLessonRepo.GetByUserAndLessonAsync(request.UserId, request.LessonId);
+
+            if (existingUserLesson != null)
             {
-                return null;
+                // Already exists, return existing
+                return _mapper.Map<UserLessonResponse>(existingUserLesson);
             }
 
-            // Create user lesson
+            // Create new user lesson - automatically mark as completed
             var userLesson = _mapper.Map<UserLesson>(request);
+            userLesson.Status = UserLessonStatus.Completed;
+            userLesson.CompletedAt = DateTime.UtcNow;
+
             var createdUserLesson = await _userLessonRepo.CreateUserLessonAsync(userLesson);
 
             return _mapper.Map<UserLessonResponse>(createdUserLesson);

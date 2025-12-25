@@ -3,12 +3,32 @@ import { userAxios } from '@/middleware/axiosMiddleware';
 
 // ==================== INTERFACES ====================
 
+// User Enums
 export enum UserRoleEnum {
   Admin = 1,
   Student = 2,
   Instructor = 3
 }
 
+export enum UserCourseStatus {
+  Dropped = 1,
+  In_progress = 2,
+  Completed = 3
+}
+
+export enum UserLessonStatus {
+  Not_Started = 1,
+  Completed = 2
+}
+
+export enum UserQuizStatus {
+  Not_Started = 1,
+  In_progress = 2,
+  Passed = 3,
+  Failed = 4
+}
+
+// User Interfaces
 export interface UserResponse {
   id: string;
   accountId: string;
@@ -31,9 +51,81 @@ export interface UpdateUserRequest {
   role?: UserRoleEnum;
 }
 
+// UserCourse Interfaces
+export interface UserCourseResponse {
+  id: string;
+  userId: string;
+  courseId: string;
+  status: UserCourseStatus;
+  progress: number;
+  enrolledAt: string;
+  completedAt?: string;
+  updatedAt: string;
+}
+
+export interface CreateUserCourseRequest {
+  userId: string;
+  courseId: string;
+}
+
+export interface UpdateUserCourseRequest {
+  status?: UserCourseStatus;
+  completedAt?: string;
+}
+
+// UserLesson Interfaces
+export interface UserLessonResponse {
+  id: string;
+  userId: string;
+  lessonId: string;
+  status: UserLessonStatus;
+  completedAt?: string;
+  updatedAt: string;
+}
+
+export interface CreateUserLessonRequest {
+  userId: string;
+  lessonId: string;
+}
+
+export interface UpdateUserLessonRequest {
+  status?: UserLessonStatus;
+  completedAt?: string;
+}
+
+// UserQuiz Interfaces
+export interface UserQuizResponse {
+  id: string;
+  userId: string;
+  quizId: string;
+  status: UserQuizStatus;
+  attemptCount: number;
+  bestScore?: number;
+  firstAttemptAt?: string;
+  lastAttemptAt?: string;
+  passedAt?: string;
+  updatedAt: string;
+}
+
+export interface CreateUserQuizRequest {
+  userId: string;
+  quizId: string;
+  attemptCount: number;
+  bestScore?: number;
+}
+
+export interface UpdateUserQuizRequest {
+  status?: UserQuizStatus;
+  attemptCount?: number;
+  bestScore?: number;
+  firstAttemptAt?: string;
+  lastAttemptAt?: string;
+  passedAt?: string;
+}
+
 // ==================== USER SERVICE ====================
 
-export const userService = {
+export const userAPI = {
   /**
    * Get all users
    * GET: /api/Users
@@ -109,7 +201,7 @@ export const userService = {
       const user = localStorage.getItem('user');
       if (user) {
         const parsedUser = JSON.parse(user);
-        return await userService.getUserById(parsedUser.userId);
+        return await userAPI.getUserById(parsedUser.userId);
       }
       return null;
     } catch (error) {
@@ -126,8 +218,8 @@ export const userService = {
       const user = localStorage.getItem('user');
       if (user) {
         const parsedUser = JSON.parse(user);
-        const updatedUser = await userService.updateUser(parsedUser.userId, data);
-        
+        const updatedUser = await userAPI.updateUser(parsedUser.userId, data);
+
         // Update local storage
         localStorage.setItem('user', JSON.stringify({
           ...parsedUser,
@@ -135,7 +227,7 @@ export const userService = {
           avatarUrl: updatedUser.avatarUrl,
           role: updatedUser.role
         }));
-        
+
         return updatedUser;
       }
       return null;
@@ -165,22 +257,320 @@ export const userService = {
    * Check if current user is admin
    */
   isAdmin: (): boolean => {
-    return userService.hasRole(UserRoleEnum.Admin);
+    return userAPI.hasRole(UserRoleEnum.Admin);
   },
 
   /**
    * Check if current user is instructor
    */
   isInstructor: (): boolean => {
-    return userService.hasRole(UserRoleEnum.Instructor);
+    return userAPI.hasRole(UserRoleEnum.Instructor);
   },
 
   /**
    * Check if current user is student
    */
   isStudent: (): boolean => {
-    return userService.hasRole(UserRoleEnum.Student);
+    return userAPI.hasRole(UserRoleEnum.Student);
   },
 };
 
-export default userService;
+// ==================== USER COURSE SERVICE ====================
+
+export const userCourseAPI = {
+  /**
+   * Get all user courses
+   * GET: /api/UserCourses
+   */
+  getAllUserCourses: async (): Promise<UserCourseResponse[]> => {
+    const response = await userAxios.get<UserCourseResponse[]>(API_ENDPOINTS.USER_COURSES.BASE);
+    return response.data;
+  },
+
+  /**
+   * Get user course by ID
+   * GET: /api/UserCourses/{id}
+   */
+  getUserCourseById: async (id: string): Promise<UserCourseResponse> => {
+    const response = await userAxios.get<UserCourseResponse>(
+      API_ENDPOINTS.USER_COURSES.GET_BY_ID(id)
+    );
+    return response.data;
+  },
+
+  /**
+   * Get user courses by user ID
+   * GET: /api/UserCourses/by-user/{userId}
+   */
+  getUserCoursesByUserId: async (userId: string): Promise<UserCourseResponse[]> => {
+    const response = await userAxios.get<UserCourseResponse[]>(
+      API_ENDPOINTS.USER_COURSES.BY_USER(userId)
+    );
+    return response.data;
+  },
+
+  /**
+   * Get user courses by course ID
+   * GET: /api/UserCourses/by-course/{courseId}
+   */
+  getUserCoursesByCourseId: async (courseId: string): Promise<UserCourseResponse[]> => {
+    const response = await userAxios.get<UserCourseResponse[]>(
+      API_ENDPOINTS.USER_COURSES.BY_COURSE(courseId)
+    );
+    return response.data;
+  },
+
+  /**
+   * Get user course by user and course
+   * GET: /api/UserCourses/by-user-and-course/{userId}/{courseId}
+   */
+  getUserCourseByUserAndCourse: async (userId: string, courseId: string): Promise<UserCourseResponse> => {
+    const response = await userAxios.get<UserCourseResponse>(
+      API_ENDPOINTS.USER_COURSES.BY_USER_AND_COURSE(userId, courseId)
+    );
+    return response.data;
+  },
+
+  /**
+   * Check if user is enrolled in course
+   * GET: /api/UserCourses/is-enrolled/{userId}/{courseId}
+   */
+  checkIsEnrolled: async (userId: string, courseId: string): Promise<{ isEnrolled: boolean }> => {
+    const response = await userAxios.get<{ isEnrolled: boolean }>(
+      API_ENDPOINTS.USER_COURSES.IS_ENROLLED(userId, courseId)
+    );
+    return response.data;
+  },
+
+  /**
+   * Create new user course (enroll)
+   * POST: /api/UserCourses
+   */
+  createUserCourse: async (data: CreateUserCourseRequest): Promise<UserCourseResponse> => {
+    const response = await userAxios.post<UserCourseResponse>(
+      API_ENDPOINTS.USER_COURSES.BASE,
+      data
+    );
+    return response.data;
+  },
+
+  /**
+   * Recalculate course progress
+   * PUT: /api/UserCourses/{id}
+   */
+  recalculateCourseProgress: async (id: string): Promise<UserCourseResponse> => {
+    const response = await userAxios.put<UserCourseResponse>(
+      API_ENDPOINTS.USER_COURSES.RECALCULATE_PROGRESS(id)
+    );
+    return response.data;
+  },
+
+  /**
+   * Delete user course (unenroll)
+   * DELETE: /api/UserCourses/{id}
+   */
+  deleteUserCourse: async (id: string): Promise<void> => {
+    await userAxios.delete(API_ENDPOINTS.USER_COURSES.GET_BY_ID(id));
+  },
+};
+
+// ==================== USER LESSON API ====================
+
+export const userLessonAPI = {
+  /**
+   * Get all user lessons
+   * GET: /api/UserLessons
+   */
+  getAllUserLessons: async (): Promise<UserLessonResponse[]> => {
+    const response = await userAxios.get<UserLessonResponse[]>(API_ENDPOINTS.USER_LESSONS.BASE);
+    return response.data;
+  },
+
+  /**
+   * Get user lesson by ID
+   * GET: /api/UserLessons/{id}
+   */
+  getUserLessonById: async (id: string): Promise<UserLessonResponse> => {
+    const response = await userAxios.get<UserLessonResponse>(
+      API_ENDPOINTS.USER_LESSONS.GET_BY_ID(id)
+    );
+    return response.data;
+  },
+
+  /**
+   * Get user lessons by user ID
+   * GET: /api/UserLessons/by-user/{userId}
+   */
+  getUserLessonsByUserId: async (userId: string): Promise<UserLessonResponse[]> => {
+    const response = await userAxios.get<UserLessonResponse[]>(
+      API_ENDPOINTS.USER_LESSONS.BY_USER(userId)
+    );
+    return response.data;
+  },
+
+  /**
+   * Get user lessons by lesson ID
+   * GET: /api/UserLessons/by-lesson/{lessonId}
+   */
+  getUserLessonsByLessonId: async (lessonId: string): Promise<UserLessonResponse[]> => {
+    const response = await userAxios.get<UserLessonResponse[]>(
+      API_ENDPOINTS.USER_LESSONS.BY_LESSON(lessonId)
+    );
+    return response.data;
+  },
+
+  /**
+   * Get user lesson by user and lesson
+   * GET: /api/UserLessons/by-user-and-lesson/{userId}/{lessonId}
+   */
+  getUserLessonByUserAndLesson: async (userId: string, lessonId: string): Promise<UserLessonResponse> => {
+    const response = await userAxios.get<UserLessonResponse>(
+      API_ENDPOINTS.USER_LESSONS.BY_USER_AND_LESSON(userId, lessonId)
+    );
+    return response.data;
+  },
+
+  /**
+   * Create new user lesson
+   * POST: /api/UserLessons
+   */
+  createUserLesson: async (data: CreateUserLessonRequest): Promise<UserLessonResponse> => {
+    const response = await userAxios.post<UserLessonResponse>(
+      API_ENDPOINTS.USER_LESSONS.BASE,
+      data
+    );
+    return response.data;
+  },
+
+  /**
+   * Check if user completed lesson
+   * GET: /api/UserLessons/is-completed/{userId}/{lessonId}
+   */
+  checkIsCompleted: async (userId: string, lessonId: string): Promise<{ isCompleted: boolean }> => {
+    const response = await userAxios.get<{ isCompleted: boolean }>(
+      API_ENDPOINTS.USER_LESSONS.IS_COMPLETED(userId, lessonId)
+    );
+    return response.data;
+  },
+
+  /**
+   * Delete user lesson
+   * DELETE: /api/UserLessons/{id}
+   */
+  deleteUserLesson: async (id: string): Promise<void> => {
+    await userAxios.delete(API_ENDPOINTS.USER_LESSONS.GET_BY_ID(id));
+  },
+};
+
+// ==================== USER QUIZ API ====================
+
+export const userQuizAPI = {
+  /**
+   * Get all user quizzes
+   * GET: /api/UserQuizzes
+   */
+  getAllUserQuizzes: async (): Promise<UserQuizResponse[]> => {
+    const response = await userAxios.get<UserQuizResponse[]>(API_ENDPOINTS.USER_QUIZZES.BASE);
+    return response.data;
+  },
+
+  /**
+   * Get user quiz by ID
+   * GET: /api/UserQuizzes/{id}
+   */
+  getUserQuizById: async (id: string): Promise<UserQuizResponse> => {
+    const response = await userAxios.get<UserQuizResponse>(
+      API_ENDPOINTS.USER_QUIZZES.GET_BY_ID(id)
+    );
+    return response.data;
+  },
+
+  /**
+   * Get user quizzes by user ID
+   * GET: /api/UserQuizzes/by-user/{userId}
+   */
+  getUserQuizzesByUserId: async (userId: string): Promise<UserQuizResponse[]> => {
+    const response = await userAxios.get<UserQuizResponse[]>(
+      API_ENDPOINTS.USER_QUIZZES.BY_USER(userId)
+    );
+    return response.data;
+  },
+
+  /**
+   * Get user quizzes by quiz ID
+   * GET: /api/UserQuizzes/by-quiz/{quizId}
+   */
+  getUserQuizzesByQuizId: async (quizId: string): Promise<UserQuizResponse[]> => {
+    const response = await userAxios.get<UserQuizResponse[]>(
+      API_ENDPOINTS.USER_QUIZZES.BY_QUIZ(quizId)
+    );
+    return response.data;
+  },
+
+  /**
+   * Get user quizzes by course ID
+   * GET: /api/UserQuizzes/by-course/{courseId}
+   */
+  getUserQuizzesByCourseId: async (courseId: string): Promise<UserQuizResponse[]> => {
+    const response = await userAxios.get<UserQuizResponse[]>(
+      API_ENDPOINTS.USER_QUIZZES.BY_COURSE(courseId)
+    );
+    return response.data;
+  },
+
+  /**
+   * Get user quiz by user and quiz
+   * GET: /api/UserQuizzes/by-user-and-quiz/{userId}/{quizId}
+   */
+  getUserQuizByUserAndQuiz: async (userId: string, quizId: string): Promise<UserQuizResponse> => {
+    const response = await userAxios.get<UserQuizResponse>(
+      API_ENDPOINTS.USER_QUIZZES.BY_USER_AND_QUIZ(userId, quizId)
+    );
+    return response.data;
+  },
+
+  /**
+   * Get user quizzes by user and course
+   * GET: /api/UserQuizzes/by-user-and-course/{userId}/{courseId}
+   */
+  getUserQuizzesByUserAndCourse: async (userId: string, courseId: string): Promise<UserQuizResponse[]> => {
+    const response = await userAxios.get<UserQuizResponse[]>(
+      API_ENDPOINTS.USER_QUIZZES.BY_USER_AND_COURSE(userId, courseId)
+    );
+    return response.data;
+  },
+
+  /**
+   * Create new user quiz
+   * POST: /api/UserQuizzes
+   */
+  createUserQuiz: async (data: CreateUserQuizRequest): Promise<UserQuizResponse> => {
+    const response = await userAxios.post<UserQuizResponse>(
+      API_ENDPOINTS.USER_QUIZZES.BASE,
+      data
+    );
+    return response.data;
+  },
+
+  /**
+   * Update user quiz
+   * PUT: /api/UserQuizzes/{id}
+   */
+  updateUserQuiz: async (id: string, data: UpdateUserQuizRequest): Promise<UserQuizResponse> => {
+    const response = await userAxios.put<UserQuizResponse>(
+      API_ENDPOINTS.USER_QUIZZES.GET_BY_ID(id),
+      data
+    );
+    return response.data;
+  },
+
+  /**
+   * Delete user quiz
+   * DELETE: /api/UserQuizzes/{id}
+   */
+  deleteUserQuiz: async (id: string): Promise<void> => {
+    await userAxios.delete(API_ENDPOINTS.USER_QUIZZES.GET_BY_ID(id));
+  },
+};
+
+export default userAPI;

@@ -13,7 +13,6 @@ namespace UserAPI.Services.Interfaces
         Task<IEnumerable<UserLessonResponse>> GetUserLessonsByUserAndCourseAsync(Guid userId, Guid courseId);
         Task<UserLessonResponse?> GetUserLessonByUserAndLessonAsync(Guid userId, Guid lessonId);
         Task<UserLessonResponse?> CreateUserLessonAsync(CreateUserLessonRequest request);
-        Task<UserLessonResponse?> MarkLessonAsCompleteAsync(Guid id);
         Task<bool> DeleteUserLessonAsync(Guid id);
     }
 }

@@ -53,10 +53,10 @@ namespace UserAPI.Repositories
             userCourse.Progress = 0;
             userCourse.Status = UserCourseStatus.In_progress;
 
-   _context.Set<UserCourse>().Add(userCourse);
-      await _context.SaveChangesAsync();
+            _context.Set<UserCourse>().Add(userCourse);
+            await _context.SaveChangesAsync();
 
-     return userCourse;
+            return userCourse;
         }
 
         public async Task<bool> UpdateUserCourseAsync(UserCourse userCourse)

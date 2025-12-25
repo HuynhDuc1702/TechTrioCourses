@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using UserAPI.DTOs.Request;
 using UserAPI.DTOs.Response;
+using UserAPI.Services;
 using UserAPI.Services.Interfaces;
 
 namespace UserAPI.Controllers
@@ -54,6 +55,14 @@ namespace UserAPI.Controllers
             return Ok(userLessons);
         }
 
+        // GET: api/UserLessons/by-course/{courseId}
+        [HttpGet("by-course/{courseId}")]
+        public async Task<ActionResult<IEnumerable<UserLessonResponse>>> GetUserLessonsByCourseId(Guid courseId)
+        {
+            var userLessons = await _userLessonService.GetUserLessonsByCourseIdAsync(courseId);
+            return Ok(userLessons);
+        }
+
         // GET: api/UserLessons/by-user-and-lesson/{userId}/{lessonId}
         [HttpGet("by-user-and-lesson/{userId}/{lessonId}")]
         public async Task<ActionResult<UserLessonResponse>> GetUserLessonByUserAndLesson(Guid userId, Guid lessonId)
@@ -68,32 +77,29 @@ namespace UserAPI.Controllers
             return Ok(userLesson);
         }
 
-        // POST: api/UserLessons
+        // GET: api/UserLessons/by-user-and-course/{userId}/{courseId}
+        [HttpGet("by-user-and-course/{userId}/{courseId}")]
+        public async Task<ActionResult<IEnumerable<UserLessonResponse>>> GetUserLessonsByUserAndCourse(Guid userId, Guid courseId)
+        {
+            var userLessons = await _userLessonService.GetUserLessonsByUserAndCourseAsync(userId, courseId);
+            return Ok(userLessons);
+        }
+
+        // GET: api/UserLessons/is-completed/{userId}/{lessonId}
+        [HttpGet("is-completed/{userId}/{lessonId}")]
+        public async Task<ActionResult> CheckIsCompleted(Guid userId, Guid lessonId)
+        {
+            var userLesson = await _userLessonService.GetUserLessonByUserAndLessonAsync(userId, lessonId);
+
+            return Ok(new { isCompleted = userLesson != null });
+        }
+
+        // POST: api/UserLessons (Creates as completed)
         [HttpPost]
         public async Task<ActionResult<UserLessonResponse>> CreateUserLesson([FromBody] CreateUserLessonRequest request)
         {
             var userLesson = await _userLessonService.CreateUserLessonAsync(request);
-
-            if (userLesson == null)
-            {
-                return BadRequest(new { message = "User lesson already exists for this user and lesson" });
-            }
-
             return CreatedAtAction(nameof(GetUserLessonById), new { id = userLesson.Id }, userLesson);
-        }
-
-        // PUT: api/UserLessons/{id}/complete
-        [HttpPut("{id}/complete")]
-        public async Task<ActionResult<UserLessonResponse>> MarkLessonAsComplete(Guid id)
-        {
-            var userLesson = await _userLessonService.MarkLessonAsCompleteAsync(id);
-
-            if (userLesson == null)
-            {
-                return NotFound(new { message = "User lesson not found" });
-            }
-
-            return Ok(userLesson);
         }
 
         // DELETE: api/UserLessons/{id}
