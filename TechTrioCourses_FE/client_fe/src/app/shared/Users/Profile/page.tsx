@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { userService, UserResponse, UserRoleEnum } from '@/services/userAPI';
+import { userAPI, UserResponse, UserRoleEnum } from '@/services/userAPI';
 import { accountService } from '@/services/accountAPI';
 
 export default function ProfilePage() {
@@ -25,7 +25,7 @@ export default function ProfilePage() {
         return;
       }
 
-      const profile = await userService.getCurrentUserProfile();
+      const profile = await userAPI.getCurrentUserProfile();
       if (profile) {
         setUser(profile);
       } else {

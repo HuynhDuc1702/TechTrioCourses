@@ -1,0 +1,19 @@
+using UserAPI.DTOs.Request;
+using UserAPI.DTOs.Response;
+
+namespace UserAPI.Services.Interfaces
+{
+    public interface IUserQuizService
+    {
+        Task<UserQuizResponse?> GetUserQuizByIdAsync(Guid id);
+        Task<IEnumerable<UserQuizResponse>> GetAllUserQuizzesAsync();
+        Task<IEnumerable<UserQuizResponse>> GetUserQuizzesByUserIdAsync(Guid userId);
+        Task<IEnumerable<UserQuizResponse>> GetUserQuizzesByQuizIdAsync(Guid quizId);
+        Task<IEnumerable<UserQuizResponse>> GetUserQuizzesByCourseIdAsync(Guid courseId);
+        Task<IEnumerable<UserQuizResponse>> GetUserQuizzesByUserAndCourseAsync(Guid userId, Guid courseId);
+        Task<UserQuizResponse?> GetUserQuizByUserAndQuizAsync(Guid userId, Guid quizId);
+        Task<UserQuizResponse?> CreateUserQuizAsync(CreateUserQuizRequest request);
+        Task<UserQuizResponse?> UpdateUserQuizAsync(Guid id, UpdateUserQuizRequest request);
+        Task<bool> DeleteUserQuizAsync(Guid id);
+    }
+}

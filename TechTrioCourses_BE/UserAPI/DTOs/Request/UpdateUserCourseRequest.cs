@@ -5,7 +5,7 @@ namespace UserAPI.DTOs.Request
     public class UpdateUserCourseRequest
     {
         public UserCourseStatus? Status { get; set; }
-        public double? Progress { get; set; }
+      
         public DateTime? CompletedAt { get; set; }
  }
 }

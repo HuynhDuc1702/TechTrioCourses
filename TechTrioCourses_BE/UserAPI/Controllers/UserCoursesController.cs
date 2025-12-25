@@ -29,7 +29,7 @@ namespace UserAPI.Controllers
 
             return Ok(userCourse);
         }
-
+        
         // GET: api/UserCourses
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserCourseResponse>>> GetAllUserCourses()
@@ -67,11 +67,20 @@ namespace UserAPI.Controllers
 
             return Ok(userCourse);
         }
+        // GET: api/UserCourses/by-user-and-course/{userId}/{courseId}
+        [HttpGet("is-enrolled/{userId}/{courseId}")]
+        public async Task<ActionResult> CheckIsEnrolled(Guid userId, Guid courseId)
+        {
+            var userCourse = await _userCourseService.GetUserCourseByUserAndCourseAsync(userId, courseId);
+
+            return Ok(new { isEnrolled=userCourse !=null });
+        }
 
         // POST: api/UserCourses
         [HttpPost]
         public async Task<ActionResult<UserCourseResponse>> CreateUserCourse([FromBody] CreateUserCourseRequest request)
         {
+            
             var userCourse = await _userCourseService.CreateUserCourseAsync(request);
 
             if (userCourse == null)
@@ -84,9 +93,9 @@ namespace UserAPI.Controllers
 
         // PUT: api/UserCourses/{id}
         [HttpPut("{id}")]
-        public async Task<ActionResult<UserCourseResponse>> UpdateUserCourse(Guid id, [FromBody] UpdateUserCourseRequest request)
+        public async Task<ActionResult<UserCourseResponse>> RecalculateCourseProgress(Guid id)
         {
-            var userCourse = await _userCourseService.UpdateUserCourseAsync(id, request);
+            var userCourse = await _userCourseService.UpdateUserCourseAsync(id);
 
             if (userCourse == null)
             {
