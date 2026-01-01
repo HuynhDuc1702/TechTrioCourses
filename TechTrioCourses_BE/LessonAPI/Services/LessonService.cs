@@ -16,14 +16,14 @@ namespace LessonAPI.Services
         private readonly ILessonRepo _lessonsRepo;
         private readonly IMapper _mapper;
         private readonly HttpClient _courseAPIClient;
-        
+
         private readonly ILogger<LessonService> _logger;
         public LessonService(ILessonRepo lessonsRepo, IMapper mapper, IHttpClientFactory httpClientFactory, ILogger<LessonService> logger)
         {
             _lessonsRepo = lessonsRepo;
             _mapper = mapper;
             _courseAPIClient = httpClientFactory.CreateClient("CourseAPI");
-           
+
             _logger = logger;
         }
 
@@ -56,9 +56,9 @@ namespace LessonAPI.Services
             }
 
             string? courseTitle = null;
-          
 
-           
+
+
             try
             {
                 var course = await _courseAPIClient.GetFromJsonAsync<CourseResponse>($"api/courses/{lesson.CourseId}");
@@ -73,11 +73,11 @@ namespace LessonAPI.Services
                 _logger.LogError(ex, "Unexpected error while fetching course Title for lesson {LessonId}", lesson.Id);
             }
 
-           
+
 
             var result = _mapper.Map<LessonResponse>(lesson);
             result.CourseName = courseTitle;
-           
+
 
             return result;
         }
@@ -108,10 +108,19 @@ namespace LessonAPI.Services
             if (request.Content != null)
                 existingLesson.Content = request.Content;
 
-            
+            if (request.MediaUrl != null)
+                existingLesson.MediaUrl = request.MediaUrl;
+
+            if (request.MediaType.HasValue)
+                existingLesson.MediaType = request.MediaType.Value;
+
+            if (request.OrderIndex.HasValue)
+                existingLesson.OrderIndex = request.OrderIndex.Value;
 
             if (request.Status.HasValue)
                 existingLesson.Status = request.Status.Value;
+
+            existingLesson.UpdatedAt = DateTime.UtcNow;
 
             var updatedLesson = await _lessonsRepo.UpdateAsync(existingLesson);
 

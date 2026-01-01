@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { courseAPI, CourseResponse } from "@/services/courseAPI";
-import { lessonAPI, LessonResponse, LessonStatusEnum } from "@/services/lessonAPI";
+import { lessonAPI, LessonResponse, LessonStatusEnum, getMediaTypeLabel } from "@/services/lessonAPI";
 import Link from "next/link";
 import { UserRoleEnum } from "@/services/userAPI";
 import { useAuth } from "@/contexts/AuthContext";
@@ -15,7 +15,7 @@ export default function InstructorCourseLessonsPage() {
   const [course, setCourse] = useState<CourseResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   const { user } = useAuth();
 
   useEffect(() => {
@@ -42,7 +42,7 @@ export default function InstructorCourseLessonsPage() {
 
   const navigateToEdit = (lessonId: string) => {
     router.push(`/instructor/courses/${params.courseid}/lessons/${lessonId}/Edit`);
-  };    
+  };
 
   const loadLessons = async () => {
     try {
@@ -58,14 +58,14 @@ export default function InstructorCourseLessonsPage() {
     }
   };
 
-  
+
 
   const handleToggleStatus = async (lesson: LessonResponse) => {
     try {
-      const newStatus = lesson.status === LessonStatusEnum.Published 
-        ? LessonStatusEnum.Hidden 
+      const newStatus = lesson.status === LessonStatusEnum.Published
+        ? LessonStatusEnum.Hidden
         : LessonStatusEnum.Published;
-      
+
       await lessonAPI.updateLesson(lesson.id, {
         courseId: lesson.courseId,
         title: lesson.title,
@@ -148,9 +148,9 @@ export default function InstructorCourseLessonsPage() {
         {/* Lessons List */}
         {lessons.length === 0 ? (
           <div className="bg-white rounded-lg shadow-sm p-12 text-center">
-    
 
-      <p className="text-gray-500 text-lg">No lessons yet. Create your first lesson to get started!</p>
+
+            <p className="text-gray-500 text-lg">No lessons yet. Create your first lesson to get started!</p>
           </div>
         ) : (
           <div className="space-y-4">
@@ -175,7 +175,7 @@ export default function InstructorCourseLessonsPage() {
 
                     {lesson.mediaUrl && (
                       <div className="text-xs text-gray-500 mb-3">
-                        🎥 Media: {lesson.mediaType || 'Unknown'} - {lesson.mediaUrl}
+                        🎥 Media: {getMediaTypeLabel(lesson.mediaType)} - {lesson.mediaUrl}
                       </div>
                     )}
 
@@ -188,11 +188,10 @@ export default function InstructorCourseLessonsPage() {
                   <div className="flex gap-2">
                     <button
                       onClick={() => handleToggleStatus(lesson)}
-                      className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                        lesson.status === LessonStatusEnum.Published
+                      className={`px-4 py-2 rounded-lg font-medium transition-colors ${lesson.status === LessonStatusEnum.Published
                           ? 'bg-gray-50 text-gray-600 hover:bg-gray-100'
                           : 'bg-green-50 text-green-600 hover:bg-green-100'
-                      }`}
+                        }`}
                       title={lesson.status === LessonStatusEnum.Published ? 'Hide lesson' : 'Publish lesson'}
                     >
                       {lesson.status === LessonStatusEnum.Published ? '👁️ Hide' : '🚀 Publish'}
@@ -203,7 +202,7 @@ export default function InstructorCourseLessonsPage() {
                     >
                       ✏️ Edit
                     </button>
-                   
+
                   </div>
                 </div>
               </div>

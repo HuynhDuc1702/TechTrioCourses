@@ -500,22 +500,22 @@ namespace AccountAPI.Services
             var roleName = user != null ? ConvertRoleToEnumName(user.Role) : "Student";
 
             var claims = new[]
-     {
-    new Claim(JwtRegisteredClaimNames.Sub, account.Id.ToString()),
-     new Claim(JwtRegisteredClaimNames.Email, account.Email),
-  new Claim("userId", user?.Id.ToString() ?? ""),
+            {
+            new Claim(JwtRegisteredClaimNames.Sub, account.Id.ToString()),
+            new Claim(ClaimTypes.NameIdentifier, account.Id.ToString()),
+            new Claim(JwtRegisteredClaimNames.Email, account.Email),
             new Claim(ClaimTypes.Role, roleName),
-             new Claim(JwtRegisteredClaimNames.Jti, jwtId),
-      new Claim("token_type", "access")
-       };
+            new Claim(JwtRegisteredClaimNames.Jti, jwtId),
+            new Claim("token_type", "access")
+             };
 
             var token = new JwtSecurityToken(
-    issuer: jwtSettings["Issuer"],
-        audience: jwtSettings["Audience"],
-       claims: claims,
-     expires: DateTime.UtcNow.AddMinutes(double.Parse(jwtSettings["DurationInMinutes"]!)),
-   signingCredentials: credentials
-   );
+            issuer: jwtSettings["Issuer"],
+            audience: jwtSettings["Audience"],
+            claims: claims,
+           expires: DateTime.UtcNow.AddMinutes(double.Parse(jwtSettings["DurationInMinutes"]!)),
+           signingCredentials: credentials
+           );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }

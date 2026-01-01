@@ -51,11 +51,13 @@ function getUserFromCookie(request: NextRequest) {
   try {
     const userCookie = request.cookies.get('user');
     if (!userCookie) {
-      // Try to get from localStorage (will be handled client-side)
       return null;
     }
-    return JSON.parse(userCookie.value);
-  } catch {
+    // Decode the URL-encoded cookie value
+    const decodedValue = decodeURIComponent(userCookie.value);
+    return JSON.parse(decodedValue);
+  } catch (error) {
+    console.error('Error parsing user cookie:', error);
     return null;
   }
 }
@@ -91,6 +93,7 @@ export function middleware(request: NextRequest) {
     
     // No token - redirect to login
     if (!hasToken) {
+      console.log('🔍 [Middleware] No valid token found for:', pathname);
       const loginUrl = new URL('/auth/login', request.url);
       loginUrl.searchParams.set('redirect', pathname);
       return NextResponse.redirect(loginUrl);
@@ -98,6 +101,7 @@ export function middleware(request: NextRequest) {
 
     // Check role-based access
     const user = getUserFromCookie(request);
+    console.log('🔍 [Middleware] User from cookie:', user ? `Role ${user.role}` : 'null');
     
     // Instructor routes - only for instructors and admins (role 3 and 1)
     if (pathname.startsWith('/instructor')) {

@@ -19,7 +19,7 @@ public partial class LessonContext : DbContext
 
     public virtual DbSet<Lesson> Lessons { get; set; }
 
-  
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasPostgresExtension("uuid-ossp");
@@ -41,8 +41,8 @@ public partial class LessonContext : DbContext
                 .HasDefaultValueSql("(CURRENT_TIMESTAMP AT TIME ZONE 'UTC'::text)")
                 .HasColumnName("created_at");
             entity.Property(e => e.MediaType)
-                .HasMaxLength(50)
-                .HasColumnName("media_type");
+               .HasConversion<short>()
+ .HasColumnName("media_type");
             entity.Property(e => e.MediaUrl).HasColumnName("media_url");
             entity.Property(e => e.OrderIndex)
                 .HasDefaultValue(0)

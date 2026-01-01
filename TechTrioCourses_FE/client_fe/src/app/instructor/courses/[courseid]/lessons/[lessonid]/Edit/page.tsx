@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { lessonAPI, LessonStatusEnum, LessonUpdateRequest, LessonResponse } from "@/services/lessonAPI";
+import { lessonAPI, LessonStatusEnum, LessonUpdateRequest, LessonResponse, LessonMediaTypeEnum } from "@/services/lessonAPI";
 import { courseAPI, CourseResponse } from "@/services/courseAPI";
 import { useAuth } from "@/contexts/AuthContext";
 import { UserRoleEnum } from "@/services/userAPI";
@@ -21,7 +21,7 @@ export default function EditLessonPage() {
     title: string;
     content?: string;
     mediaUrl?: string;
-    mediaType?: string;
+    mediaType?: LessonMediaTypeEnum | '';
     orderIndex?: number;
     status: LessonStatusEnum;
   }>({
@@ -45,23 +45,23 @@ export default function EditLessonPage() {
   const loadData = async () => {
     try {
       setLoading(true);
-      
+
       // Load course
       const courseData = await courseAPI.getCourseById(params.courseid as string);
       setCourse(courseData);
-      
+
       // Load lesson - params.id is the dynamic route parameter for lesson ID
       // We need to get the lesson ID from the URL params
       const lessonId = Array.isArray(params.lessonid) ? params.lessonid[params.lessonid.length - 1] : params.lessonid;
-      
+
       // Actually, the route structure is [courseId]/lessons/[lessonId]
       // So we need to access the lesson ID from a different param
       // Let me check the route structure - it should be lessons/[id]/page.tsx
       // where [id] is the lesson ID, not course ID
-      
+
       const lessonData = await lessonAPI.getLessonById(lessonId as string);
       setLesson(lessonData);
-      
+
       // Populate form
       setFormData({
         title: lessonData.title,
@@ -80,7 +80,7 @@ export default function EditLessonPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.title.trim()) {
       alert('Lesson title is required');
       return;
@@ -91,17 +91,17 @@ export default function EditLessonPage() {
     try {
       setSubmitting(true);
       setError(null);
-      
+
       const updateData: LessonUpdateRequest = {
         courseId: lesson.courseId,
         title: formData.title,
         content: formData.content || null,
         mediaUrl: formData.mediaUrl || null,
-        mediaType: formData.mediaType || null,
+        mediaType: formData.mediaType === '' ? null : formData.mediaType,
         orderIndex: formData.orderIndex || null,
         status: formData.status,
       };
-      
+
       await lessonAPI.updateLesson(lesson.id, updateData);
       router.push(`/instructor/courses/${lesson.courseId}/lessons`);
     } catch (err: any) {
@@ -140,7 +140,7 @@ export default function EditLessonPage() {
       <div className="container mx-auto px-4 max-w-3xl">
         {/* Breadcrumb */}
         <div className="mb-4">
-          <Link 
+          <Link
             href={`/instructor/courses/${lesson.courseId}/lessons`}
             className="text-blue-600 hover:underline"
           >
@@ -224,14 +224,14 @@ export default function EditLessonPage() {
               </label>
               <select
                 value={formData.mediaType}
-                onChange={(e) => setFormData({ ...formData, mediaType: e.target.value })}
+                onChange={(e) => setFormData({ ...formData, mediaType: e.target.value ? parseInt(e.target.value) : '' })}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
               >
                 <option value="">Select media type</option>
-                <option value="video">Video</option>
-                <option value="audio">Audio</option>
-                <option value="document">Document</option>
-                <option value="image">Image</option>
+                <option value={LessonMediaTypeEnum.Video}>Video</option>
+                <option value={LessonMediaTypeEnum.Audio}>Audio</option>
+                <option value={LessonMediaTypeEnum.Document}>Document</option>
+                <option value={LessonMediaTypeEnum.Image}>Image</option>
               </select>
             </div>
 

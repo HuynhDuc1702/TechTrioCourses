@@ -2,12 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { courseAPI, CourseResponse, CourseStatusEnum } from "@/services/courseAPI";
+
 import Link from "next/link";
 
 export default function CoursesPage() {
   const [courses, setCourses] = useState<CourseResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
 
   useEffect(() => {
     const fetchCourses = async () => {
