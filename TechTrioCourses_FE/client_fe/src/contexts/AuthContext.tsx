@@ -11,6 +11,7 @@ interface User {
   fullName: string;
   avatarUrl?: string;
   role: number;
+  createdAt: string;
 }
 
 interface AuthContextType {
@@ -50,16 +51,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.log('🔍 [DEBUG] Login attempt:', { email });
       const authResult: AuthResult = await accountService.login({ email, password });
       console.log('✅ [DEBUG] Login successful, tokens received');
-      
+
       // Decode JWT to get accountId
       const tokenPayload = JSON.parse(atob(authResult.accessToken.split('.')[1]));
-      const accountId = tokenPayload.sub || tokenPayload.accountId || tokenPayload.nameid;
+      // Try multiple claim names (sub, accountId, nameid, or the full URI for NameIdentifier)
+      const accountId = tokenPayload.sub || 
+                        tokenPayload.accountId || 
+                        tokenPayload.nameid ||
+                        tokenPayload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'];
+      console.log('🔍 [DEBUG] Token payload:', tokenPayload);
       console.log('🔍 [DEBUG] Decoded accountId from token:', accountId);
-      
+
       // After login, fetch user details
       const userInfo = await userAPI.getUserByAccountId(accountId);
       console.log('✅ [DEBUG] User info fetched:', userInfo);
-      
+
       const userData: User = {
         accountId: userInfo.accountId,
         userId: userInfo.id,
@@ -67,13 +73,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         fullName: userInfo.fullName,
         avatarUrl: userInfo.avatarUrl,
         role: userInfo.role,
+        createdAt: userInfo.createdAt,
       };
+
+      console.log('🔍 [DEBUG] Setting user data:', userData);
       
+      // Store in localStorage
       localStorage.setItem('user', JSON.stringify(userData));
-      // Set cookie for middleware access
-      document.cookie = `user=${JSON.stringify(userData)}; path=/; max-age=${60 * 60 * 24 * 7}`; // 7 days
-      document.cookie = `accessTokenFromStorage=true; path=/; max-age=${60 * 60 * 24 * 7}`;
       
+      // Set cookies for middleware access
+      const userCookieValue = JSON.stringify(userData);
+      const cookieOptions = `path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`; // 7 days
+      document.cookie = `user=${encodeURIComponent(userCookieValue)}; ${cookieOptions}`;
+      document.cookie = `accessTokenFromStorage=true; ${cookieOptions}`;
+      
+      console.log('✅ [DEBUG] Cookies set');
+
       setUser(userData);
       console.log('✅ [DEBUG] Login complete, user data saved');
     } catch (error: any) {
@@ -84,11 +99,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const register = async (email: string, password: string, fullName: string, avatarUrl?: string) => {
-    const result = await accountService.register({ 
-      email, 
-      password, 
-      fullName, 
-      avatarUrl 
+    const result = await accountService.register({
+      email,
+      password,
+      fullName,
+      avatarUrl
     });
     return result;
   };
@@ -99,13 +114,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ 
-      user, 
+    <AuthContext.Provider value={{
+      user,
       loading,
-      login, 
-      register, 
-      logout, 
-      isAuthenticated: !!user 
+      login,
+      register,
+      logout,
+      isAuthenticated: !!user
     }}>
       {children}
     </AuthContext.Provider>

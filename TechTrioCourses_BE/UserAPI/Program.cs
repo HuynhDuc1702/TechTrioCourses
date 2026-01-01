@@ -25,6 +25,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserCourseService, UserCourseService>();
 builder.Services.AddScoped<IUserLessonService, UserLessonService>();
 builder.Services.AddScoped<IUserQuizService, UserQuizService>();
+builder.Services.AddScoped<IUserCourseProgress, UserCourseProgress>();
 
 // Add AutoMapper
 builder.Services.AddAutoMapper(typeof(Program));

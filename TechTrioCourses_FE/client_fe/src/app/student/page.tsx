@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { courseAPI, CourseResponse, CourseStatusEnum } from "@/services/courseAPI";
-import { userAPI,userCourseAPI} from "@/services/userAPI";
+import { userAPI, userCourseAPI } from "@/services/userAPI";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -16,10 +16,10 @@ export default function CoursesPage() {
     const fetchCourses = async () => {
       try {
         const allCourseData = await courseAPI.getAllCourses();
-        const userCourses = await userCourseAPI.getUserCoursesByUserId(user?.userId || '');
+        const userCourses = await userCourseAPI.getMyUserCourses();
         const enrolledCourseIds = new Set(userCourses.map(uc => uc.courseId));
         const myCourses = allCourseData.filter(course => enrolledCourseIds.has(course.id) && course.status === CourseStatusEnum.Published);
-       
+
         setCourses(myCourses);
       } catch (err) {
         setError(err instanceof Error ? err.message : "An unknown error occurred");
@@ -61,7 +61,7 @@ export default function CoursesPage() {
           </h1>
           <p className="text-gray-600 text-lg">Explore our collection of learning opportunities</p>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {courses.map((course) => (
             <div
@@ -69,16 +69,16 @@ export default function CoursesPage() {
               className="group bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 hover:border-indigo-200 hover:-translate-y-1"
             >
               <div className="bg-gradient-to-r from-blue-500 to-indigo-600 h-2"></div>
-              
+
               <div className="p-6">
                 <h2 className="text-2xl font-bold mb-3 text-gray-800 group-hover:text-indigo-600 transition-colors">
                   {course.title}
                 </h2>
-                
+
                 <p className="text-gray-600 mb-6 line-clamp-3 leading-relaxed">
                   {course.description || "No description available."}
                 </p>
-                
+
                 <div className="flex flex-wrap gap-2 mb-6">
                   <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-indigo-100 text-indigo-700">
                     {course.categoryName || "Uncategorized"}
@@ -87,7 +87,7 @@ export default function CoursesPage() {
                     By {course.creatorName || "Unknown"}
                   </span>
                 </div>
-                
+
                 <div className="border-t border-gray-200 pt-4 mb-4 flex justify-between items-center">
                   <div className="flex items-center text-sm text-gray-600">
                     <svg className="w-4 h-4 mr-1 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -97,13 +97,13 @@ export default function CoursesPage() {
                   </div>
                   <div className="flex items-center text-sm font-semibold text-amber-600">
                     <svg className="w-4 h-4 mr-1 fill-current" viewBox="0 0 20 20">
-                      <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                      <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
                     </svg>
                     {course.averageRating.toFixed(1)}
                   </div>
                 </div>
 
-                <Link 
+                <Link
                   href={`/student/${course.id}`}
                   className="block w-full text-center bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:from-blue-600 hover:to-indigo-700 transition-all duration-300"
                 >

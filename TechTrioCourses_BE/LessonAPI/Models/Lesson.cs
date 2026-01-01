@@ -16,7 +16,7 @@ public partial class Lesson
 
     public string? MediaUrl { get; set; }
 
-    public string? MediaType { get; set; }
+    public LessonMediaTypeEnum MediaType { get; set; }
 
     public int? OrderIndex { get; set; }
 

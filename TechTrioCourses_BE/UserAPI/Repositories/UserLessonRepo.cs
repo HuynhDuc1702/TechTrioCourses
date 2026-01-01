@@ -49,7 +49,6 @@ namespace UserAPI.Repositories
         {
             userLesson.Id = Guid.NewGuid();
             userLesson.UpdatedAt = DateTime.UtcNow;
-            userLesson.Status = UserLessonStatus.Not_Started;
 
      _context.Set<UserLesson>().Add(userLesson);
     await _context.SaveChangesAsync();

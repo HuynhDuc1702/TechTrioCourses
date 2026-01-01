@@ -1,8 +1,11 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.IdentityModel.Tokens.Jwt;
 using UserAPI.DTOs.Request;
 using UserAPI.DTOs.Response;
+using UserAPI.Services;
 using UserAPI.Services.Interfaces;
-
+using System.Security.Claims;
 namespace UserAPI.Controllers
 {
     [Route("api/[controller]")]
@@ -10,10 +13,12 @@ namespace UserAPI.Controllers
     public class UserCoursesController : ControllerBase
     {
         private readonly IUserCourseService _userCourseService;
+        private readonly IUserService _userService;
 
-        public UserCoursesController(IUserCourseService userCourseService)
+        public UserCoursesController(IUserCourseService userCourseService, IUserService userService)
         {
             _userCourseService = userCourseService;
+            _userService= userService;
         }
 
         // GET: api/UserCourses/{id}
@@ -38,11 +43,21 @@ namespace UserAPI.Controllers
             return Ok(userCourses);
         }
 
-        // GET: api/UserCourses/by-user/{userId}
-        [HttpGet("by-user/{userId}")]
-        public async Task<ActionResult<IEnumerable<UserCourseResponse>>> GetUserCoursesByUserId(Guid userId)
+        // GET: api/UserCourses/by-user
+        [HttpGet("by-user")]
+        [Authorize]
+        public async Task<ActionResult<IEnumerable<UserCourseResponse>>> GetUserCoursesByUserId()
         {
-            var userCourses = await _userCourseService.GetUserCoursesByUserIdAsync(userId);
+            // Get AccountId from Token Claims
+            var accountId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(accountId) || !Guid.TryParse(accountId, out var accountGuid))
+                return Unauthorized();
+
+            // Resolve User from AccountId
+            var user = await _userService.GetUserByAccountIdAsync(accountGuid);
+            if (user == null) return Unauthorized();
+
+            var userCourses = await _userCourseService.GetUserCoursesByUserIdAsync(user.Id);
             return Ok(userCourses);
         }
 
@@ -54,11 +69,21 @@ namespace UserAPI.Controllers
             return Ok(userCourses);
         }
 
-        // GET: api/UserCourses/by-user-and-course/{userId}/{courseId}
-        [HttpGet("by-user-and-course/{userId}/{courseId}")]
-        public async Task<ActionResult<UserCourseResponse>> GetUserCourseByUserAndCourse(Guid userId, Guid courseId)
+        // GET: api/UserCourses/by-user-and-course/{courseId}
+        [HttpGet("by-user-and-course/{courseId}")]
+        [Authorize]
+        public async Task<ActionResult<UserCourseResponse>> GetUserCourseByUserAndCourse(Guid courseId)
         {
-            var userCourse = await _userCourseService.GetUserCourseByUserAndCourseAsync(userId, courseId);
+            // Get AccountId from Token Claims
+            var accountId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(accountId) || !Guid.TryParse(accountId, out var accountGuid))
+                return Unauthorized();
+
+            // Resolve User from AccountId
+            var user = await _userService.GetUserByAccountIdAsync(accountGuid);
+            if (user == null) return Unauthorized();
+
+            var userCourse = await _userCourseService.GetUserCourseByUserAndCourseAsync(user.Id, courseId);
 
             if (userCourse == null)
             {
@@ -67,13 +92,25 @@ namespace UserAPI.Controllers
 
             return Ok(userCourse);
         }
-        // GET: api/UserCourses/by-user-and-course/{userId}/{courseId}
-        [HttpGet("is-enrolled/{userId}/{courseId}")]
-        public async Task<ActionResult> CheckIsEnrolled(Guid userId, Guid courseId)
-        {
-            var userCourse = await _userCourseService.GetUserCourseByUserAndCourseAsync(userId, courseId);
 
-            return Ok(new { isEnrolled=userCourse !=null });
+        // GET: api/UserCourses/is-enrolled/{courseId}
+        [HttpGet("is-enrolled/{courseId}")]
+        [Authorize]
+        public async Task<ActionResult> CheckIsEnrolled(Guid courseId)
+        {
+            // Get AccountId from Token Claims
+            var accountId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(accountId) || !Guid.TryParse(accountId, out var accountGuid))
+                return Unauthorized();
+
+            // Resolve User from AccountId
+            var user = await _userService.GetUserByAccountIdAsync(accountGuid);
+            if (user == null) return Unauthorized();
+
+            // Use the resolved UserId
+            var userCourse = await _userCourseService.GetUserCourseByUserAndCourseAsync(user.Id, courseId);
+
+            return Ok(new { isEnrolled = userCourse != null });
         }
 
         // POST: api/UserCourses

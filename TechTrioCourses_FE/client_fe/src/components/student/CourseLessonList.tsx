@@ -35,7 +35,6 @@ export default function CourseLessonList({ courseId }: CourseLessonListProps) {
                         lessonData.map(async (lesson) => {
                             try {
                                 const completionStatus = await userLessonAPI.checkIsCompleted(
-                                    user.userId,
                                     lesson.id
                                 );
                                 return {

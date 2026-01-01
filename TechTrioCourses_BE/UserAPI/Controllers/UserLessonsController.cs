@@ -1,4 +1,7 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using UserAPI.DTOs.Request;
 using UserAPI.DTOs.Response;
 using UserAPI.Services;
@@ -11,10 +14,12 @@ namespace UserAPI.Controllers
     public class UserLessonsController : ControllerBase
     {
         private readonly IUserLessonService _userLessonService;
+        private readonly IUserService _userService;
 
-        public UserLessonsController(IUserLessonService userLessonService)
+        public UserLessonsController(IUserLessonService userLessonService, IUserService userService)
         {
             _userLessonService = userLessonService;
+            _userService = userService;
         }
 
         // GET: api/UserLessons/{id}
@@ -39,11 +44,21 @@ namespace UserAPI.Controllers
             return Ok(userLessons);
         }
 
-        // GET: api/UserLessons/by-user/{userId}
-        [HttpGet("by-user/{userId}")]
-        public async Task<ActionResult<IEnumerable<UserLessonResponse>>> GetUserLessonsByUserId(Guid userId)
+        // GET: api/UserLessons/by-user
+        [HttpGet("by-user")]
+        [Authorize]
+        public async Task<ActionResult<IEnumerable<UserLessonResponse>>> GetUserLessonsByUserId()
         {
-            var userLessons = await _userLessonService.GetUserLessonsByUserIdAsync(userId);
+            // Get AccountId from Token Claims
+            var accountId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(accountId) || !Guid.TryParse(accountId, out var accountGuid))
+                return Unauthorized();
+
+            // Resolve User from AccountId
+            var user = await _userService.GetUserByAccountIdAsync(accountGuid);
+            if (user == null) return Unauthorized();
+
+            var userLessons = await _userLessonService.GetUserLessonsByUserIdAsync(user.Id);
             return Ok(userLessons);
         }
 
@@ -79,19 +94,39 @@ namespace UserAPI.Controllers
 
         // GET: api/UserLessons/by-user-and-course/{userId}/{courseId}
         [HttpGet("by-user-and-course/{userId}/{courseId}")]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<UserLessonResponse>>> GetUserLessonsByUserAndCourse(Guid userId, Guid courseId)
         {
-            var userLessons = await _userLessonService.GetUserLessonsByUserAndCourseAsync(userId, courseId);
+            // Get AccountId from Token Claims
+            var accountId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(accountId) || !Guid.TryParse(accountId, out var accountGuid))
+                return Unauthorized();
+
+            // Resolve User from AccountId
+            var user = await _userService.GetUserByAccountIdAsync(accountGuid);
+            if (user == null) return Unauthorized();
+
+            var userLessons = await _userLessonService.GetUserLessonsByUserAndCourseAsync(user.Id, courseId);
             return Ok(userLessons);
         }
 
-        // GET: api/UserLessons/is-completed/{userId}/{lessonId}
-        [HttpGet("is-completed/{userId}/{lessonId}")]
-        public async Task<ActionResult> CheckIsCompleted(Guid userId, Guid lessonId)
+        // GET: api/UserLessons/is-completed/{lessonId}
+        [HttpGet("is-completed/{lessonId}")]
+        [Authorize]
+        public async Task<ActionResult> CheckIsCompleted(Guid lessonId)
         {
-            var userLesson = await _userLessonService.GetUserLessonByUserAndLessonAsync(userId, lessonId);
+            // Get AccountId from Token Claims
+            var accountId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(accountId) || !Guid.TryParse(accountId, out var accountGuid))
+                return Unauthorized();
 
-            return Ok(new { isCompleted = userLesson != null });
+            // Resolve User from AccountId
+            var user = await _userService.GetUserByAccountIdAsync(accountGuid);
+            if (user == null) return Unauthorized();
+
+            var userLesson = await _userLessonService.GetUserLessonByUserAndLessonAsync(user.Id, lessonId);
+
+            return Ok(new { isCompleted = userLesson != null && userLesson.Status == Enums.UserLessonStatus.Completed });
         }
 
         // POST: api/UserLessons (Creates as completed)

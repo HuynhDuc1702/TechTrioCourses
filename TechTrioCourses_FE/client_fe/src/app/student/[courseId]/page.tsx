@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { courseAPI, CourseResponse, CourseStatusEnum } from "@/services/courseAPI";
+import { userAPI, userCourseAPI, UserCourseResponse, userLessonAPI } from "@/services/userAPI";
+import { useAuth } from "@/contexts/AuthContext";
 import Link from "next/link";
 import CourseLessonList from "@/components/student/CourseLessonList";
 import CourseQuizList from "@/components/student/CourseQuizList";
@@ -13,27 +15,30 @@ export default function StudentCourseDetailPage() {
   const params = useParams();
   const router = useRouter();
   const [course, setCourse] = useState<CourseResponse | null>(null);
+  const [UserCourse, setUserCourse] = useState<UserCourseResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<TabType>("lessons");
   const courseId = params.courseId as string;
+  const { user } = useAuth();
 
   useEffect(() => {
-    const fetchCourse = async () => {
-      try {
-        const data = await courseAPI.getCourseById(courseId);
-        setCourse(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "An unknown error occurred");
-      } finally {
-        setLoading(false);
-      }
-    };
+    if (!courseId) return;
 
-    if (courseId) {
-      fetchCourse();
-    }
+    courseAPI.getCourseById(courseId)
+      .then(setCourse)
+      .catch(err => setError(err.message))
+      .finally(() => setLoading(false));
   }, [courseId]);
+  useEffect(() => {
+    if (!user?.userId || !courseId) return;
+
+    userCourseAPI
+      .getUserCourseByUserAndCourse(courseId)
+      .then(setUserCourse)
+      .catch(err => setError(err.message));
+  }, [user?.userId, courseId]);
+
 
   if (loading) {
     return (
@@ -127,6 +132,27 @@ export default function StudentCourseDetailPage() {
                 </p>
               </div>
             )}
+            {UserCourse?.progress !== undefined && (
+              <div className="mt6 pt-6 border-t border-gray-200">
+                <div className="flex justify-between item-center mb-2">
+                  <span className="text-sm font-medium text-gray-700">
+                    Your Progress
+                  </span>
+                  <span className="text-sm font-semibold text-gray-700">
+                    {UserCourse.progress}%
+                  </span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                  <div
+                    className="bg-indigo-600 h-3 rounded-full transition-all duration-500"
+                    style={{ width: `${UserCourse.progress}%` }}
+                  />
+
+                </div>
+
+              </div>
+            )}
+
           </div>
         </div>
 
@@ -138,8 +164,8 @@ export default function StudentCourseDetailPage() {
               <button
                 onClick={() => setActiveTab("lessons")}
                 className={`flex-1 py-4 px-6 text-center font-semibold transition-colors ${activeTab === "lessons"
-                    ? "border-b-2 border-indigo-600 text-indigo-600"
-                    : "text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                  ? "border-b-2 border-indigo-600 text-indigo-600"
+                  : "text-gray-500 hover:text-gray-700 hover:border-gray-300"
                   }`}
               >
                 <div className="flex items-center justify-center gap-2">
@@ -156,8 +182,8 @@ export default function StudentCourseDetailPage() {
               <button
                 onClick={() => setActiveTab("quizzes")}
                 className={`flex-1 py-4 px-6 text-center font-semibold transition-colors ${activeTab === "quizzes"
-                    ? "border-b-2 border-indigo-600 text-indigo-600"
-                    : "text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                  ? "border-b-2 border-indigo-600 text-indigo-600"
+                  : "text-gray-500 hover:text-gray-700 hover:border-gray-300"
                   }`}
               >
                 <div className="flex items-center justify-center gap-2">

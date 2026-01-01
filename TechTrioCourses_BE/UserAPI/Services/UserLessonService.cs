@@ -1,22 +1,31 @@
-using AutoMapper;
+﻿using AutoMapper;
 using UserAPI.DTOs.Request;
 using UserAPI.DTOs.Response;
 using UserAPI.Enums;
 using UserAPI.Models;
 using UserAPI.Repositories.Interfaces;
 using UserAPI.Services.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace UserAPI.Services
 {
     public class UserLessonService : IUserLessonService
     {
         private readonly IUserLessonRepo _userLessonRepo;
+        private readonly IUserCourseProgress _userCourseProgress;
         private readonly IMapper _mapper;
+        private readonly ILogger<UserLessonService> _logger;
 
-        public UserLessonService(IUserLessonRepo userLessonRepo, IMapper mapper)
+        public UserLessonService(
+            IUserLessonRepo userLessonRepo, 
+            IMapper mapper, 
+            IUserCourseProgress userCourseProgress,
+            ILogger<UserLessonService> logger)
         {
             _userLessonRepo = userLessonRepo;
             _mapper = mapper;
+            _userCourseProgress = userCourseProgress;
+            _logger = logger;
         }
 
         public async Task<UserLessonResponse?> GetUserLessonByIdAsync(Guid id)
@@ -57,7 +66,7 @@ namespace UserAPI.Services
             if (existingUserLesson != null)
             {
                 // Already exists, return existing
-                return _mapper.Map<UserLessonResponse>(existingUserLesson);
+              return _mapper.Map<UserLessonResponse>(existingUserLesson);
             }
 
             // Create new user lesson - automatically mark as completed
@@ -67,25 +76,20 @@ namespace UserAPI.Services
 
             var createdUserLesson = await _userLessonRepo.CreateUserLessonAsync(userLesson);
 
+            // Trigger progress recalculation
+            try
+            {
+                await _userCourseProgress.RecaculateCourseProgress(request.CourseId, request.UserId);
+            }
+            catch (Exception ex)
+            {
+       _logger.LogError(ex, "Error during course progress recalculation for CourseId: {CourseId}, UserId: {UserId}", 
+         request.CourseId, request.UserId);
+            }
+
             return _mapper.Map<UserLessonResponse>(createdUserLesson);
         }
 
-        public async Task<UserLessonResponse?> MarkLessonAsCompleteAsync(Guid id)
-        {
-            var userLesson = await _userLessonRepo.GetByIdAsync(id);
-            if (userLesson == null)
-            {
-                return null;
-            }
-
-            // Mark lesson as completed
-            userLesson.Status = UserLessonStatus.Completed;
-            userLesson.CompletedAt = DateTime.UtcNow;
-
-            await _userLessonRepo.UpdateUserLessonAsync(userLesson);
-
-            return _mapper.Map<UserLessonResponse>(userLesson);
-        }
 
         public async Task<bool> DeleteUserLessonAsync(Guid id)
         {
@@ -103,5 +107,7 @@ namespace UserAPI.Services
             var userLessons = await _userLessonRepo.GetByUserAndCourseAsync(userId, courseId);
             return _mapper.Map<IEnumerable<UserLessonResponse>>(userLessons);
         }
+
+       
     }
 }

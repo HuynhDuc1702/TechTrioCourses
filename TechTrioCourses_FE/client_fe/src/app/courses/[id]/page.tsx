@@ -34,9 +34,9 @@ export default function CourseDetailPage() {
     if (params.id) {
       fetchCourse();
       if (user) {
-    checkEnrolled();
-  }
-     
+        checkEnrolled();
+      }
+
     }
 
   }, [params.id, user]);
@@ -60,7 +60,7 @@ export default function CourseDetailPage() {
       return;
     }
     try {
-      const userCourses = await userCourseAPI.checkIsEnrolled(user?.userId || '', id);
+      const userCourses = await userCourseAPI.checkIsEnrolled(id);
       setEnrolled(userCourses.isEnrolled);
     } catch (err) {
       setError(err instanceof Error ? err.message : "An unknown error occurred");
