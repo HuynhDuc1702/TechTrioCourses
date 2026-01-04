@@ -1,9 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using UserAPI.DTOs.Request;
-using UserAPI.DTOs.Response;
+using UserAPI.DTOs.Request.UserQuiz;
+using UserAPI.DTOs.Response.UserQuiz;
 using UserAPI.Services.Interfaces;
 
 namespace UserAPI.Controllers

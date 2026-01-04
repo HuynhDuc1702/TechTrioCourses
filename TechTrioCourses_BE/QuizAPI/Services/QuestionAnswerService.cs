@@ -36,11 +36,11 @@ if (answer == null)
     return _mapper.Map<QuestionAnswerResponse>(answer);
  }
 
-  public async Task<IEnumerable<QuestionAnswerResponse>> GetQuestionAnswersByResultIdAsync(Guid resultId)
+  public async Task<IEnumerable<QuestionAnswerResponse>> GetQuestionAnswersByQuestionIdAsync(Guid questionId)
  {
-    var answers = await _questionAnswerRepo.GetByResultIdAsync(resultId);
-     return _mapper.Map<IEnumerable<QuestionAnswerResponse>>(answers);
-        }
+       var answers = await _questionAnswerRepo.GetByQuestionIdAsync(questionId);
+    return _mapper.Map<IEnumerable<QuestionAnswerResponse>>(answers);
+ }
 
  public async Task<QuestionAnswerResponse> CreateQuestionAnswerAsync(CreateQuestionAnswerRequest request)
  {
@@ -63,9 +63,6 @@ return null;
   // Map only non-null properties from request to existing answer
    if (request.AnswerText != null)
   existingAnswer.AnswerText = request.AnswerText;
-
-      if (request.CorrectAnswer != null)
-       existingAnswer.CorrectAnswer = request.CorrectAnswer;
 
    var updatedAnswer = await _questionAnswerRepo.UpdateAsync(existingAnswer);
 

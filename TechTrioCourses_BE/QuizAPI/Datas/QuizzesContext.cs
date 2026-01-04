@@ -25,11 +25,9 @@ public partial class QuizzesContext : DbContext
 
     public virtual DbSet<Quiz> Quizzes { get; set; }
 
-    public virtual DbSet<QuizzeResult> QuizzeResults { get; set; }
+    public virtual DbSet<QuizQuestion> QuizQuestions { get; set; }
 
-    public virtual DbSet<UserSelectedChoice> UserSelectedChoices { get; set; }
-
-   
+    
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -41,28 +39,30 @@ public partial class QuizzesContext : DbContext
 
             entity.ToTable("questions");
 
-            entity.HasIndex(e => e.QuizId, "idx_questions_quiz");
+            entity.HasIndex(e => e.CourseId, "idx_questions_course");
+
+            entity.HasIndex(e => e.UserId, "idx_questions_user");
 
             entity.Property(e => e.Id)
                 .HasDefaultValueSql("uuid_generate_v4()")
                 .HasColumnName("id");
-           
+            entity.Property(e => e.CourseId).HasColumnName("course_id");
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(CURRENT_TIMESTAMP AT TIME ZONE 'UTC'::text)")
                 .HasColumnName("created_at");
             entity.Property(e => e.Points).HasColumnName("points");
             entity.Property(e => e.QuestionText).HasColumnName("question_text");
-            entity.Property(e => e.QuestionType).HasConversion<short>()
-
-.HasColumnName("question_type");
-            entity.Property(e => e.QuizId).HasColumnName("quiz_id");
+            entity.Property(e => e.QuestionType)
+             .HasConversion<short>()
+            .HasColumnName("question_type");
             entity.Property(e => e.Status)
-                                 .HasConversion<short>()
-.HasDefaultValue(QuestionStatusEnum.Hidden)
-.HasColumnName("status");
+             .HasConversion<short>()
+                .HasDefaultValue(QuestionStatusEnum.Hidden)
+                .HasColumnName("status");
             entity.Property(e => e.UpdatedAt)
                 .HasDefaultValueSql("(CURRENT_TIMESTAMP AT TIME ZONE 'UTC'::text)")
                 .HasColumnName("updated_at");
+            entity.Property(e => e.UserId).HasColumnName("user_id");
         });
 
         modelBuilder.Entity<QuestionAnswer>(entity =>
@@ -73,23 +73,21 @@ public partial class QuizzesContext : DbContext
 
             entity.HasIndex(e => e.QuestionId, "idx_question_answers_question");
 
-            entity.HasIndex(e => e.ResultId, "idx_question_answers_result");
-
-            entity.HasIndex(e => new { e.ResultId, e.QuestionId }, "question_answers_result_id_question_id_key").IsUnique();
-
             entity.Property(e => e.Id)
                 .HasDefaultValueSql("uuid_generate_v4()")
                 .HasColumnName("id");
             entity.Property(e => e.AnswerText).HasColumnName("answer_text");
-            entity.Property(e => e.CorrectAnswer).HasColumnName("correct_answer");
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(CURRENT_TIMESTAMP AT TIME ZONE 'UTC'::text)")
                 .HasColumnName("created_at");
             entity.Property(e => e.QuestionId).HasColumnName("question_id");
-            entity.Property(e => e.ResultId).HasColumnName("result_id");
             entity.Property(e => e.UpdatedAt)
                 .HasDefaultValueSql("(CURRENT_TIMESTAMP AT TIME ZONE 'UTC'::text)")
                 .HasColumnName("updated_at");
+
+            entity.HasOne(d => d.Question).WithMany(p => p.QuestionAnswers)
+                .HasForeignKey(d => d.QuestionId)
+                .HasConstraintName("fk_question_answers_question");
         });
 
         modelBuilder.Entity<QuestionChoice>(entity =>
@@ -103,17 +101,21 @@ public partial class QuizzesContext : DbContext
             entity.Property(e => e.Id)
                 .HasDefaultValueSql("uuid_generate_v4()")
                 .HasColumnName("id");
+            entity.Property(e => e.ChoiceText).HasColumnName("choice_text");
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(CURRENT_TIMESTAMP AT TIME ZONE 'UTC'::text)")
                 .HasColumnName("created_at");
             entity.Property(e => e.IsCorrect)
                 .HasDefaultValue(false)
                 .HasColumnName("is_correct");
-            entity.Property(e => e.OptionText).HasColumnName("option_text");
             entity.Property(e => e.QuestionId).HasColumnName("question_id");
             entity.Property(e => e.UpdatedAt)
                 .HasDefaultValueSql("(CURRENT_TIMESTAMP AT TIME ZONE 'UTC'::text)")
                 .HasColumnName("updated_at");
+
+            entity.HasOne(d => d.Question).WithMany(p => p.QuestionChoices)
+                .HasForeignKey(d => d.QuestionId)
+                .HasConstraintName("fk_question_choices_question");
         });
 
         modelBuilder.Entity<Quiz>(entity =>
@@ -138,81 +140,34 @@ public partial class QuizzesContext : DbContext
                 .HasColumnName("name");
             entity.Property(e => e.Status)
                  .HasConversion<short>()
-.HasDefaultValue(QuizzStatusEnum.Hidden)
-.HasColumnName("status");
+                .HasDefaultValue(QuizzStatusEnum.Hidden)
+                .HasColumnName("status");
             entity.Property(e => e.TotalMarks).HasColumnName("total_marks");
             entity.Property(e => e.UpdatedAt)
                 .HasDefaultValueSql("(CURRENT_TIMESTAMP AT TIME ZONE 'UTC'::text)")
                 .HasColumnName("updated_at");
         });
 
-        modelBuilder.Entity<QuizzeResult>(entity =>
+        modelBuilder.Entity<QuizQuestion>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("quizze_results_pkey");
+            entity.HasKey(e => new { e.QuizId, e.QuestionId }).HasName("quiz_questions_pkey");
 
-            entity.ToTable("quizze_results");
+            entity.ToTable("quiz_questions");
 
-            entity.HasIndex(e => e.CourseId, "idx_results_course");
+            entity.HasIndex(e => e.QuizId, "idx_quiz_questions_quiz");
 
-            entity.HasIndex(e => e.QuizId, "idx_results_quiz");
-
-            entity.HasIndex(e => e.UserId, "idx_results_user");
-
-            entity.Property(e => e.Id)
-                .HasDefaultValueSql("uuid_generate_v4()")
-                .HasColumnName("id");
-            entity.Property(e => e.AttemptNumber)
-                .HasDefaultValue(1)
-                .HasColumnName("attempt_number");
-            entity.Property(e => e.CompletedAt).HasColumnName("completed_at");
-            entity.Property(e => e.CourseId).HasColumnName("course_id");
-            entity.Property(e => e.DurationSeconds)
-                .HasDefaultValue(0)
-                .HasColumnName("duration_seconds");
-            entity.Property(e => e.Metadata)
-                .HasColumnType("jsonb")
-                .HasColumnName("metadata");
             entity.Property(e => e.QuizId).HasColumnName("quiz_id");
-            entity.Property(e => e.Score)
-                .HasDefaultValueSql("0")
-                .HasColumnName("score");
-            entity.Property(e => e.StartedAt)
-                .HasDefaultValueSql("(CURRENT_TIMESTAMP AT TIME ZONE 'UTC'::text)")
-                .HasColumnName("started_at");
-            entity.Property(e => e.Status)
-                 .HasConversion<short>()
-.HasDefaultValue(QuizzResultStatusEnum.Pending)
-.HasColumnName("status");
-            entity.Property(e => e.UpdatedAt)
-                .HasDefaultValueSql("(CURRENT_TIMESTAMP AT TIME ZONE 'UTC'::text)")
-                .HasColumnName("updated_at");
-            entity.Property(e => e.UserId).HasColumnName("user_id");
-        });
-
-        modelBuilder.Entity<UserSelectedChoice>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("user_selected_choices_pkey");
-
-            entity.ToTable("user_selected_choices");
-
-            entity.HasIndex(e => e.QuestionId, "idx_user_choices_question");
-
-            entity.HasIndex(e => e.ResultId, "idx_user_choices_result");
-
-            entity.HasIndex(e => new { e.ResultId, e.QuestionId }, "user_selected_choices_result_id_question_id_key").IsUnique();
-
-            entity.Property(e => e.Id)
-                .HasDefaultValueSql("uuid_generate_v4()")
-                .HasColumnName("id");
-            entity.Property(e => e.ChoiceId).HasColumnName("choice_id");
-            entity.Property(e => e.CreatedAt)
-                .HasDefaultValueSql("(CURRENT_TIMESTAMP AT TIME ZONE 'UTC'::text)")
-                .HasColumnName("created_at");
             entity.Property(e => e.QuestionId).HasColumnName("question_id");
-            entity.Property(e => e.ResultId).HasColumnName("result_id");
-            entity.Property(e => e.UpdatedAt)
-                .HasDefaultValueSql("(CURRENT_TIMESTAMP AT TIME ZONE 'UTC'::text)")
-                .HasColumnName("updated_at");
+            entity.Property(e => e.OverridePoints).HasColumnName("override_points");
+            entity.Property(e => e.QuestionOrder).HasColumnName("question_order");
+
+            entity.HasOne(d => d.Question).WithMany(p => p.QuizQuestions)
+                .HasForeignKey(d => d.QuestionId)
+                .HasConstraintName("fk_qq_question");
+
+            entity.HasOne(d => d.Quiz).WithMany(p => p.QuizQuestions)
+                .HasForeignKey(d => d.QuizId)
+                .HasConstraintName("fk_qq_quiz");
         });
 
         OnModelCreatingPartial(modelBuilder);

@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using System.Net.Http;
-using UserAPI.DTOs.Request;
-using UserAPI.DTOs.Response;
+using UserAPI.DTOs.Response.UserCourse;
 using UserAPI.Enums;
 using UserAPI.Models;
 using UserAPI.Repositories.Interfaces;

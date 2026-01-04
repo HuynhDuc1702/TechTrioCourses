@@ -1,7 +1,6 @@
 using AutoMapper;
-using UserAPI.DTOs.Request;
-using UserAPI.DTOs.Response;
-using UserAPI.Enums;
+using UserAPI.DTOs.Request.UserCourse;
+using UserAPI.DTOs.Response.UserCourse;
 using UserAPI.Models;
 
 namespace UserAPI.MappingProfile

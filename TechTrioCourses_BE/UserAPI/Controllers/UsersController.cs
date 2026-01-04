@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using UserAPI.DTOs.Request;
-using UserAPI.DTOs.Response;
+using UserAPI.DTOs.Request.User;
+using UserAPI.DTOs.Response.User;
 using UserAPI.Services.Interfaces;
 
 namespace UserAPI.Controllers

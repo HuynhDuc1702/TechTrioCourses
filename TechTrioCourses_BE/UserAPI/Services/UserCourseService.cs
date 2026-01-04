@@ -1,6 +1,6 @@
 using AutoMapper;
-using UserAPI.DTOs.Request;
-using UserAPI.DTOs.Response;
+using UserAPI.DTOs.Request.UserCourse;
+using UserAPI.DTOs.Response.UserCourse;
 using UserAPI.Models;
 using UserAPI.Repositories.Interfaces;
 using UserAPI.Services.Interfaces;

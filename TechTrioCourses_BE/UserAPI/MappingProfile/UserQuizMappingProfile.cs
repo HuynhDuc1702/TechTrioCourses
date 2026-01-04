@@ -1,7 +1,6 @@
 using AutoMapper;
-using UserAPI.DTOs.Request;
-using UserAPI.DTOs.Response;
-using UserAPI.Enums;
+using UserAPI.DTOs.Request.UserQuiz;
+using UserAPI.DTOs.Response.UserQuiz;
 using UserAPI.Models;
 
 namespace UserAPI.MappingProfile

@@ -61,11 +61,11 @@ return null;
        }
 
     // Map only non-null properties from request to existing choice
-      if (request.OptionText != null)
-      existingChoice.OptionText = request.OptionText;
+      if (request.ChoiceText != null)
+         existingChoice.ChoiceText = request.ChoiceText;
 
-   if (request.IsCorrect.HasValue)
-          existingChoice.IsCorrect = request.IsCorrect.Value;
+            if (request.IsCorrect.HasValue)
+        existingChoice.IsCorrect = request.IsCorrect.Value;
 
        var updatedChoice = await _questionChoiceRepo.UpdateAsync(existingChoice);
 

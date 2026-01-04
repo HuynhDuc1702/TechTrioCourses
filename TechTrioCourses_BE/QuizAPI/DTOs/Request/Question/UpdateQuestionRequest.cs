@@ -6,8 +6,7 @@ namespace QuizAPI.DTOs.Request.Question
     {
         public string? QuestionText { get; set; }
         public QuestionTypeEnum? QuestionType { get; set; }
-   public QuestionStatusEnum? Status { get; set; }
-     public double? Points { get; set; }
-        public string? CorrectAnswer { get; set; }
+        public QuestionStatusEnum? Status { get; set; }
+        public double? Points { get; set; }
     }
 }

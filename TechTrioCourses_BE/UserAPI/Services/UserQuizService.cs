@@ -1,6 +1,6 @@
 using AutoMapper;
-using UserAPI.DTOs.Request;
-using UserAPI.DTOs.Response;
+using UserAPI.DTOs.Request.UserQuiz;
+using UserAPI.DTOs.Response.UserQuiz;
 using UserAPI.Models;
 using UserAPI.Repositories.Interfaces;
 using UserAPI.Services.Interfaces;

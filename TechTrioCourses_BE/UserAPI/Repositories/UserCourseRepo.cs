@@ -41,8 +41,7 @@ namespace UserAPI.Repositories
 
         public async Task<UserCourse?> GetByUserAndCourseAsync(Guid userId, Guid courseId)
         {
-            return await _context.Set<UserCourse>()
-           .FirstOrDefaultAsync(uc => uc.UserId == userId && uc.CourseId == courseId);
+           return await _context.Set<UserCourse>().FirstOrDefaultAsync(uc=> uc.CourseId==courseId && uc.UserId==userId);
         }
 
         public async Task<UserCourse> CreateUserCourseAsync(UserCourse userCourse)

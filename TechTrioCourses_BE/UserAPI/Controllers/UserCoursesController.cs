@@ -1,11 +1,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.IdentityModel.Tokens.Jwt;
-using UserAPI.DTOs.Request;
-using UserAPI.DTOs.Response;
-using UserAPI.Services;
-using UserAPI.Services.Interfaces;
 using System.Security.Claims;
+using UserAPI.DTOs.Request.UserCourse;
+using UserAPI.DTOs.Response.UserCourse;
+using UserAPI.Services.Interfaces;
+
 namespace UserAPI.Controllers
 {
     [Route("api/[controller]")]

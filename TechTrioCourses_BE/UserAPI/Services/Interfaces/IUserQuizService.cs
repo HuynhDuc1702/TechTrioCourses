@@ -1,5 +1,5 @@
-using UserAPI.DTOs.Request;
-using UserAPI.DTOs.Response;
+using UserAPI.DTOs.Request.UserQuiz;
+using UserAPI.DTOs.Response.UserQuiz;
 
 namespace UserAPI.Services.Interfaces
 {

@@ -24,18 +24,14 @@ builder.Services.AddHttpClient("LessonAPI", client =>
 // Register repositories
 builder.Services.AddScoped<IQuestionRepo, QuestionRepo>();
 builder.Services.AddScoped<IQuizRepo, QuizRepo>();
-builder.Services.AddScoped<IQuizzeResultRepo, QuizzeResultRepo>();
 builder.Services.AddScoped<IQuestionChoiceRepo, QuestionChoiceRepo>();
 builder.Services.AddScoped<IQuestionAnswerRepo, QuestionAnswerRepo>();
-builder.Services.AddScoped<IUserSelectedChoiceRepo, UserSelectedChoiceRepo>();
 
 // Register services
 builder.Services.AddScoped<IQuestionService, QuestionService>();
 builder.Services.AddScoped<IQuizService, QuizService>();
-builder.Services.AddScoped<IQuizzeResultService, QuizzeResultService>();
 builder.Services.AddScoped<IQuestionChoiceService, QuestionChoiceService>();
 builder.Services.AddScoped<IQuestionAnswerService, QuestionAnswerService>();
-builder.Services.AddScoped<IUserSelectedChoiceService, UserSelectedChoiceService>();
 
 builder.Services.AddAutoMapper(typeof(Program));
 

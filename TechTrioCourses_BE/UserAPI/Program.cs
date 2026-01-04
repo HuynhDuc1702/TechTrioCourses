@@ -19,12 +19,18 @@ builder.Services.AddScoped<IUserRepo, UserRepo>();
 builder.Services.AddScoped<IUserCourseRepo, UserCourseRepo>();
 builder.Services.AddScoped<IUserLessonRepo, UserLessonRepo>();
 builder.Services.AddScoped<IUserQuizRepo, UserQuizRepo>();
+builder.Services.AddScoped<IQuizzeResultRepo, QuizzeResultRepo>();
+builder.Services.AddScoped<IUserInputAnswerRepo, UserInputAnswerRepo>();
+builder.Services.AddScoped<IUserSelectedChoiceRepo, UserSelectedChoiceRepo>();
 
 // Register services
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserCourseService, UserCourseService>();
 builder.Services.AddScoped<IUserLessonService, UserLessonService>();
 builder.Services.AddScoped<IUserQuizService, UserQuizService>();
+builder.Services.AddScoped<IQuizzeResultService, QuizzeResultService>();
+builder.Services.AddScoped<IUserInputAnswerService, UserInputAnswerService>();
+builder.Services.AddScoped<IUserSelectedChoiceService, UserSelectedChoiceService>();
 builder.Services.AddScoped<IUserCourseProgress, UserCourseProgress>();
 
 // Add AutoMapper

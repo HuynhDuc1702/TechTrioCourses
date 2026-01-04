@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using UserAPI.DTOs.Request;
-using UserAPI.DTOs.Response;
+using UserAPI.DTOs.Request.User;
+using UserAPI.DTOs.Response.User;
 using UserAPI.Enums;
 using UserAPI.Models;
 
