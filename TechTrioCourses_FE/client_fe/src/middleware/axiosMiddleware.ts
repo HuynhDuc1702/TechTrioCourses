@@ -290,3 +290,8 @@ export const categoryAxios = createAxiosInstance(API_URLS.CATEGORY);
  * Axios instance for Lesson API
  */
 export const lessonAxios = createAxiosInstance(API_URLS.LESSON);
+/**
+ * Axios instance for Quiz API
+ */
+export const quizAxios = createAxiosInstance(API_URLS.QUIZ);
+ 

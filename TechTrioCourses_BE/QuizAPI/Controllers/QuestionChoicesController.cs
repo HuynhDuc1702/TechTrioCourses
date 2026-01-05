@@ -9,77 +9,77 @@ namespace QuizAPI.Controllers
     [ApiController]
     public class QuestionChoicesController : ControllerBase
     {
-   private readonly IQuestionChoiceService _questionChoiceService;
+        private readonly IQuestionChoiceService _questionChoiceService;
 
         public QuestionChoicesController(IQuestionChoiceService questionChoiceService)
-  {
-     _questionChoiceService = questionChoiceService;
- }
+        {
+            _questionChoiceService = questionChoiceService;
+        }
 
         // GET: api/QuestionChoices
-    [HttpGet]
+        [HttpGet]
         public async Task<ActionResult<IEnumerable<QuestionChoiceResponse>>> GetQuestionChoices()
-   {
-     var choices = await _questionChoiceService.GetAllQuestionChoicesAsync();
-       return Ok(choices);
+        {
+            var choices = await _questionChoiceService.GetAllQuestionChoicesAsync();
+            return Ok(choices);
         }
 
         // GET: api/QuestionChoices/5
-   [HttpGet("{id}")]
-  public async Task<ActionResult<QuestionChoiceResponse>> GetQuestionChoice(Guid id)
+        [HttpGet("{id}")]
+        public async Task<ActionResult<QuestionChoiceResponse>> GetQuestionChoice(Guid id)
         {
-       var choice = await _questionChoiceService.GetQuestionChoiceByIdAsync(id);
+            var choice = await _questionChoiceService.GetQuestionChoiceByIdAsync(id);
 
             if (choice == null)
-      {
-      return NotFound();
-    }
+            {
+                return NotFound();
+            }
 
-       return Ok(choice);
-      }
+            return Ok(choice);
+        }
 
-  // GET: api/QuestionChoices/question/5
-     [HttpGet("question/{questionId}")]
- public async Task<ActionResult<IEnumerable<QuestionChoiceResponse>>> GetQuestionChoicesByQuestion(Guid questionId)
+        // GET: api/QuestionChoices/question/5
+        [HttpGet("question/{questionId}")]
+        public async Task<ActionResult<IEnumerable<QuestionChoiceResponse>>> GetQuestionChoicesByQuestion(Guid questionId)
         {
-         var choices = await _questionChoiceService.GetQuestionChoicesByQuestionIdAsync(questionId);
-       return Ok(choices);
- }
+            var choices = await _questionChoiceService.GetQuestionChoicesByQuestionIdAsync(questionId);
+            return Ok(choices);
+        }
 
         // PUT: api/QuestionChoices/5
-   [HttpPut("{id}")]
- public async Task<IActionResult> PutQuestionChoice(Guid id, UpdateQuestionChoiceRequest request)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutQuestionChoice(Guid id, UpdateQuestionChoiceRequest request)
         {
-   var updatedChoice = await _questionChoiceService.UpdateQuestionChoiceAsync(id, request);
+            var updatedChoice = await _questionChoiceService.UpdateQuestionChoiceAsync(id, request);
 
-  if (updatedChoice == null)
-   {
-    return NotFound();
-}
+            if (updatedChoice == null)
+            {
+                return NotFound();
+            }
 
-     return Ok(updatedChoice);
+            return Ok(updatedChoice);
         }
 
         // POST: api/QuestionChoices
-     [HttpPost]
-  public async Task<ActionResult<QuestionChoiceResponse>> PostQuestionChoice(CreateQuestionChoiceRequest request)
- {
-      var createdChoice = await _questionChoiceService.CreateQuestionChoiceAsync(request);
- return CreatedAtAction(nameof(GetQuestionChoice), new { id = createdChoice.Id }, createdChoice);
+        [HttpPost]
+        public async Task<ActionResult<QuestionChoiceResponse>> PostQuestionChoice(CreateQuestionChoiceRequest request)
+        {
+            var createdChoice = await _questionChoiceService.CreateQuestionChoiceAsync(request);
+            return CreatedAtAction(nameof(GetQuestionChoice), new { id = createdChoice.Id }, createdChoice);
         }
 
-      // DELETE: api/QuestionChoices/5
-     [HttpDelete("{id}")]
-  public async Task<IActionResult> DeleteQuestionChoice(Guid id)
- {
-  var result = await _questionChoiceService.DeleteQuestionChoiceAsync(id);
+        // DELETE: api/QuestionChoices/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteQuestionChoice(Guid id)
+        {
+            var result = await _questionChoiceService.DeleteQuestionChoiceAsync(id);
 
-         if (!result)
-       {
-      return NotFound();
-     }
+            if (!result)
+            {
+                return NotFound();
+            }
 
-   return NoContent();
+            return NoContent();
         }
- }
+    }
 }

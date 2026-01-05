@@ -2,7 +2,7 @@ namespace QuizAPI.DTOs.Response.QuizQuestion
 {
     public class QuizQuestionResponse
     {
-        public Guid Id;
+     
         public Guid QuizId { get; set; }
         public Guid QuestionId { get; set; }
         public int? QuestionOrder { get; set; }

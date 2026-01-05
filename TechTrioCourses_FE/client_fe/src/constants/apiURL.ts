@@ -70,4 +70,16 @@ export const API_ENDPOINTS = {
     QUIZZES: {
         BASE: '/api/Quizzes',
     },
+    QUESTIONS: {
+        BASE: '/api/Questions',
+    },
+    QUESTION_CHOICES: {
+        BASE: '/api/QuestionChoices',
+    },
+    QUESTION_ANSWERS: {
+        BASE: '/api/QuestionAnswers',
+    },
+    QUIZ_QUESTIONS: {
+        BASE: '/api/QuizQuestions',
+    },
 }
