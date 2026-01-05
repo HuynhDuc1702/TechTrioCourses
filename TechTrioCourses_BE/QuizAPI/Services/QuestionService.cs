@@ -37,6 +37,17 @@ namespace QuizAPI.Services
 
             return _mapper.Map<QuestionResponse>(question);
         }
+        public async Task<IEnumerable<QuestionResponse>> GetQuestionCourseIdAsync(Guid courseId)
+        {
+            var questions = await _questionRepo.GetQuestionsByCourseId(courseId);
+
+            if (questions == null)
+            {
+                return null;
+            }
+
+            return _mapper.Map<IEnumerable<QuestionResponse>>(questions);
+        }
 
         public async Task<QuestionResponse> CreateQuestionAsync(CreateQuestionRequest request)
         {

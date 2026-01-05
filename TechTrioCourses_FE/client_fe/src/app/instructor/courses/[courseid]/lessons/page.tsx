@@ -114,8 +114,11 @@ export default function InstructorCourseLessonsPage() {
       <div className="container mx-auto px-4">
         {/* Breadcrumb */}
         <div className="mb-4">
-          <Link href="/instructor/courses" className="text-blue-600 hover:underline">
-            ← Back to Courses
+         <Link
+            href={`/instructor/courses/${params.courseid}`}
+            className="text-blue-600 hover:underline"
+          >
+            ← Back to course's details
           </Link>
         </div>
 

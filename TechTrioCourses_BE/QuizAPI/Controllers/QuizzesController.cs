@@ -42,6 +42,14 @@ namespace QuizAPI.Controllers
             return Ok(quiz);
         }
 
+        // GET: api/Quizzes/course/{courseId}
+        [HttpGet("course/{courseId}")]
+        public async Task<ActionResult<IEnumerable<QuizResponse>>> GetQuizzesByCourseId(Guid courseId)
+        {
+            var quizzes = await _quizService.GetQuizzesByCourseIdAsync(courseId);
+            return Ok(quizzes);
+        }
+
         // PUT: api/Quizzes/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutQuiz(Guid id, UpdateQuizRequest request)

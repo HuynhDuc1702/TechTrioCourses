@@ -141,11 +141,18 @@ export default function CourseDetailPage() {
                 Manage Lessons
               </Link>
               <Link
+                href={`/instructor/courses/${course.id}/quizzes`}
+                className="block w-full text-center bg-gradient-to-r from-yellow-500 to-pink-600 text-white font-semibold py-2 px-4 rounded-lg hover:from-purple-600 hover:to-pink-700 transition-all duration-300 mt-4"
+              >
+                Manage Quizzes
+              </Link>
+              <Link
                 href={`/instructor/courses/${course.id}/questions`}
                 className="block w-full text-center bg-gradient-to-r from-purple-500 to-pink-600 text-white font-semibold py-2 px-4 rounded-lg hover:from-purple-600 hover:to-pink-700 transition-all duration-300 mt-4"
               >
                 Question Bank
               </Link>
+              
             </div>
           </div>
         </div>

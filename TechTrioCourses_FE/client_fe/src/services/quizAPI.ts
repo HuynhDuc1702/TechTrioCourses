@@ -141,7 +141,11 @@ export const quizAPI = {
         const response = await quizAxios.get<QuizResponse[]>(API_ENDPOINTS.QUIZZES.BASE);
         return response.data;
     },
-
+    // Get quizzes by Course ID
+    async getQuizzesByCourseId(courseId: string): Promise<QuizResponse[]> {
+        const response = await quizAxios.get<QuizResponse[]>(`${API_ENDPOINTS.QUIZZES.BASE}/course/${courseId}`);
+        return response.data;
+    },
     // Delete a quiz
     async deleteQuiz(id: string): Promise<void> {
         await quizAxios.delete<void>(`${API_ENDPOINTS.QUIZZES.BASE}/${id}`);
@@ -171,6 +175,11 @@ export const questionAPI = {
     // Get all questions
     async getAllQuestions(): Promise<QuestionResponse[]> {
         const response = await quizAxios.get<QuestionResponse[]>(API_ENDPOINTS.QUESTIONS.BASE);
+        return response.data;
+    },
+    // Get questions by Course ID
+    async getQuestionsByCourseId(courseId: string): Promise<QuestionResponse[]> {
+        const response = await quizAxios.get<QuestionResponse[]>(`${API_ENDPOINTS.QUESTIONS.BASE}/course/${courseId}`);
         return response.data;
     },
     // Delete a question

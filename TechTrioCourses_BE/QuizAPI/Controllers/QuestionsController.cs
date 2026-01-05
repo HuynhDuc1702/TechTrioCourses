@@ -42,6 +42,19 @@ namespace QuizAPI.Controllers
 
             return Ok(question);
         }
+        // GET: api/Questions/5
+        [HttpGet("course/{courseId}")]
+        public async Task<ActionResult<QuestionResponse>> GetQuestionsByCourseId(Guid courseId)
+        {
+            var questions = await _questionService.GetQuestionCourseIdAsync(courseId);
+
+            if (questions == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(questions);
+        }
 
         // PUT: api/Questions/5
         [HttpPut("{id}")]

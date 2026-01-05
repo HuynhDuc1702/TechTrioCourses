@@ -24,6 +24,13 @@ namespace QuizAPI.Repositories
             return await _context.Quizzes.FirstOrDefaultAsync(q => q.Id == id);
         }
 
+        public async Task<IEnumerable<Quiz>> GetByCourseIdAsync(Guid courseId)
+        {
+            return await _context.Quizzes
+      .Where(q => q.CourseId == courseId)
+     .ToListAsync();
+        }
+
         public async Task<Quiz> CreateAsync(Quiz quiz)
         {
             quiz.Id = Guid.NewGuid();

@@ -1,37 +1,36 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { lessonAPI, LessonStatusEnum, LessonUpdateRequest, LessonResponse, LessonMediaTypeEnum } from "@/services/lessonAPI";
+import { quizAPI, QuizCreateRequest, QuizStatusEnum, QuizResponse } from "@/services/quizAPI";
 import { courseAPI, CourseResponse } from "@/services/courseAPI";
 import { useAuth } from "@/contexts/AuthContext";
 import { UserRoleEnum } from "@/services/userAPI";
 import Link from "next/link";
 
-export default function EditLessonPage() {
+export default function EditQuizPage() {
   const params = useParams();
   const router = useRouter();
   const { user } = useAuth();
   const [course, setCourse] = useState<CourseResponse | null>(null);
-  const [lesson, setLesson] = useState<LessonResponse | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [quiz, setQuiz] = useState<QuizResponse | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null); 
 
+ // Form state
   const [formData, setFormData] = useState<{
-    title: string;
-    content?: string;
-    mediaUrl?: string;
-    mediaType?: LessonMediaTypeEnum | '';
-    orderIndex?: number;
-    status: LessonStatusEnum;
-  }>({
-    title: '',
-    content: '',
-    mediaUrl: '',
-    mediaType: '',
-    orderIndex: 0,
-    status: LessonStatusEnum.Hidden,
-  });
+        name: string;
+        description?: string;
+        totalMarks?: number;
+        durationMinutes?: number;
+        status: QuizStatusEnum;
+    }>({
+        name: "",
+        description: "",
+        totalMarks : 0,
+        durationMinutes: 0,
+        status: QuizStatusEnum.Hidden,
+    }
+  );
 
   useEffect(() => {
     // Check if user is instructor or admin
@@ -39,93 +38,65 @@ export default function EditLessonPage() {
       router.push('/');
       return;
     }
-    loadData();
-  }, [user, params.courseid, params.lessonid]);
-
+      loadData();
+  }, [user, params]);
   const loadData = async () => {
     try {
-      setLoading(true);
-
-      // Load course
       const courseData = await courseAPI.getCourseById(params.courseid as string);
-      setCourse(courseData);
+        setCourse(courseData);
 
-      const lessonId = Array.isArray(params.lessonid) ? params.lessonid[params.lessonid.length - 1] : params.lessonid;
+        const quizData = await quizAPI.getQuizById(params.quizzId as string);
+        setQuiz(quizData);
 
-      // Load lesson
-
-      const lessonData = await lessonAPI.getLessonById(lessonId as string);
-      setLesson(lessonData);
-
-      // Populate form
-      setFormData({
-        title: lessonData.title,
-        content: lessonData.content || '',
-        mediaUrl: lessonData.mediaUrl || '',
-        mediaType: lessonData.mediaType || '',
-        orderIndex: lessonData.orderIndex || 0,
-        status: lessonData.status,
-      });
+        // Populate form data
+        setFormData({
+            name: quizData.name,
+            description: quizData.description || "",
+            totalMarks: quizData.totalMarks || 0,
+            durationMinutes: quizData.durationMinutes || 0,
+            status: quizData.QuizStatus,
+        });
     } catch (err: any) {
-      setError(err.message || 'Failed to load lesson');
-    } finally {
-      setLoading(false);
+        setError(err.message || 'Failed to load course');
     }
   };
-
-  const handleSubmit = async (e: React.FormEvent) => {
+const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.title.trim()) {
-      alert('Lesson title is required');
+    if (!formData.name.trim()) {
+      alert('Quiz name is required');
       return;
     }
-
-    if (!lesson) return;
 
     try {
       setSubmitting(true);
       setError(null);
 
-      const updateData: LessonUpdateRequest = {
-        courseId: lesson.courseId,
-        title: formData.title,
-        content: formData.content || null,
-        mediaUrl: formData.mediaUrl || null,
-        mediaType: formData.mediaType === '' ? null : formData.mediaType,
-        orderIndex: formData.orderIndex || null,
-        status: formData.status,
+      const createData: QuizCreateRequest = {
+        courseId: params.courseid as string,
+        name: formData.name,
+        description: formData.description || null,
+        totalMarks: formData.totalMarks || undefined,
+        durationMinutes: formData.durationMinutes || undefined,
+        QuizStatus: formData.status,
       };
 
-      await lessonAPI.updateLesson(lesson.id, updateData);
-      router.push(`/instructor/courses/${lesson.courseId}/lessons`);
+      await quizAPI.createQuiz(createData);
+      router.push(`/instructor/courses/${params.courseid}/quizzes`);
     } catch (err: any) {
-      setError(err.message || 'Failed to update lesson');
+      setError(err.message || 'Failed to create quiz');
     } finally {
       setSubmitting(false);
     }
   };
 
   const handleCancel = () => {
-    if (lesson) {
-      router.push(`/instructor/courses/${lesson.courseId}/lessons`);
-    } else {
-      router.back();
-    }
+    router.push(`/instructor/courses/${params.courseid}/lessons`);
   };
-
-  if (loading) {
+   if (!quiz) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-gray-600">Loading lesson...</div>
-      </div>
-    );
-  }
-
-  if (!lesson) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-gray-600">Lesson not found</div>
+        <div className="text-gray-600">Quiz not found</div>
       </div>
     );
   }
@@ -135,7 +106,7 @@ export default function EditLessonPage() {
       <div className="container mx-auto px-4 max-w-3xl">
         {/* Breadcrumb */}
         <div className="mb-4">
-        <Link
+          <Link
             href={`/instructor/courses/${params.courseid}`}
             className="text-blue-600 hover:underline"
           >
@@ -145,7 +116,7 @@ export default function EditLessonPage() {
 
         {/* Header */}
         <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-          <h1 className="text-3xl font-bold text-gray-900">Edit Lesson</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Create New Quiz</h1>
           {course && (
             <p className="text-gray-600 mt-2">
               Course: <span className="font-medium">{course.title}</span>
@@ -163,90 +134,76 @@ export default function EditLessonPage() {
         {/* Form */}
         <div className="bg-white rounded-lg shadow-sm p-6">
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Title */}
+            {/* Name */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Lesson Title <span className="text-red-500">*</span>
+                Quiz Name <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
-                value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
-                placeholder="Enter lesson title"
+                placeholder="Enter quiz name"
                 required
               />
             </div>
 
-            {/* Content */}
+            {/* Description */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Content
+                Description
               </label>
               <textarea
-                value={formData.content}
-                onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
-                placeholder="Enter lesson content (optional)"
+                placeholder="Enter quiz description (optional)"
                 rows={8}
               />
               <p className="text-xs text-gray-500 mt-1">
-                Provide detailed content for the lesson
+                Provide detailed description for the quiz
               </p>
             </div>
 
-            {/* Media URL */}
+            {/* Total Marks */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Media URL
-              </label>
-              <input
-                type="url"
-                value={formData.mediaUrl}
-                onChange={(e) => setFormData({ ...formData, mediaUrl: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
-                placeholder="https://example.com/video.mp4"
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                URL to video, audio, or other media content
-              </p>
-            </div>
-
-            {/* Media Type */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Media Type
-              </label>
-              <select
-                value={formData.mediaType}
-                onChange={(e) => setFormData({ ...formData, mediaType: e.target.value ? parseInt(e.target.value) : '' })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
-              >
-                <option value="">Select media type</option>
-                <option value={LessonMediaTypeEnum.Video}>Video</option>
-                <option value={LessonMediaTypeEnum.Audio}>Audio</option>
-                <option value={LessonMediaTypeEnum.Document}>Document</option>
-                <option value={LessonMediaTypeEnum.Image}>Image</option>
-              </select>
-            </div>
-
-            {/* Order Index */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Order Index
+                Total Marks
               </label>
               <input
                 type="number"
-                value={formData.orderIndex}
-                onChange={(e) => setFormData({ ...formData, orderIndex: parseInt(e.target.value) || 0 })}
+                value={formData.totalMarks}
+                onChange={(e) => setFormData({ ...formData, totalMarks: parseInt(e.target.value) || 0 })}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
-                placeholder="Order index"
+                placeholder="Enter total marks"
                 min="0"
               />
               <p className="text-xs text-gray-500 mt-1">
-                Determines the order of lessons (lower numbers appear first)
+                Total marks for the quiz
               </p>
             </div>
+
+            {/* Duration */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Duration (Minutes)
+              </label>
+               <input
+                type="number"
+                value={formData.durationMinutes}
+                onChange={(e) => setFormData({ ...formData, durationMinutes: parseInt(e.target.value) || 0 })}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                placeholder="Enter duration in minutes"
+                min="0"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Duration of the quiz in minutes
+              </p>
+             
+            </div>
+
+          
 
             {/* Status */}
             <div>
@@ -255,11 +212,11 @@ export default function EditLessonPage() {
               </label>
               <select
                 value={formData.status}
-                onChange={(e) => setFormData({ ...formData, status: parseInt(e.target.value) as LessonStatusEnum })}
+                onChange={(e) => setFormData({ ...formData, status: parseInt(e.target.value) as QuizStatusEnum })}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
               >
-                <option value={LessonStatusEnum.Hidden}>Hidden</option>
-                <option value={LessonStatusEnum.Published}>Published</option>
+                <option value={QuizStatusEnum.Hidden}>Hidden</option>
+                <option value={QuizStatusEnum.Published}>Published</option>
               </select>
               <p className="text-xs text-gray-500 mt-1">
                 Hidden lessons are not visible to students
@@ -281,7 +238,7 @@ export default function EditLessonPage() {
                 className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-lg hover:from-blue-600 hover:to-indigo-700 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={submitting}
               >
-                {submitting ? 'Updating...' : 'Update Lesson'}
+                {submitting ? 'Creating...' : 'Create Quiz'}
               </button>
             </div>
           </form>
