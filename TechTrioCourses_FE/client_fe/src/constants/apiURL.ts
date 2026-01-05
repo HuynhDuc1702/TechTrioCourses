@@ -5,6 +5,7 @@ export const API_URLS = {
     USER: process.env.NEXT_PUBLIC_USER_API_URL || "https://localhost:7012",
     CATEGORY: process.env.NEXT_PUBLIC_CATEGORY_API_URL || "https://localhost:7273",
     LESSON: process.env.NEXT_PUBLIC_LESSON_API_URL || "https://localhost:7088",
+    QUIZ: process.env.NEXT_PUBLIC_QUIZ_API_URL || "https://localhost:7149",
 
 }
 
@@ -65,5 +66,8 @@ export const API_ENDPOINTS = {
     },
     LESSONS: {
         BASE: '/api/Lessons',
+    },
+    QUIZZES: {
+        BASE: '/api/Quizzes',
     },
 }

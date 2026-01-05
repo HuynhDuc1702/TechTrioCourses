@@ -6,79 +6,79 @@ using QuizAPI.Repositories.Interfaces;
 namespace QuizAPI.Repositories
 {
     public class QuizRepo : IQuizRepo
- {
+    {
         private readonly QuizzesContext _context;
 
         public QuizRepo(QuizzesContext context)
         {
-      _context = context;
-  }
+            _context = context;
+        }
 
         public async Task<IEnumerable<Quiz>> GetAllAsync()
-  {
-   return await _context.Quizzes.ToListAsync();
-     }
+        {
+            return await _context.Quizzes.ToListAsync();
+        }
 
-     public async Task<Quiz?> GetByIdAsync(Guid id)
-    {
-    return await _context.Quizzes.FirstOrDefaultAsync(q => q.Id == id);
+        public async Task<Quiz?> GetByIdAsync(Guid id)
+        {
+            return await _context.Quizzes.FirstOrDefaultAsync(q => q.Id == id);
         }
 
         public async Task<Quiz> CreateAsync(Quiz quiz)
-   {
-     quiz.Id = Guid.NewGuid();
+        {
+            quiz.Id = Guid.NewGuid();
             quiz.CreatedAt = DateTime.UtcNow;
-  quiz.UpdatedAt = DateTime.UtcNow;
+            quiz.UpdatedAt = DateTime.UtcNow;
 
-        _context.Quizzes.Add(quiz);
-  await _context.SaveChangesAsync();
+            _context.Quizzes.Add(quiz);
+            await _context.SaveChangesAsync();
 
-     return quiz;
+            return quiz;
         }
 
-    public async Task<Quiz?> UpdateAsync(Quiz quiz)
+        public async Task<Quiz?> UpdateAsync(Quiz quiz)
         {
-  var existingQuiz = await _context.Quizzes.FindAsync(quiz.Id);
-        if (existingQuiz == null)
-  {
-    return null;
+            var existingQuiz = await _context.Quizzes.FindAsync(quiz.Id);
+            if (existingQuiz == null)
+            {
+                return null;
             }
 
             quiz.UpdatedAt = DateTime.UtcNow;
-          _context.Entry(existingQuiz).CurrentValues.SetValues(quiz);
+            _context.Entry(existingQuiz).CurrentValues.SetValues(quiz);
 
-   try
-    {
-       await _context.SaveChangesAsync();
- return existingQuiz;
+            try
+            {
+                await _context.SaveChangesAsync();
+                return existingQuiz;
             }
-         catch (DbUpdateConcurrencyException)
- {
-           if (!await ExistsAsync(quiz.Id))
-             {
-        return null;
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!await ExistsAsync(quiz.Id))
+                {
+                    return null;
                 }
-  throw;
-         }
+                throw;
+            }
         }
 
         public async Task<bool> DeleteAsync(Guid id)
-{
-        var quiz = await _context.Quizzes.FindAsync(id);
-      if (quiz == null)
+        {
+            var quiz = await _context.Quizzes.FindAsync(id);
+            if (quiz == null)
             {
-             return false;
-     }
+                return false;
+            }
 
             _context.Quizzes.Remove(quiz);
-await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
 
-   return true;
+            return true;
         }
 
         public async Task<bool> ExistsAsync(Guid id)
         {
-     return await _context.Quizzes.AnyAsync(q => q.Id == id);
-  }
+            return await _context.Quizzes.AnyAsync(q => q.Id == id);
+        }
     }
 }

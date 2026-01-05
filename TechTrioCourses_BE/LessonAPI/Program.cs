@@ -22,7 +22,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddHttpClient("CourseAPI", client =>
 {
     var config = builder.Configuration;
- var baseUrl = config["ApiSettings:CourseAPI"];
+    var baseUrl = config["ApiSettings:CourseAPI"];
     client.BaseAddress = new Uri(baseUrl);
 });
 
@@ -52,13 +52,13 @@ builder.Services.AddAuthentication(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
     {
-      ValidateIssuer = true,
+        ValidateIssuer = true,
         ValidateAudience = true,
-   ValidateLifetime = true,
-      ValidateIssuerSigningKey = true,
-  ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
         ValidAudience = builder.Configuration["JwtSettings:Audience"],
-   IssuerSigningKey = new SymmetricSecurityKey(
+        IssuerSigningKey = new SymmetricSecurityKey(
       Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Key"] ?? "DefaultKey"))
     };
 });

@@ -6,11 +6,11 @@ namespace QuizAPI.Enums
     {
 
         [Description("Multiple_Choice")]
-        Multiple_Choice = 0,
+        Multiple_Choice = 1,
         [Description("True_False")]
-        True_False = 1,
+        True_False = 2,
         [Description("Short_Answer")]
-        Short_Answer = 2,
+        Short_Answer = 3,
 
     }
 }

@@ -26,12 +26,14 @@ builder.Services.AddScoped<IQuestionRepo, QuestionRepo>();
 builder.Services.AddScoped<IQuizRepo, QuizRepo>();
 builder.Services.AddScoped<IQuestionChoiceRepo, QuestionChoiceRepo>();
 builder.Services.AddScoped<IQuestionAnswerRepo, QuestionAnswerRepo>();
+builder.Services.AddScoped<IQuizQuestionRepo, QuizQuestionRepo>();
 
 // Register services
 builder.Services.AddScoped<IQuestionService, QuestionService>();
 builder.Services.AddScoped<IQuizService, QuizService>();
 builder.Services.AddScoped<IQuestionChoiceService, QuestionChoiceService>();
 builder.Services.AddScoped<IQuestionAnswerService, QuestionAnswerService>();
+builder.Services.AddScoped<IQuizQuestionService, QuizQuestionService>();
 
 builder.Services.AddAutoMapper(typeof(Program));
 
@@ -40,11 +42,11 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
   {
-        policy.WithOrigins("http://localhost:3000", "https://localhost:3000", "http://localhost:5173")
-       .AllowAnyHeader()
-              .AllowAnyMethod()
-  .AllowCredentials();
-    });
+      policy.WithOrigins("http://localhost:3000", "https://localhost:3000", "http://localhost:5173")
+     .AllowAnyHeader()
+     .AllowAnyMethod()
+    .AllowCredentials();
+  });
 });
 
 // Configure JWT Authentication
@@ -58,12 +60,12 @@ builder.Services.AddAuthentication(options =>
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
-      ValidateAudience = true,
+        ValidateAudience = true,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
         ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
         ValidAudience = builder.Configuration["JwtSettings:Audience"],
-  IssuerSigningKey = new SymmetricSecurityKey(
+        IssuerSigningKey = new SymmetricSecurityKey(
       Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Key"] ?? "DefaultKey"))
     };
 });

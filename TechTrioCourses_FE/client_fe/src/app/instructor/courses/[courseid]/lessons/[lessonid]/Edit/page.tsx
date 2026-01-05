@@ -50,14 +50,9 @@ export default function EditLessonPage() {
       const courseData = await courseAPI.getCourseById(params.courseid as string);
       setCourse(courseData);
 
-      // Load lesson - params.id is the dynamic route parameter for lesson ID
-      // We need to get the lesson ID from the URL params
       const lessonId = Array.isArray(params.lessonid) ? params.lessonid[params.lessonid.length - 1] : params.lessonid;
 
-      // Actually, the route structure is [courseId]/lessons/[lessonId]
-      // So we need to access the lesson ID from a different param
-      // Let me check the route structure - it should be lessons/[id]/page.tsx
-      // where [id] is the lesson ID, not course ID
+      // Load lesson
 
       const lessonData = await lessonAPI.getLessonById(lessonId as string);
       setLesson(lessonData);
