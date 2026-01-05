@@ -88,9 +88,9 @@ export default function CourseDetailPage() {
                 <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-gray-100 text-gray-700">
                   By {course.creatorName || "Unknown"}
                 </span>
-                <span className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-medium ${course.status === CourseStatusEnum.Published ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"
+                <span className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-medium ${Number(course.status) === CourseStatusEnum.Published ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-700"
                   }`}>
-                  {course.status === CourseStatusEnum.Published ? "Active" : "Draft"}
+                  {Number(course.status) === CourseStatusEnum.Published ? "Publish" : "Hidden"}
                 </span>
               </div>
 
@@ -152,7 +152,7 @@ export default function CourseDetailPage() {
               >
                 Question Bank
               </Link>
-              
+
             </div>
           </div>
         </div>

@@ -46,7 +46,6 @@ namespace QuizAPI.Services
         public async Task<QuizResponse> CreateQuizAsync(CreateQuizRequest request)
         {
             var quiz = _mapper.Map<Quiz>(request);
-            quiz.Status = QuizzStatusEnum.Hidden;
 
             var createdQuiz = await _quizRepo.CreateAsync(quiz);
 

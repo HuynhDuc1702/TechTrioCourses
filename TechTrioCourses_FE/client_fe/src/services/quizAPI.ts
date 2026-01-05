@@ -10,16 +10,16 @@ export interface QuizCreateRequest {
     courseId: string;
     name: string;
     description?: string | null;
-    totalMarks: number;
-    durationMinutes: number;
-    QuizStatus: QuizStatusEnum;
+    totalMarks?: number;
+    durationMinutes?: number;
+    status: QuizStatusEnum;
 }
 export interface QuizUpdateRequest {
     name?: string | null;
     description?: string | null;
     totalMarks?: number | null;
     durationMinutes?: number | null;
-    QuizStatus?: QuizStatusEnum;
+    status?: QuizStatusEnum;
 }
 export interface QuizResponse {
     id: string;
@@ -28,7 +28,7 @@ export interface QuizResponse {
     description?: string | null;
     totalMarks: number;
     durationMinutes: number;
-    QuizStatus: QuizStatusEnum;
+    status: QuizStatusEnum;
     createdAt: string;
     updatedAt: string;
 }

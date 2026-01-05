@@ -29,6 +29,10 @@ export default function QuizListPage() {
         try {
             setLoading(true);
             const data = await quizAPI.getQuizzesByCourseId(courseId);
+            console.log("Quiz data received:", data);
+            if (data.length > 0) {
+                console.log("First quiz status:", data[0].status, "Type:", typeof data[0].status);
+            }
             setQuizzes(data);
         } catch (error) {
             console.error("Failed to load quizzes", error);
@@ -62,7 +66,7 @@ export default function QuizListPage() {
     };
 
     const getStatusName = (status: number) => {
-        switch (status) {
+        switch (Number(status)) {
             case QuizStatusEnum.Published: return "Published";
             case QuizStatusEnum.Hidden: return "Hidden";
             default: return "Unknown";
@@ -79,7 +83,7 @@ export default function QuizListPage() {
                     <h1 className="text-3xl font-bold text-gray-900">Quizzes</h1>
                     <div className="ml-auto">
                         <Link
-                            href={`/instructor/courses/${courseId}/quizzes/Create`}
+                            href={`/instructor/courses/${courseId}/quizzes/create`}
                             className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition inline-block"
                         >
                             + Create Quiz
@@ -129,14 +133,14 @@ export default function QuizListPage() {
                                                 {quiz.totalMarks}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
-                                                <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${quiz.QuizStatus === QuizStatusEnum.Published ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                                                <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${Number(quiz.status) === QuizStatusEnum.Published ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                                                     }`}>
-                                                    {getStatusName(quiz.QuizStatus)}
+                                                    {getStatusName(quiz.status)}
                                                 </span>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                                 <Link
-                                                    href={`/instructor/courses/${courseId}/quizzes/${quiz.id}/Edit`}
+                                                    href={`/instructor/courses/${courseId}/quizzes/${quiz.id}/edit`}
                                                     className="text-indigo-600 hover:text-indigo-900 mr-4"
                                                 >
                                                     Edit
