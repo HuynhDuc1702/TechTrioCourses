@@ -24,9 +24,10 @@ namespace CourseAPI.Controllers
             _coursesService = coursesService;
         }
 
+    
         // GET: api/Courses
         [HttpGet]
-        
+
         public async Task<ActionResult<IEnumerable<CourseResponse>>> GetCourses()
         {
             var courses = await _coursesService.GetAllCoursesAsync();

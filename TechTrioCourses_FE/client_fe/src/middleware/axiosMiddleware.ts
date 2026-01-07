@@ -1,5 +1,6 @@
 import axios, { AxiosInstance, InternalAxiosRequestConfig, AxiosError } from 'axios';
 import { API_URLS, API_ENDPOINTS } from '@/constants/apiURL';
+import Cookies from 'js-cookie';
 
 // ==================== TOKEN MANAGEMENT ====================
 
@@ -11,51 +12,60 @@ export class TokenManager {
   private static readonly USER_KEY = 'user';
 
   /**
-   * Get access token from localStorage
+   * Get access token from cookies
    */
   static getAccessToken(): string | null {
-    return localStorage.getItem(this.ACCESS_TOKEN_KEY);
+    return Cookies.get(this.ACCESS_TOKEN_KEY) || null;
   }
 
   /**
-   * Get refresh token from localStorage
+   * Get refresh token from cookies
    */
   static getRefreshToken(): string | null {
-    return localStorage.getItem(this.REFRESH_TOKEN_KEY);
+    return Cookies.get(this.REFRESH_TOKEN_KEY) || null;
   }
 
   /**
-   * Set access token in localStorage
+   * Set access token in cookies
    */
   static setAccessToken(token: string): void {
-    localStorage.setItem(this.ACCESS_TOKEN_KEY, token);
+    Cookies.set(this.ACCESS_TOKEN_KEY, token, { secure: true, sameSite: 'Lax' });
   }
 
   /**
-   * Set refresh token in localStorage
+   * Set refresh token in cookies
    */
   static setRefreshToken(token: string): void {
-    localStorage.setItem(this.REFRESH_TOKEN_KEY, token);
+    Cookies.set(this.REFRESH_TOKEN_KEY, token, { secure: true, sameSite: 'Lax' });
   }
 
   /**
    * Set both tokens with expiration times
    */
   static setTokens(accessToken: string, refreshToken: string, accessExpiresAt: string, refreshExpiresAt: string): void {
-    localStorage.setItem(this.ACCESS_TOKEN_KEY, accessToken);
-    localStorage.setItem(this.REFRESH_TOKEN_KEY, refreshToken);
-    localStorage.setItem(this.ACCESS_EXPIRY_KEY, accessExpiresAt);
-    localStorage.setItem(this.REFRESH_EXPIRY_KEY, refreshExpiresAt);
+    // Calculate expiration days/fractions for js-cookie
+    const accessDate = new Date(accessExpiresAt);
+    const refreshDate = new Date(refreshExpiresAt);
+
+    Cookies.set(this.ACCESS_TOKEN_KEY, accessToken, { expires: refreshDate, secure: true, sameSite: 'Lax' });
+    Cookies.set(this.REFRESH_TOKEN_KEY, refreshToken, { expires: refreshDate, secure: true, sameSite: 'Lax' });
+
+    Cookies.set(this.ACCESS_EXPIRY_KEY, accessExpiresAt, { expires: refreshDate, secure: true, sameSite: 'Lax' });
+    Cookies.set(this.REFRESH_EXPIRY_KEY, refreshExpiresAt, { expires: refreshDate, secure: true, sameSite: 'Lax' });
   }
 
   /**
    * Clear all tokens and user data
    */
   static clearTokens(): void {
-    localStorage.removeItem(this.ACCESS_TOKEN_KEY);
-    localStorage.removeItem(this.REFRESH_TOKEN_KEY);
-    localStorage.removeItem(this.ACCESS_EXPIRY_KEY);
-    localStorage.removeItem(this.REFRESH_EXPIRY_KEY);
+    Cookies.remove(this.ACCESS_TOKEN_KEY);
+    Cookies.remove(this.REFRESH_TOKEN_KEY);
+    Cookies.remove(this.ACCESS_EXPIRY_KEY);
+    Cookies.remove(this.REFRESH_EXPIRY_KEY);
+    Cookies.remove(this.USER_KEY);
+
+    Cookies.remove(this.USER_KEY);
+
     localStorage.removeItem(this.USER_KEY);
   }
 
@@ -63,7 +73,7 @@ export class TokenManager {
    * Check if access token is expired
    */
   static isAccessTokenExpired(): boolean {
-    const expiresAt = localStorage.getItem(this.ACCESS_EXPIRY_KEY);
+    const expiresAt = Cookies.get(this.ACCESS_EXPIRY_KEY);
     if (!expiresAt) return true;
     return new Date(expiresAt) <= new Date();
   }
@@ -72,16 +82,16 @@ export class TokenManager {
    * Check if refresh token is expired
    */
   static isRefreshTokenExpired(): boolean {
-    const expiresAt = localStorage.getItem(this.REFRESH_EXPIRY_KEY);
+    const expiresAt = Cookies.get(this.REFRESH_EXPIRY_KEY);
     if (!expiresAt) return true;
     return new Date(expiresAt) <= new Date();
   }
 
   /**
-   * Check if user is authenticated with valid token
+   * Check if user is authenticated with valid session (valid refresh token)
    */
   static isAuthenticated(): boolean {
-    return !!this.getAccessToken() && !this.isAccessTokenExpired();
+    return !!this.getRefreshToken() && !this.isRefreshTokenExpired();
   }
 }
 
@@ -117,7 +127,7 @@ const processQueue = (error: any = null, token: string | null = null): void => {
  */
 const refreshAccessToken = async (): Promise<string> => {
   const refreshToken = TokenManager.getRefreshToken();
-  
+
   if (!refreshToken || TokenManager.isRefreshTokenExpired()) {
     throw new Error('No valid refresh token available');
   }
@@ -131,7 +141,7 @@ const refreshAccessToken = async (): Promise<string> => {
 
     const { accessToken, refreshToken: newRefreshToken, accessTokenExpiresAt, refreshTokenExpiresAt } = response.data;
     TokenManager.setTokens(accessToken, newRefreshToken, accessTokenExpiresAt, refreshTokenExpiresAt);
-    
+
     return accessToken;
   } catch (error) {
     TokenManager.clearTokens();
@@ -146,11 +156,11 @@ const refreshAccessToken = async (): Promise<string> => {
  */
 const requestInterceptor = (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
   const token = TokenManager.getAccessToken();
-  
+
   if (token && config.headers) {
     config.headers.Authorization = `Bearer ${token}`;
   }
-  
+
   return config;
 };
 
@@ -185,7 +195,7 @@ const responseErrorInterceptor = async (error: AxiosError): Promise<any> => {
   ];
 
   // Check if this is an auth endpoint - if yes, just reject without refresh/redirect
-  const isAuthEndpoint = authEndpoints.some(endpoint => 
+  const isAuthEndpoint = authEndpoints.some(endpoint =>
     originalRequest.url?.includes(endpoint)
   );
 
@@ -217,20 +227,20 @@ const responseErrorInterceptor = async (error: AxiosError): Promise<any> => {
     try {
       const newAccessToken = await refreshAccessToken();
       processQueue(null, newAccessToken);
-      
+
       if (originalRequest.headers) {
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
       }
-      
+
       return axios(originalRequest);
     } catch (refreshError) {
       processQueue(refreshError, null);
-      
+
       // Redirect to login page
       if (typeof window !== 'undefined') {
         window.location.href = '/auth/login';
       }
-      
+
       return Promise.reject(refreshError);
     } finally {
       isRefreshing = false;
@@ -294,4 +304,3 @@ export const lessonAxios = createAxiosInstance(API_URLS.LESSON);
  * Axios instance for Quiz API
  */
 export const quizAxios = createAxiosInstance(API_URLS.QUIZ);
- 

@@ -59,6 +59,7 @@ export const API_ENDPOINTS = {
         BY_COURSE: (courseId: string) => `/api/UserQuizzes/by-course/${courseId}`,
         BY_USER_AND_QUIZ: (quizId: string) => `/api/UserQuizzes/by-user-and-quiz/${quizId}`,
         BY_USER_AND_COURSE: (courseId: string) => `/api/UserQuizzes/by-user-and-course/${courseId}`,
+        IS_PASSED: (quizId: string) => `/api/UserQuizzes/is-passed/${quizId}`,
     },
 
     CATEGORIES: {
@@ -81,5 +82,26 @@ export const API_ENDPOINTS = {
     },
     QUIZ_QUESTIONS: {
         BASE: '/api/QuizQuestions',
+    },
+    USER_SELECTED_CHOICES: {
+        BASE: '/api/UserSelectedChoices',
+        GET_BY_ID: (id: string) => `/api/UserSelectedChoices/${id}`,
+        BY_RESULT: (resultId: string) => `/api/UserSelectedChoices/result/${resultId}`,
+        BY_RESULT_AND_QUESTION: (resultId: string, questionId: string) => `/api/UserSelectedChoices/result/${resultId}/question/${questionId}`,
+    },
+    USER_INPUT_ANSWERS: {
+        BASE: '/api/UserInputAnswers',
+        GET_BY_ID: (id: string) => `/api/UserInputAnswers/${id}`,
+        BY_RESULT: (resultId: string) => `/api/UserInputAnswers/result/${resultId}`,
+        BY_RESULT_AND_QUESTION: (resultId: string, questionId: string) => `/api/UserInputAnswers/result/${resultId}/question/${questionId}`,
+    },
+    USER_QUIZZE_RESULTS: {
+        BASE: '/api/UserQuizzeResults',
+        GET_BY_ID: (id: string) => `/api/UserQuizzeResults/${id}`,
+        BY_USER: () => `/api/UserQuizzeResults/by-user`,
+        BY_QUIZ: (quizId: string) => `/api/UserQuizzeResults/by-quiz/${quizId}`,
+        BY_COURSE: (courseId: string) => `/api/UserQuizzeResults/by-course/${courseId}`,
+        BY_USER_AND_QUIZ: (quizId: string) => `/api/UserQuizzeResults/by-user-and-quiz/${quizId}`,
+        BY_USER_AND_COURSE: (courseId: string) => `/api/UserQuizzeResults/by-user-and-course/${courseId}`,
     },
 }

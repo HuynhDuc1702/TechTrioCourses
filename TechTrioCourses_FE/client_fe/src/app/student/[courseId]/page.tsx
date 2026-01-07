@@ -6,8 +6,8 @@ import { courseAPI, CourseResponse, CourseStatusEnum } from "@/services/courseAP
 import { userAPI, userCourseAPI, UserCourseResponse, userLessonAPI } from "@/services/userAPI";
 import { useAuth } from "@/contexts/AuthContext";
 import Link from "next/link";
-import CourseLessonList from "@/components/student/CourseLessonList";
-import CourseQuizList from "@/components/student/CourseQuizList";
+import CourseLessonList from "@/components/student/CourseLessonsList";
+import CourseQuizList from "@/components/student/CourseQuizzesList";
 
 type TabType = "lessons" | "quizzes";
 

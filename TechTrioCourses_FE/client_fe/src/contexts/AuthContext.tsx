@@ -3,6 +3,7 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { accountService, AuthResult, AccountResponse } from '@/services/accountAPI';
 import { userAPI, UserResponse } from '@/services/userAPI';
+import Cookies from 'js-cookie';
 
 interface User {
   accountId: string;
@@ -21,6 +22,7 @@ interface AuthContextType {
   register: (email: string, password: string, fullName: string, avatarUrl?: string) => Promise<{ account: AccountResponse; message: string }>;
   logout: () => void;
   isAuthenticated: boolean;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -29,22 +31,76 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    // Check if user is already logged in
-    const token = accountService.getAccessToken();
-    if (token) {
-      const storedUser = localStorage.getItem('user');
-      if (storedUser) {
-        try {
-          setUser(JSON.parse(storedUser));
-        } catch (error) {
-          console.error('Error parsing stored user:', error);
-          accountService.logout();
-        }
-      }
+  // Helper to sync user state across storage and cookies
+  const syncUserSession = (userData: User, refreshTokenExpiresAt?: string) => {
+    // 1. Update State
+    setUser(userData);
+
+    // 2. Update LocalStorage
+    localStorage.setItem('user', JSON.stringify(userData));
+
+
+    // 3. Update Cookies
+    // Try to get existing expiration from stored refresh token expiry, or default to 7 days
+
+    const refreshTokenExpiresAtStr = Cookies.get('refreshTokenExpiresAt');
+    let expiresOpt: Date | number = 7; // Default fallback
+
+    if (refreshTokenExpiresAtStr) {
+      expiresOpt = new Date(refreshTokenExpiresAtStr);
     }
+
+    Cookies.set('user', JSON.stringify(userData), { path: '/', expires: expiresOpt, sameSite: 'Lax' });
+  };
+
+  useEffect(() => {
+    const isAuthenticated = accountService.isAuthenticated();
+
+    if (!isAuthenticated) {
+      accountService.logout();
+      setLoading(false);
+      return;
+    }
+
+    const storedUser = localStorage.getItem("user");
+    if (!storedUser) {
+      accountService.logout();
+      setLoading(false);
+      return;
+    }
+
+    try {
+      setUser(JSON.parse(storedUser));
+    } catch {
+      accountService.logout();
+    }
+
     setLoading(false);
   }, []);
+
+  const refreshUser = async () => {
+    try {
+      if (!user) return; 
+      const userInfo = await userAPI.getUserByAccountId(user.accountId);
+
+      const userData: User = {
+        accountId: userInfo.accountId,
+        userId: userInfo.id,
+        email: user.email, 
+        fullName: userInfo.fullName,
+        avatarUrl: userInfo.avatarUrl,
+        role: userInfo.role,
+        createdAt: userInfo.createdAt,
+      };
+
+     
+      syncUserSession(userData);
+
+    } catch (error) {
+      console.error('Failed to refresh user profile:', error);
+    }
+  };
+
 
   const login = async (email: string, password: string) => {
     try {
@@ -55,10 +111,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Decode JWT to get accountId
       const tokenPayload = JSON.parse(atob(authResult.accessToken.split('.')[1]));
       // Try multiple claim names (sub, accountId, nameid, or the full URI for NameIdentifier)
-      const accountId = tokenPayload.sub || 
-                        tokenPayload.accountId || 
-                        tokenPayload.nameid ||
-                        tokenPayload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'];
+      const accountId = tokenPayload.sub ||
+        tokenPayload.accountId ||
+        tokenPayload.nameid ||
+        tokenPayload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'];
       console.log('🔍 [DEBUG] Token payload:', tokenPayload);
       console.log('🔍 [DEBUG] Decoded accountId from token:', accountId);
 
@@ -77,19 +133,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       };
 
       console.log('🔍 [DEBUG] Setting user data:', userData);
-      
-      // Store in localStorage
-      localStorage.setItem('user', JSON.stringify(userData));
-      
-      // Set cookies for middleware access
-      const userCookieValue = JSON.stringify(userData);
-      const cookieOptions = `path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`; // 7 days
-      document.cookie = `user=${encodeURIComponent(userCookieValue)}; ${cookieOptions}`;
-      document.cookie = `accessTokenFromStorage=true; ${cookieOptions}`;
-      
-      console.log('✅ [DEBUG] Cookies set');
 
-      setUser(userData);
+      syncUserSession(userData, authResult.refreshTokenExpiresAt);
+
       console.log('✅ [DEBUG] Login complete, user data saved');
     } catch (error: any) {
       console.error('❌ [DEBUG] Login error:', error);
@@ -120,7 +166,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       login,
       register,
       logout,
-      isAuthenticated: !!user
+      isAuthenticated: !!user,
+      refreshUser
     }}>
       {children}
     </AuthContext.Provider>

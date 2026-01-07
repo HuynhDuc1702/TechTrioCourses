@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { lessonAPI, LessonResponse } from "@/services/lessonAPI";
+import { lessonAPI, LessonResponse, LessonStatusEnum } from "@/services/lessonAPI";
 import { userLessonAPI } from "@/services/userAPI";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -27,7 +27,8 @@ export default function CourseLessonList({ courseId }: CourseLessonListProps) {
                 setLoading(true);
 
                 // Fetch all lessons for this course
-                const lessonData = await lessonAPI.getLessonsByCourseId(courseId);
+                const allLessonData = await lessonAPI.getLessonsByCourseId(courseId);
+                   const lessonData = allLessonData.filter(lesson => lesson.status === LessonStatusEnum.Published);
 
                 // Check completion status for each lesson
                 if (user?.userId) {

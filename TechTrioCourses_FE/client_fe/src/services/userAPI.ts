@@ -564,6 +564,16 @@ export const userQuizAPI = {
   deleteUserQuiz: async (id: string): Promise<void> => {
     await userAxios.delete(API_ENDPOINTS.USER_QUIZZES.GET_BY_ID(id));
   },
+  /**
+   * Check if user passed quiz
+   * GET: /api/UserQuizzes/is-passed/{quizId}
+   */
+  checkIsPassed: async (quizId: string): Promise<{ isPassed: boolean }> => {
+    const response = await userAxios.get<{ isPassed: boolean }>(
+      API_ENDPOINTS.USER_QUIZZES.IS_PASSED(quizId)
+    );
+    return response.data;
+  },
 };
 
 export default userAPI;

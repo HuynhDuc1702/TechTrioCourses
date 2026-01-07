@@ -74,7 +74,8 @@ namespace CourseAPI.Services
                     {
                         // Group lessons by CourseId and count them
                         var lessonCounts = lessons
-                    .Where(l => courseIds.Contains(l.CourseId))
+                    .Where(l => courseIds.Contains(l.CourseId)
+                    && l.Status == LessonStatusEnum.Published)
                    .GroupBy(l => l.CourseId)
                      .ToDictionary(g => g.Key, g => g.Count());
 
@@ -116,7 +117,8 @@ namespace CourseAPI.Services
                     {
                         // Group quizzes by CourseId and count them
                         var quizCounts = quizzes
-                         .Where(q => courseIds.Contains(q.CourseId))
+                         .Where(q => courseIds.Contains(q.CourseId)
+                                && q.Status == QuizzStatusEnum.Published)
                              .GroupBy(q => q.CourseId)
                       .ToDictionary(g => g.Key, g => g.Count());
 
@@ -293,7 +295,8 @@ namespace CourseAPI.Services
                 if (lessonsResponse.IsSuccessStatusCode)
                 {
                     var lessons = await lessonsResponse.Content.ReadFromJsonAsync<List<LessonResponse>>();
-                    totalLessons = lessons?.Count ?? 0;
+                    totalLessons = lessons?.Count(l => l.CourseId == course.Id
+                                                         && l.Status == LessonStatusEnum.Published) ?? 0;
                 }
             }
             catch (HttpRequestException ex)
@@ -312,7 +315,10 @@ namespace CourseAPI.Services
                 if (quizzesResponse.IsSuccessStatusCode)
                 {
                     var quizzes = await quizzesResponse.Content.ReadFromJsonAsync<List<QuizResponse>>();
-                    totalQuizzes = quizzes?.Count(q => q.CourseId == course.Id) ?? 0;
+                    totalQuizzes = quizzes?
+
+                        .Count(q => q.CourseId == course.Id
+                                    && q.Status == QuizzStatusEnum.Published) ?? 0;
                 }
             }
             catch (HttpRequestException ex)
@@ -333,7 +339,6 @@ namespace CourseAPI.Services
 
             return result;
         }
-
 
         public async Task<CourseResponse> CreateCourseAsync(CreateCourseRequest request)
         {

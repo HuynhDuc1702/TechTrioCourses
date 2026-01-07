@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using UserAPI.DTOs.Request.UserQuiz;
 using UserAPI.DTOs.Response.UserQuiz;
+using UserAPI.Services;
 using UserAPI.Services.Interfaces;
 
 namespace UserAPI.Controllers
@@ -42,6 +43,25 @@ namespace UserAPI.Controllers
             return Ok(userQuizzes);
         }
 
+        // GET: api/UserQuizzes/is-passed/{quizId}
+        [HttpGet("is-passed/{quizId}")]
+        [Authorize]
+        public async Task<ActionResult> CheckIsPassed(Guid quizId)
+        {
+            // Get AccountId from Token Claims
+            var accountId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(accountId) || !Guid.TryParse(accountId, out var accountGuid))
+                return Unauthorized();
+
+            // Resolve User from AccountId
+            var user = await _userService.GetUserByAccountIdAsync(accountGuid);
+            if (user == null) return Unauthorized();
+
+            var userquizz = await _userQuizService.GetUserQuizByUserAndQuizAsync(user.Id, quizId);
+
+            return Ok(new { isPassed = userquizz != null && userquizz.Status == Enums.UserQuizzStatus.Passed });
+        }
+
         // GET: api/UserQuizzes/by-user
         [HttpGet("by-user")]
         [Authorize]
@@ -76,7 +96,7 @@ namespace UserAPI.Controllers
             return Ok(userQuizzes);
         }
 
-        // GET: api/UserQuizzes/by-user-and-quiz/{userId}/{quizId}
+        // GET: api/UserQuizzes/by-user-and-quiz/{quizId}
         [HttpGet("by-user-and-quiz/{quizId}")]
         [Authorize]
         public async Task<ActionResult<UserQuizResponse>> GetUserQuizByUserAndQuiz(Guid quizId)

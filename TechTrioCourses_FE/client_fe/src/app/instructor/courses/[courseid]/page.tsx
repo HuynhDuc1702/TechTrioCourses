@@ -49,7 +49,7 @@ export default function CourseDetailPage() {
         <div className="bg-red-50 border-l-4 border-red-500 p-6 rounded-lg shadow-lg">
           <p className="text-red-700 font-semibold">Error: {error || "Course not found"}</p>
           <Link
-            href="/courses"
+            href="/instructor/courses"
             className="mt-4 inline-block text-indigo-600 hover:text-indigo-800 underline"
           >
             Back to Courses
@@ -63,7 +63,7 @@ export default function CourseDetailPage() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
       <div className="container mx-auto px-4 py-12">
         <Link
-          href="/courses"
+          href="/instructor/courses"
           className="inline-flex items-center text-indigo-600 hover:text-indigo-800 mb-6 transition-colors"
         >
           <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
