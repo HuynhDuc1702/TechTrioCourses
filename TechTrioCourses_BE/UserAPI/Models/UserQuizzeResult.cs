@@ -4,7 +4,7 @@ using UserAPI.Enums;
 
 namespace UserAPI.Models;
 
-public partial class QuizzeResult
+public partial class UserQuizzeResult
 {
     public Guid Id { get; set; }
 
@@ -16,7 +16,7 @@ public partial class QuizzeResult
 
     public double? Score { get; set; }
 
-    public QuizzeResultStatusEnum Status { get; set; }
+    public UserQuizzeResultStatusEnum Status { get; set; }
 
     public int AttemptNumber { get; set; }
 

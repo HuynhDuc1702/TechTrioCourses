@@ -1,24 +1,24 @@
 using Microsoft.AspNetCore.Mvc;
-using UserAPI.DTOs.Request.QuizzeResult;
-using UserAPI.DTOs.Response.QuizzeResult;
+using UserAPI.DTOs.Request.UserQuizzeResult;
+using UserAPI.DTOs.Response.UserQuizzeResult;
 using UserAPI.Services.Interfaces;
 
 namespace UserAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class QuizzeResultsController : ControllerBase
+    public class UserQuizzeResultsController : ControllerBase
     {
-        private readonly IQuizzeResultService _quizzeResultService;
+        private readonly IUserQuizzeResultService _quizzeResultService;
 
-        public QuizzeResultsController(IQuizzeResultService quizzeResultService)
+        public UserQuizzeResultsController(IUserQuizzeResultService quizzeResultService)
         {
             _quizzeResultService = quizzeResultService;
         }
 
         // GET: api/QuizzeResults
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<QuizzeResultResponse>>> GetQuizzeResults()
+        public async Task<ActionResult<IEnumerable<UserQuizzeResultResponse>>> GetQuizzeResults()
         {
             var results = await _quizzeResultService.GetAllQuizzeResultsAsync();
             return Ok(results);
@@ -26,7 +26,7 @@ namespace UserAPI.Controllers
 
         // GET: api/QuizzeResults/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<QuizzeResultResponse>> GetQuizzeResult(Guid id)
+        public async Task<ActionResult<UserQuizzeResultResponse>> GetQuizzeResult(Guid id)
         {
             var result = await _quizzeResultService.GetQuizzeResultByIdAsync(id);
 
@@ -40,7 +40,7 @@ namespace UserAPI.Controllers
 
         // GET: api/QuizzeResults/user/5
         [HttpGet("user/{userId}")]
-        public async Task<ActionResult<IEnumerable<QuizzeResultResponse>>> GetQuizzeResultsByUser(Guid userId)
+        public async Task<ActionResult<IEnumerable<UserQuizzeResultResponse>>> GetQuizzeResultsByUser(Guid userId)
         {
             var results = await _quizzeResultService.GetQuizzeResultsByUserIdAsync(userId);
             return Ok(results);
@@ -48,7 +48,7 @@ namespace UserAPI.Controllers
 
         // GET: api/QuizzeResults/quiz/5
         [HttpGet("quiz/{quizId}")]
-        public async Task<ActionResult<IEnumerable<QuizzeResultResponse>>> GetQuizzeResultsByQuiz(Guid quizId)
+        public async Task<ActionResult<IEnumerable<UserQuizzeResultResponse>>> GetQuizzeResultsByQuiz(Guid quizId)
         {
             var results = await _quizzeResultService.GetQuizzeResultsByQuizIdAsync(quizId);
             return Ok(results);
@@ -56,7 +56,7 @@ namespace UserAPI.Controllers
 
         // GET: api/QuizzeResults/user/5/quiz/6
         [HttpGet("user/{userId}/quiz/{quizId}")]
-        public async Task<ActionResult<IEnumerable<QuizzeResultResponse>>> GetQuizzeResultsByUserAndQuiz(Guid userId, Guid quizId)
+        public async Task<ActionResult<IEnumerable<UserQuizzeResultResponse>>> GetQuizzeResultsByUserAndQuiz(Guid userId, Guid quizId)
         {
             var results = await _quizzeResultService.GetQuizzeResultsByUserAndQuizIdAsync(userId, quizId);
             return Ok(results);
@@ -64,7 +64,7 @@ namespace UserAPI.Controllers
 
         // PUT: api/QuizzeResults/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutQuizzeResult(Guid id, UpdateQuizzeResultRequest request)
+        public async Task<IActionResult> PutQuizzeResult(Guid id, UpdateUserQuizzeResultRequest request)
         {
             var updatedResult = await _quizzeResultService.UpdateQuizzeResultAsync(id, request);
 
@@ -78,7 +78,7 @@ namespace UserAPI.Controllers
 
         // POST: api/QuizzeResults
         [HttpPost]
-        public async Task<ActionResult<QuizzeResultResponse>> PostQuizzeResult(CreateQuizzeResultRequest request)
+        public async Task<ActionResult<UserQuizzeResultResponse>> PostQuizzeResult(CreateUserQuizzeResultRequest request)
         {
             var createdResult = await _quizzeResultService.CreateQuizzeResultAsync(request);
             return CreatedAtAction(nameof(GetQuizzeResult), new { id = createdResult.Id }, createdResult);

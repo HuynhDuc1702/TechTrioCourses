@@ -21,7 +21,7 @@ public partial class TechTrioUsersContext : DbContext
     public virtual DbSet<UserCourse> UserCourses { get; set; }
     public virtual DbSet<UserLesson> UserLessons { get; set; }
     public virtual DbSet<UserQuiz> UserQuizzes { get; set; }
-    public virtual DbSet<QuizzeResult> QuizzeResults { get; set; }
+    public virtual DbSet<UserQuizzeResult> UserQuizzeResults { get; set; }
     public virtual DbSet<UserInputAnswer> UserInputAnswers { get; set; }
     public virtual DbSet<UserSelectedChoice> UserSelectedChoices { get; set; }
 
@@ -112,11 +112,11 @@ public partial class TechTrioUsersContext : DbContext
                 .HasColumnName("updated_at");
             entity.Property(e => e.UserId).HasColumnName("user_id");
         });
-        modelBuilder.Entity<QuizzeResult>(entity =>
+        modelBuilder.Entity<UserQuizzeResult>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("quizze_results_pkey");
+            entity.HasKey(e => e.Id).HasName("user_quizze_results_pkey");
 
-            entity.ToTable("quizze_results");
+            entity.ToTable("user_quizze_results");
 
             entity.HasIndex(e => e.CourseId, "idx_results_course");
 
@@ -147,7 +147,7 @@ public partial class TechTrioUsersContext : DbContext
                 .HasColumnName("started_at");
             entity.Property(e => e.Status)
                .HasConversion<short>()
-                .HasDefaultValue(QuizzeResultStatusEnum.In_progress)
+                .HasDefaultValue(UserQuizzeResultStatusEnum.In_progress)
                 .HasColumnName("status");
             entity.Property(e => e.UpdatedAt)
                 .HasDefaultValueSql("(CURRENT_TIMESTAMP AT TIME ZONE 'UTC'::text)")

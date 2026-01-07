@@ -2,7 +2,7 @@
 
 namespace UserAPI.Enums
 {
-    public enum QuizzeResultStatusEnum
+    public enum UserQuizzeResultStatusEnum
     {
         [Description("In_progress")]
         In_progress = 1,
