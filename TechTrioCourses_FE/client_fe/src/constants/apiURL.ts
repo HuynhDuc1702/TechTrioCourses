@@ -1,12 +1,14 @@
-// API URLs for microservices architecture
-export const API_URLS = {
-    ACCOUNT: process.env.NEXT_PUBLIC_ACCOUNT_API_URL || "https://localhost:7240",
-    COURSE: process.env.NEXT_PUBLIC_COURSE_API_URL || "https://localhost:7102",
-    USER: process.env.NEXT_PUBLIC_USER_API_URL || "https://localhost:7012",
-    CATEGORY: process.env.NEXT_PUBLIC_CATEGORY_API_URL || "https://localhost:7273",
-    LESSON: process.env.NEXT_PUBLIC_LESSON_API_URL || "https://localhost:7088",
-    QUIZ: process.env.NEXT_PUBLIC_QUIZ_API_URL || "https://localhost:7149",
+// API Gateway - Single entry point for all backend services
+export const API_URL = process.env.NEXT_PUBLIC_API_GATEWAY_URL || "https://localhost:5000";
 
+// API URLs for microservices (all now route through gateway)
+export const API_URLS = {
+    ACCOUNT: API_URL,
+    COURSE: API_URL,
+    USER: API_URL,
+    CATEGORY: API_URL,
+    LESSON: API_URL,
+    QUIZ: API_URL,
 }
 
 // API endpoints (paths only, base URL comes from API_URLS)

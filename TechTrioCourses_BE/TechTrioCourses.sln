@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuizAPI", "QuizAPI\QuizAPI.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TechTrioCourses.Shared", "TechTrioCourses.Shared\TechTrioCourses.Shared.csproj", "{C8EC5D72-3EF9-4041-8384-53831FA7E1CB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TechTrioCourses.Gateway", "TechTrioCourses.Gateway\TechTrioCourses.Gateway.csproj", "{93776343-A3DB-85C7-0A58-60A7866BC448}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{C8EC5D72-3EF9-4041-8384-53831FA7E1CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C8EC5D72-3EF9-4041-8384-53831FA7E1CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C8EC5D72-3EF9-4041-8384-53831FA7E1CB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{93776343-A3DB-85C7-0A58-60A7866BC448}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93776343-A3DB-85C7-0A58-60A7866BC448}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93776343-A3DB-85C7-0A58-60A7866BC448}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93776343-A3DB-85C7-0A58-60A7866BC448}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
