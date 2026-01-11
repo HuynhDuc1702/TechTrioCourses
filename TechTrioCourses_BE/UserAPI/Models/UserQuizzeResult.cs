@@ -1,6 +1,6 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
-using TechTrioCourses.Shared.Enums;
+using UserAPI.Enums;
 
 namespace UserAPI.Models;
 
@@ -16,7 +16,7 @@ public partial class UserQuizzeResult
 
     public double? Score { get; set; }
 
-    public UserQuizResultStatusEnum Status { get; set; }
+    public UserQuizzeResultStatusEnum Status { get; set; }
 
     public int AttemptNumber { get; set; }
 

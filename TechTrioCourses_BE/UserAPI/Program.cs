@@ -1,12 +1,12 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using UserAPI.Datas;
 using UserAPI.Repositories;
 using UserAPI.Repositories.Interfaces;
 using UserAPI.Services;
 using UserAPI.Services.Interfaces;
-using Polly;
-using Polly.Extensions.Http;
-using TechTrioCourses.Shared.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,45 +35,53 @@ builder.Services.AddScoped<IUserCourseProgress, UserCourseProgress>();
 
 // Add AutoMapper
 builder.Services.AddAutoMapper(typeof(Program));
-
-// Add Memory Cache
-builder.Services.AddMemoryCache();
-
-// Define policies
-var retryPolicy = HttpPolicyExtensions
-    .HandleTransientHttpError()
-  .WaitAndRetryAsync(3, retryAttempt =>
-        TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
-
-var circuitBreakerPolicy = HttpPolicyExtensions
-    .HandleTransientHttpError()
-    .CircuitBreakerAsync(5, TimeSpan.FromSeconds(30));
-
 builder.Services.AddHttpClient("LessonAPI", client =>
 {
     var config = builder.Configuration;
     var baseUrl = config["ApiSettings:LessonAPI"];
     client.BaseAddress = new Uri(baseUrl);
-    client.Timeout = TimeSpan.FromSeconds(10);
-})
-.AddPolicyHandler(retryPolicy)
-.AddPolicyHandler(circuitBreakerPolicy);
-
+});
 builder.Services.AddHttpClient("QuizAPI", client =>
 {
     var config = builder.Configuration;
     var baseUrl = config["ApiSettings:QuizAPI"];
     client.BaseAddress = new Uri(baseUrl);
-    client.Timeout = TimeSpan.FromSeconds(10);
+});
+
+// Add CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:3000", "https://localhost:3000", "http://localhost:5173")
+              .AllowAnyHeader()
+        .AllowAnyMethod()
+     .AllowCredentials();
+    });
+});
+
+// Configure JWT Authentication
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 })
-.AddPolicyHandler(retryPolicy)
-.AddPolicyHandler(circuitBreakerPolicy);
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
+        ValidAudience = builder.Configuration["JwtSettings:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(
+        Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Key"] ?? "DefaultKey"))
+    };
+});
 
-// Add shared CORS configuration
-builder.Services.AddTechTrioCors();
-
-// Configure shared JWT Authentication
-builder.Services.AddTechTrioJwtAuthentication(builder.Configuration);
+builder.Services.AddAuthorization();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

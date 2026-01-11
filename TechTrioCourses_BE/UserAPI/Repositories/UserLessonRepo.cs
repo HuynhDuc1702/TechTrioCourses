@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using UserAPI.Datas;
-using TechTrioCourses.Shared.Enums;
+using UserAPI.Enums;
 using UserAPI.Models;
 using UserAPI.Repositories.Interfaces;
 

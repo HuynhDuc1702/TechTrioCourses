@@ -1,4 +1,4 @@
-using TechTrioCourses.Shared.Enums;
+using UserAPI.Enums;
 
 namespace UserAPI.DTOs.Response.UserCourse
 {
@@ -7,7 +7,7 @@ namespace UserAPI.DTOs.Response.UserCourse
         public Guid Id { get; set; }
   public Guid UserId { get; set; }
         public Guid CourseId { get; set; }
-   public UserCourseStatusEnum Status { get; set; }
+   public UserCourseStatus Status { get; set; }
  public double Progress { get; set; }
      public DateTime EnrolledAt { get; set; }
   public DateTime? CompletedAt { get; set; }

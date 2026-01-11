@@ -1,7 +1,7 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
-using TechTrioCourses.Shared.Enums;
+using UserAPI.Enums;
 using UserAPI.Models;
 
 namespace UserAPI.Datas;
@@ -76,7 +76,7 @@ public partial class TechTrioUsersContext : DbContext
             entity.Property(e => e.Progress).HasColumnName("progress");
             entity.Property(e => e.Status)
                 .HasConversion<short>()
-                .HasDefaultValue(UserCourseStatusEnum.In_progress)
+                .HasDefaultValue(UserCourseStatus.In_progress)
                 .HasColumnName("status");
             entity.Property(e => e.UpdatedAt)
                 .HasDefaultValueSql("(CURRENT_TIMESTAMP AT TIME ZONE 'UTC'::text)")
@@ -105,7 +105,7 @@ public partial class TechTrioUsersContext : DbContext
             entity.Property(e => e.CourseId).HasColumnName("course_id");
             entity.Property(e => e.Status)
                .HasConversion<short>()
-                .HasDefaultValue(UserLessonStatusEnum.Not_Started)
+                .HasDefaultValue(UserLessonStatus.Not_Started)
                 .HasColumnName("status");
             entity.Property(e => e.UpdatedAt)
                 .HasDefaultValueSql("(CURRENT_TIMESTAMP AT TIME ZONE 'UTC'::text)")
@@ -147,7 +147,7 @@ public partial class TechTrioUsersContext : DbContext
                 .HasColumnName("started_at");
             entity.Property(e => e.Status)
                .HasConversion<short>()
-                .HasDefaultValue(UserQuizResultStatusEnum.In_progress)
+                .HasDefaultValue(UserQuizzeResultStatusEnum.In_progress)
                 .HasColumnName("status");
             entity.Property(e => e.UpdatedAt)
                 .HasDefaultValueSql("(CURRENT_TIMESTAMP AT TIME ZONE 'UTC'::text)")
@@ -233,7 +233,7 @@ public partial class TechTrioUsersContext : DbContext
             entity.Property(e => e.QuizId).HasColumnName("quiz_id");
             entity.Property(e => e.Status)
                 .HasConversion<short>()
-                .HasDefaultValue(UserQuizStatusEnum.Not_Started)
+                .HasDefaultValue(UserQuizzStatus.Not_Started)
                 .HasColumnName("status");
             entity.Property(e => e.UpdatedAt)
                 .HasDefaultValueSql("(CURRENT_TIMESTAMP AT TIME ZONE 'UTC'::text)")

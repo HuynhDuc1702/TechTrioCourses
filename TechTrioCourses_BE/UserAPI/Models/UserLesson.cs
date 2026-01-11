@@ -1,6 +1,6 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
-using TechTrioCourses.Shared.Enums;
+using UserAPI.Enums;
 
 namespace UserAPI.Models;
 
@@ -13,7 +13,7 @@ public partial class UserLesson
     public Guid LessonId { get; set; }
     public Guid? CourseId { get; set; }
 
-    public UserLessonStatusEnum Status { get; set; }
+    public UserLessonStatus Status { get; set; }
 
     public DateTime? CompletedAt { get; set; }
 

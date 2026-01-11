@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using UserAPI.Datas;
-using TechTrioCourses.Shared.Enums;
+using UserAPI.Enums;
 using UserAPI.Models;
 using UserAPI.Repositories.Interfaces;
 
@@ -50,7 +50,7 @@ namespace UserAPI.Repositories
             userCourse.EnrolledAt = DateTime.UtcNow;
             userCourse.UpdatedAt = DateTime.UtcNow;
             userCourse.Progress = 0;
-            userCourse.Status = UserCourseStatusEnum.In_progress;
+            userCourse.Status = UserCourseStatus.In_progress;
 
             _context.Set<UserCourse>().Add(userCourse);
             await _context.SaveChangesAsync();
