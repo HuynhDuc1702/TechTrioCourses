@@ -1,18 +1,16 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 
-namespace LessonAPI.Enums
+namespace TechTrioCourses.Shared.Enums
 {
     public enum LessonMediaTypeEnum
     {
-
         [Description("Video")]
         Video = 1,
         [Description("Audio")]
         Audio = 2,
-        [Description("Document")]
+      [Description("Document")]
         Document = 3,
         [Description("Image")]
-        Image = 4,
-
+     Image = 4
     }
 }

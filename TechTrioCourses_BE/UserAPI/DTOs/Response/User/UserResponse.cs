@@ -1,4 +1,4 @@
-using UserAPI.Enums;
+using TechTrioCourses.Shared.Enums;
 
 namespace UserAPI.DTOs.Response.User
 {

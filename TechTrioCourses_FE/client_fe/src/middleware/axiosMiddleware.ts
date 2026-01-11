@@ -184,7 +184,7 @@ const responseInterceptor = (response: any) => {
 const responseErrorInterceptor = async (error: AxiosError): Promise<any> => {
   const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
-  // ✅ AUTH ENDPOINTS - SKIP REFRESH & REDIRECT
+  // AUTH ENDPOINTS - SKIP REFRESH & REDIRECT
   const authEndpoints = [
     API_ENDPOINTS.ACCOUNTS.LOGIN,
     API_ENDPOINTS.ACCOUNTS.REGISTER,

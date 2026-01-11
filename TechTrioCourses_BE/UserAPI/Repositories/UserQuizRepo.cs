@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using UserAPI.Datas;
-using UserAPI.Enums;
+using TechTrioCourses.Shared.Enums;
 using UserAPI.Models;
 using UserAPI.Repositories.Interfaces;
 
@@ -63,7 +63,7 @@ namespace UserAPI.Repositories
         {
             userQuiz.Id = Guid.NewGuid();
             userQuiz.UpdatedAt = DateTime.UtcNow;
-            userQuiz.Status = UserQuizzStatus.Not_Started;
+            userQuiz.Status = UserQuizStatusEnum.Not_Started;
 
             _context.Set<UserQuiz>().Add(userQuiz);
             await _context.SaveChangesAsync();
@@ -71,7 +71,7 @@ namespace UserAPI.Repositories
             return userQuiz;
         }
 
-        public async Task<bool> UpdateUserQuizAsync(Guid userId, Guid quizId, Enums.UserQuizzStatus newStatus, double? score)
+        public async Task<bool> UpdateUserQuizAsync(Guid userId, Guid quizId, UserQuizStatusEnum newStatus, double? score)
         {
             var userQuiz = await _context.Set<UserQuiz>()
                 .FirstOrDefaultAsync(x => x.UserId == userId && x.QuizId == quizId);
@@ -94,14 +94,14 @@ namespace UserAPI.Repositories
             }
 
             // Status transition
-            if (newStatus == Enums.UserQuizzStatus.Passed)
+            if (newStatus == UserQuizStatusEnum.Passed)
             {
-                if (userQuiz.Status != Enums.UserQuizzStatus.Passed)
+                if (userQuiz.Status != UserQuizStatusEnum.Passed)
                 {
                     userQuiz.PassedAt = DateTime.UtcNow;
                 }
             }
-            if (userQuiz.Status != UserQuizzStatus.Passed)
+            if (userQuiz.Status != UserQuizStatusEnum.Passed)
             {
                 userQuiz.Status = newStatus;
             }

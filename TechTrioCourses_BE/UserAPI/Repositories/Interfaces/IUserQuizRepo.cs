@@ -1,3 +1,4 @@
+using TechTrioCourses.Shared.Enums;
 using UserAPI.Models;
 
 namespace UserAPI.Repositories.Interfaces
@@ -12,7 +13,7 @@ namespace UserAPI.Repositories.Interfaces
         Task<IEnumerable<UserQuiz>> GetByUserAndCourseAsync(Guid userId, Guid courseId);
         Task<UserQuiz?> GetByUserAndQuizAsync(Guid userId, Guid quizId);
         Task<UserQuiz> CreateUserQuizAsync(UserQuiz userQuiz);
-        Task<bool> UpdateUserQuizAsync(Guid userId, Guid quizId, Enums.UserQuizzStatus newStatus, double? score);
+        Task<bool> UpdateUserQuizAsync(Guid userId, Guid quizId, UserQuizStatusEnum newStatus, double? score);
         Task<bool> DeleteUserQuizAsync(Guid id);
         Task<bool> UserQuizExistsAsync(Guid userId, Guid quizId);
     }

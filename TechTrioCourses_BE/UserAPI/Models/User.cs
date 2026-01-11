@@ -1,7 +1,8 @@
-﻿using UserAPI.Enums;
+
 using System;
 using System.Collections.Generic;
-using UserAPI.Enums;
+using TechTrioCourses.Shared.Enums;
+
 
 namespace UserAPI.Models;
 

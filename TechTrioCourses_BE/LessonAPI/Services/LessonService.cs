@@ -1,13 +1,14 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Azure;
-using LessonAPI.Enums;
+
 using LessonAPI.Models;
 using LessonAPI.DTOs.Request;
 using LessonAPI.DTOs.Response;
 using LessonAPI.Repositories.Interfaces;
 using LessonAPI.Services.Interfaces;
 using Microsoft.VisualBasic;
-using static LessonAPI.DTOs.Response.LessonResponse;
+
+using TechTrioCourses.Shared.Enums;
 
 namespace LessonAPI.Services
 {
@@ -145,11 +146,11 @@ namespace LessonAPI.Services
                 return false;
 
             }
-            if (existingLesson.Status == LessonStatusEnum.Hidden)
+            if (existingLesson.Status == PublishStatusEnum.Hidden)
             {
                 return true; // Already disabled, no need to update
             }
-            existingLesson.Status = LessonStatusEnum.Hidden;
+            existingLesson.Status = PublishStatusEnum.Hidden;
             existingLesson.UpdatedAt = DateTime.UtcNow;
             var updatedLesson = await _lessonsRepo.UpdateAsync(existingLesson);
 
@@ -165,11 +166,11 @@ namespace LessonAPI.Services
                 return false;
 
             }
-            if (existingLesson.Status == LessonStatusEnum.Archived)
+            if (existingLesson.Status == PublishStatusEnum.Archived)
             {
                 return true; // Already disabled, no need to update
             }
-            existingLesson.Status = LessonStatusEnum.Archived;
+            existingLesson.Status = TechTrioCourses.Shared.Enums.PublishStatusEnum.Archived;
             existingLesson.UpdatedAt = DateTime.UtcNow;
             var updatedLesson = await _lessonsRepo.UpdateAsync(existingLesson);
 

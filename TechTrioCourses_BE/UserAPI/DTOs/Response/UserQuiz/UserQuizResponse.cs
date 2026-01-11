@@ -1,4 +1,4 @@
-using UserAPI.Enums;
+using TechTrioCourses.Shared.Enums;
 
 namespace UserAPI.DTOs.Response.UserQuiz
 {
@@ -8,7 +8,7 @@ namespace UserAPI.DTOs.Response.UserQuiz
    public Guid UserId { get; set; }
         public Guid QuizId { get; set; }
         public Guid CourseId { get; set; }
-   public UserQuizzStatus Status { get; set; }
+   public UserQuizStatusEnum Status { get; set; }
    public int AttemptCount { get; set; }
 public double? BestScore { get; set; }
         public DateTime? FirstAttemptAt { get; set; }

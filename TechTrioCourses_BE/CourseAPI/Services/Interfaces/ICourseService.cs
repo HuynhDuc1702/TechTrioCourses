@@ -1,4 +1,4 @@
-﻿using CourseAPI.DTOs.Request;
+using CourseAPI.DTOs.Request;
 using CourseAPI.DTOs.Response;
 using static CourseAPI.DTOs.Response.CourseResponse;
 

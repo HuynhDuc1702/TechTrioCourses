@@ -3,10 +3,8 @@ using CategoryAPI.Repositories;
 using CategoryAPI.Repositories.Interfaces;
 using CategoryAPI.Services;
 using CategoryAPI.Services.Interfaces;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
+using TechTrioCourses.Shared.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,40 +20,11 @@ builder.Services.AddScoped<ICategoryRepo, CategoryRepo>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddAutoMapper(typeof(Program));
 
-// Add CORS
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowFrontend", policy =>
-    {
-     policy.WithOrigins("http://localhost:3000", "https://localhost:3000", "http://localhost:5173")
- .AllowAnyHeader()
-          .AllowAnyMethod()
-         .AllowCredentials();
-    });
-});
+// Add shared CORS configuration
+builder.Services.AddTechTrioCors();
 
-// Configure JWT Authentication
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(options =>
-{
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuer = true,
-     ValidateAudience = true,
-   ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-    ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
-        ValidAudience = builder.Configuration["JwtSettings:Audience"],
-IssuerSigningKey = new SymmetricSecurityKey(
-   Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Key"] ?? "DefaultKey"))
-    };
-});
-
-builder.Services.AddAuthorization();
+// Configure shared JWT Authentication
+builder.Services.AddTechTrioJwtAuthentication(builder.Configuration);
 
 var app = builder.Build();
 

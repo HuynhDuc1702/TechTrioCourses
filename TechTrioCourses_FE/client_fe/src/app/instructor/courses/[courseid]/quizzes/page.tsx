@@ -29,10 +29,6 @@ export default function QuizListPage() {
         try {
             setLoading(true);
             const data = await quizAPI.getQuizzesByCourseId(courseId);
-            console.log("Quiz data received:", data);
-            if (data.length > 0) {
-                console.log("First quiz status:", data[0].status, "Type:", typeof data[0].status);
-            }
             setQuizzes(data);
         } catch (error) {
             console.error("Failed to load quizzes", error);
@@ -83,7 +79,7 @@ export default function QuizListPage() {
                     <h1 className="text-3xl font-bold text-gray-900">Quizzes</h1>
                     <div className="ml-auto">
                         <Link
-                            href={`/instructor/courses/${courseId}/quizzes/create`}
+                            href={`/instructor/courses/${courseId}/quizzes/Create`}
                             className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition inline-block"
                         >
                             + Create Quiz

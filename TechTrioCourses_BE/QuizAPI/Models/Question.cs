@@ -1,4 +1,4 @@
-﻿using QuizAPI.Enums;
+using TechTrioCourses.Shared.Enums;
 using System;
 using System.Collections.Generic;
 
@@ -16,7 +16,7 @@ public partial class Question
 
     public QuestionTypeEnum QuestionType { get; set; }
 
-    public QuestionStatusEnum Status { get; set; }
+    public PublishStatusEnum Status { get; set; }
 
     public double Points { get; set; }
 

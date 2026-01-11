@@ -31,20 +31,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Helper to sync user state across storage and cookies
+
   const syncUserSession = (userData: User, refreshTokenExpiresAt?: string) => {
-    // 1. Update State
+   
     setUser(userData);
 
-    // 2. Update LocalStorage
+  
     localStorage.setItem('user', JSON.stringify(userData));
 
 
-    // 3. Update Cookies
-    // Try to get existing expiration from stored refresh token expiry, or default to 7 days
+ 
 
     const refreshTokenExpiresAtStr = Cookies.get('refreshTokenExpiresAt');
-    let expiresOpt: Date | number = 7; // Default fallback
+    let expiresOpt: Date | number = 7; 
 
     if (refreshTokenExpiresAtStr) {
       expiresOpt = new Date(refreshTokenExpiresAtStr);
@@ -104,9 +103,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (email: string, password: string) => {
     try {
-      console.log('🔍 [DEBUG] Login attempt:', { email });
+      console.log('DEBUG] Login attempt:', { email });
       const authResult: AuthResult = await accountService.login({ email, password });
-      console.log('✅ [DEBUG] Login successful, tokens received');
+      console.log('DEBUG] Login successful, tokens received');
 
       // Decode JWT to get accountId
       const tokenPayload = JSON.parse(atob(authResult.accessToken.split('.')[1]));
@@ -115,12 +114,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         tokenPayload.accountId ||
         tokenPayload.nameid ||
         tokenPayload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'];
-      console.log('🔍 [DEBUG] Token payload:', tokenPayload);
-      console.log('🔍 [DEBUG] Decoded accountId from token:', accountId);
+      console.log('[DEBUG] Token payload:', tokenPayload);
+      console.log('[DEBUG] Decoded accountId from token:', accountId);
 
       // After login, fetch user details
       const userInfo = await userAPI.getUserByAccountId(accountId);
-      console.log('✅ [DEBUG] User info fetched:', userInfo);
+      console.log('[DEBUG] User info fetched:', userInfo);
 
       const userData: User = {
         accountId: userInfo.accountId,
@@ -132,14 +131,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         createdAt: userInfo.createdAt,
       };
 
-      console.log('🔍 [DEBUG] Setting user data:', userData);
+      console.log('[DEBUG] Setting user data:', userData);
 
       syncUserSession(userData, authResult.refreshTokenExpiresAt);
 
-      console.log('✅ [DEBUG] Login complete, user data saved');
+      console.log('[DEBUG] Login complete, user data saved');
     } catch (error: any) {
-      console.error('❌ [DEBUG] Login error:', error);
-      console.error('❌ [DEBUG] Error response:', error.response?.data);
+      console.error('[DEBUG] Login error:', error);
+      console.error('[DEBUG] Error response:', error.response?.data);
       throw error;
     }
   };

@@ -1,5 +1,5 @@
-﻿using CourseAPI.Models;
-using CourseAPI.Enums;
+using CourseAPI.Models;
+using TechTrioCourses.Shared.Enums;
 
 namespace CourseAPI.DTOs.Response
 {
@@ -12,7 +12,7 @@ namespace CourseAPI.DTOs.Response
             public string? Description { get; set; }
             public Guid? CategoryId { get; set; }
             public Guid? CreatorId { get; set; }
-            public CourseStatusEnum Status { get; set; }
+            public PublishStatusEnum Status { get; set; }
 
             public DateTime? CreatedAt { get; set; }
             public DateTime? UpdatedAt { get; set; }

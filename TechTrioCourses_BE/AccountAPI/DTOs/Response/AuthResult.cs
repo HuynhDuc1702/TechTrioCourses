@@ -1,5 +1,5 @@
-﻿using AccountAPI.Models;
-using AccountAPI.Enums;
+using AccountAPI.Models;
+
 
 namespace AccountAPI.DTOs.Response
 {

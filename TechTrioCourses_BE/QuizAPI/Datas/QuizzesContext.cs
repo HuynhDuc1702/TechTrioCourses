@@ -1,7 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
-using QuizAPI.Enums;
+using TechTrioCourses.Shared.Enums;
 using QuizAPI.Models;
 
 namespace QuizAPI.Datas;
@@ -57,7 +57,7 @@ public partial class QuizzesContext : DbContext
             .HasColumnName("question_type");
             entity.Property(e => e.Status)
              .HasConversion<short>()
-                .HasDefaultValue(QuestionStatusEnum.Hidden)
+                .HasDefaultValue(PublishStatusEnum.Hidden)
                 .HasColumnName("status");
             entity.Property(e => e.UpdatedAt)
                 .HasDefaultValueSql("(CURRENT_TIMESTAMP AT TIME ZONE 'UTC'::text)")
@@ -140,7 +140,7 @@ public partial class QuizzesContext : DbContext
                 .HasColumnName("name");
             entity.Property(e => e.Status)
                  .HasConversion<short>()
-                .HasDefaultValue(QuizzStatusEnum.Hidden)
+                .HasDefaultValue(PublishStatusEnum.Hidden)
                 .HasColumnName("status");
             entity.Property(e => e.TotalMarks).HasColumnName("total_marks");
             entity.Property(e => e.UpdatedAt)

@@ -1,6 +1,6 @@
-﻿using AutoMapper;
+using AutoMapper;
 using CourseAPI.DTOs;
-using CourseAPI.Enums;
+using TechTrioCourses.Shared.Enums;
 using static CourseAPI.DTOs.Response.CourseResponse;
 using CourseAPI.DTOs.Request;
 using CourseAPI.DTOs.Response;

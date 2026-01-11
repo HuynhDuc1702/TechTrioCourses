@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using QuizAPI.DTOs.Request.Question;
 using QuizAPI.DTOs.Request.Quiz;
 using QuizAPI.DTOs.Request.QuestionChoice;

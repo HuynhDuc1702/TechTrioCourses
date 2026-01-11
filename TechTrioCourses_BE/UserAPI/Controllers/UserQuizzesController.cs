@@ -5,6 +5,7 @@ using UserAPI.DTOs.Request.UserQuiz;
 using UserAPI.DTOs.Response.UserQuiz;
 using UserAPI.Services;
 using UserAPI.Services.Interfaces;
+using TechTrioCourses.Shared.Enums;
 
 namespace UserAPI.Controllers
 {
@@ -59,7 +60,7 @@ namespace UserAPI.Controllers
 
             var userquizz = await _userQuizService.GetUserQuizByUserAndQuizAsync(user.Id, quizId);
 
-            return Ok(new { isPassed = userquizz != null && userquizz.Status == Enums.UserQuizzStatus.Passed });
+            return Ok(new { isPassed = userquizz != null && userquizz.Status == UserQuizStatusEnum.Passed });
         }
 
         // GET: api/UserQuizzes/by-user

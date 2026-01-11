@@ -1,6 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using UserAPI.Enums;
+using TechTrioCourses.Shared.Enums;
 
 namespace UserAPI.Models;
 
@@ -13,7 +13,7 @@ public partial class UserQuiz
     public Guid QuizId { get; set; }
     public Guid? CourseId { get; set; }
 
-    public UserQuizzStatus Status { get; set; }
+    public UserQuizStatusEnum Status { get; set; }
 
     public double? BestScore { get; set; }
 

@@ -1,18 +1,16 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 
-namespace UserAPI.Enums
+namespace TechTrioCourses.Shared.Enums
 {
-    public enum UserQuizzStatus
+    public enum UserQuizStatusEnum
     {
         [Description("Not_Started")]
         Not_Started = 1,
         [Description("In_progress")]
         In_progress = 2,
         [Description("Passed")]
-        Passed = 3,
+  Passed = 3,
         [Description("Failed")]
-        Failed = 4,
-
+        Failed = 4
     }
 }
-

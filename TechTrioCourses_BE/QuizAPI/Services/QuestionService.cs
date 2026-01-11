@@ -1,7 +1,7 @@
 using AutoMapper;
 using QuizAPI.DTOs.Request.Question;
 using QuizAPI.DTOs.Response.Question;
-using QuizAPI.Enums;
+using TechTrioCourses.Shared.Enums;
 using QuizAPI.Models;
 using QuizAPI.Repositories;
 using QuizAPI.Repositories.Interfaces;
@@ -105,12 +105,12 @@ namespace QuizAPI.Services
                 return false;
             }
 
-            if (existingQuestion.Status == QuestionStatusEnum.Hidden)
+            if (existingQuestion.Status == PublishStatusEnum.Hidden)
             {
                 return true; // Already disabled, no need to update
             }
 
-            existingQuestion.Status = QuestionStatusEnum.Hidden;
+            existingQuestion.Status = PublishStatusEnum.Hidden;
             existingQuestion.UpdatedAt = DateTime.UtcNow;
             var updatedQuestion = await _questionRepo.UpdateAsync(existingQuestion);
 
@@ -126,12 +126,12 @@ namespace QuizAPI.Services
                 return false;
             }
 
-            if (existingQuestion.Status == QuestionStatusEnum.Archived)
+            if (existingQuestion.Status == PublishStatusEnum.Archived)
             {
                 return true; // Already disabled, no need to update
             }
 
-            existingQuestion.Status = QuestionStatusEnum.Archived;
+            existingQuestion.Status = PublishStatusEnum.Archived;
             existingQuestion.UpdatedAt = DateTime.UtcNow;
             var updatedQuestion = await _questionRepo.UpdateAsync(existingQuestion);
 

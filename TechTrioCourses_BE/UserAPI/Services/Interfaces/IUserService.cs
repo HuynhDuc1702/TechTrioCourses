@@ -1,4 +1,4 @@
-﻿using UserAPI.DTOs.Request.User;
+using UserAPI.DTOs.Request.User;
 using UserAPI.DTOs.Response.User;
 
 namespace UserAPI.Services.Interfaces

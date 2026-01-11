@@ -1,10 +1,10 @@
-using UserAPI.Enums;
+using TechTrioCourses.Shared.Enums;
 
 namespace UserAPI.DTOs.Request.UserQuiz
 {
     public class UpdateUserQuizRequest
     {
-   public UserQuizzStatus? Status { get; set; }
+   public UserQuizStatusEnum? Status { get; set; }
   public int? AttemptCount { get; set; }
      public double? BestScore { get; set; }
         public DateTime? FirstAttemptAt { get; set; }

@@ -1,4 +1,4 @@
-using CourseAPI.Enums;
+using TechTrioCourses.Shared.Enums;
 
 namespace CourseAPI.DTOs.Response
 {
@@ -9,7 +9,7 @@ namespace CourseAPI.DTOs.Response
         public string Name { get; set; } = null!;
         public string? Description { get; set; }
   public double TotalMarks { get; set; }
-        public QuizzStatusEnum Status { get; set; }
+        public PublishStatusEnum Status { get; set; }
         public double DurationMinutes { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }

@@ -1,6 +1,6 @@
-﻿using AccountAPI.Models;
+using AccountAPI.Models;
 using AutoMapper;
-using AccountAPI.Enums;
+using TechTrioCourses.Shared.Enums;
 using AccountAPI.DTOs.Request;
 using AccountAPI.DTOs.Response;
 

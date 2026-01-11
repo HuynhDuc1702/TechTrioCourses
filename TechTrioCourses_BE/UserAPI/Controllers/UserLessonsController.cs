@@ -4,6 +4,7 @@ using System.Security.Claims;
 using UserAPI.DTOs.Request.UserLesson;
 using UserAPI.DTOs.Response.UserLesson;
 using UserAPI.Services.Interfaces;
+using TechTrioCourses.Shared.Enums;
 
 namespace UserAPI.Controllers
 {
@@ -124,7 +125,7 @@ namespace UserAPI.Controllers
 
             var userLesson = await _userLessonService.GetUserLessonByUserAndLessonAsync(user.Id, lessonId);
 
-            return Ok(new { isCompleted = userLesson != null && userLesson.Status == Enums.UserLessonStatus.Completed });
+            return Ok(new { isCompleted = userLesson != null && userLesson.Status == UserLessonStatusEnum.Completed });
         }
 
         // POST: api/UserLessons (Creates as completed)

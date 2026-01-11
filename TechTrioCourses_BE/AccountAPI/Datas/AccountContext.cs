@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using AccountAPI.Enums;
+
 using AccountAPI.Models;
 using Microsoft.EntityFrameworkCore;
+using TechTrioCourses.Shared.Enums;
 
 namespace AccountAPI.Datas;
 

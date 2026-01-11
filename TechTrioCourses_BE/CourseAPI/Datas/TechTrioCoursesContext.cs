@@ -1,6 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using CourseAPI.Enums;
+using TechTrioCourses.Shared.Enums;
 using CourseAPI.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -41,7 +41,7 @@ public partial class TechTrioCoursesContext : DbContext
             entity.Property(e => e.Description).HasColumnName("description");
             entity.Property(e => e.Status)
                  .HasConversion<short>()
-                .HasDefaultValue(CourseStatusEnum.Hidden)
+                .HasDefaultValue(PublishStatusEnum.Hidden)
                 .HasColumnName("status");
             entity.Property(e => e.Title)
                 .HasMaxLength(200)

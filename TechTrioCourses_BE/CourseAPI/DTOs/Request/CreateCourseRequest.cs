@@ -1,4 +1,4 @@
-﻿using CourseAPI.Enums;
+using TechTrioCourses.Shared.Enums;
 
 namespace CourseAPI.DTOs.Request
 {
@@ -8,7 +8,7 @@ namespace CourseAPI.DTOs.Request
         public string? Description { get; set; }
         public Guid? CategoryId { get; set; }
         public Guid? CreatorId { get; set; }
-        public CourseStatusEnum Status { get; set; }
+        public PublishStatusEnum Status { get; set; }
     }
 }
     
