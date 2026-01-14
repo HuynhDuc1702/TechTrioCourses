@@ -11,9 +11,9 @@ export interface UserQuizzeResultCreateRequest {
   userId: string;
   courseId: string;
   quizId: string;
-  attemptNumber: number;
-  userquizzeResultStatus: UserQuizzeResultStatusEnum;
-  metadata?: string;
+  userQuizId: string;
+ 
+
 }
 export interface UserQuizzeResultUpdateRequest {
 
@@ -28,13 +28,13 @@ export interface UserQuizzeResultResponse {
   userId: string;
   courseId: string;
   quizId: string;
-  score?: number;
+  score?: number | null;
   userquizzeResultStatus: UserQuizzeResultStatusEnum;
   attemptNumber: number;
   metadata?: string;
   startedAt: string;
-  completedAt: string;
-  durationSeconds?: number;
+  completedAt?: string | null; 
+  durationSeconds?: number | null;
   updatedAt: string;
 }
 // ==================== USER QUIZ API ====================
@@ -92,6 +92,29 @@ export const userQuizzeResultsAPI = {
     );
     return response.data;
   },
+
+  /**
+   * Get user quizze result by userQuiz ID
+   * GET: /api/UserQuizzeResults/by-course/{courseId}
+   */
+  getUserQuizzeResultsByUserQuizId: async (userQuizId: string): Promise<UserQuizzeResultResponse[]> => {
+    const response = await userAxios.get<UserQuizzeResultResponse[]>(
+      API_ENDPOINTS.USER_QUIZZE_RESULTS.BY_USER_QUIZ(userQuizId)
+    );
+    return response.data;
+  },
+  
+  /**
+   * Get latest user quizze result by userQuiz ID
+   * GET: /api/UserQuizzeResults/by-course/{courseId}
+   */
+  getLatestUserQuizzeResultByUserQuizId: async (userQuizId: string): Promise<UserQuizzeResultResponse> => {
+    const response = await userAxios.get<UserQuizzeResultResponse>(
+      API_ENDPOINTS.USER_QUIZZE_RESULTS.GET_LATEST(userQuizId)
+    );
+    return response.data;
+  },
+
 
   /**
    * Get user quizze result by user and quiz

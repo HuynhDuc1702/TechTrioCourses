@@ -1,4 +1,5 @@
 using AutoMapper;
+using TechTrioCourses.Shared.Enums;
 using UserAPI.DTOs.Request.UserQuizzeResult;
 using UserAPI.DTOs.Response.UserQuizzeResult;
 using UserAPI.Models;
@@ -52,9 +53,27 @@ namespace UserAPI.Services
             return _mapper.Map<IEnumerable<UserQuizzeResultResponse>>(results);
         }
 
+        public async Task<IEnumerable<UserQuizzeResultResponse>> GetQuizzeResultsByUserQuizIdAsync(Guid userQuizId)
+        {
+            var results = await _quizzeResultRepo.GetByUserQuizIdAsync(userQuizId);
+            return _mapper.Map<IEnumerable<UserQuizzeResultResponse>>(results);
+        }
+        public async Task<UserQuizzeResultResponse> GetLatestUserQuizzeResult(Guid userQuizId)
+        {
+            var results = await _quizzeResultRepo.GetLatestByUserQuizIdAsync(userQuizId);
+            return _mapper.Map<UserQuizzeResultResponse>(results);
+        }
+
         public async Task<UserQuizzeResultResponse> CreateQuizzeResultAsync(CreateUserQuizzeResultRequest request)
         {
+
             var quizzeResult = _mapper.Map<UserQuizzeResult>(request);
+            var latestQuizzeResult = await _quizzeResultRepo.GetLatestByUserQuizIdAsync(quizzeResult.UserQuizId);
+            quizzeResult.AttemptNumber =
+            latestQuizzeResult == null
+           ? 1
+           : latestQuizzeResult.AttemptNumber + 1;
+           
             var createdResult = await _quizzeResultRepo.CreateAsync(quizzeResult);
             return _mapper.Map<UserQuizzeResultResponse>(createdResult);
         }

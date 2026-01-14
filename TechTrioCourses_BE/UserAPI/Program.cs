@@ -1,7 +1,6 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
+using TechTrioCourses.Shared.Enums;
+using TechTrioCourses.Shared.Extensions;
 using UserAPI.Datas;
 using UserAPI.Repositories;
 using UserAPI.Repositories.Interfaces;
@@ -48,40 +47,11 @@ builder.Services.AddHttpClient("QuizAPI", client =>
     client.BaseAddress = new Uri(baseUrl);
 });
 
-// Add CORS
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowFrontend", policy =>
-    {
-        policy.WithOrigins("http://localhost:3000", "https://localhost:3000", "http://localhost:5173")
-              .AllowAnyHeader()
-        .AllowAnyMethod()
-     .AllowCredentials();
-    });
-});
+// Add CORS using shared extension
+builder.Services.AddTechTrioCors();
 
-// Configure JWT Authentication
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(options =>
-{
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
-        ValidAudience = builder.Configuration["JwtSettings:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(
-        Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Key"] ?? "DefaultKey"))
-    };
-});
-
-builder.Services.AddAuthorization();
+// Configure JWT Authentication using shared extension
+builder.Services.AddTechTrioJwtAuthentication(builder.Configuration);
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

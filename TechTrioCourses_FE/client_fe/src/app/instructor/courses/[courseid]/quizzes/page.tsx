@@ -79,7 +79,7 @@ export default function QuizListPage() {
                     <h1 className="text-3xl font-bold text-gray-900">Quizzes</h1>
                     <div className="ml-auto">
                         <Link
-                            href={`/instructor/courses/${courseId}/quizzes/Create`}
+                            href={`/instructor/courses/${courseId}/quizzes/create`}
                             className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition inline-block"
                         >
                             + Create Quiz

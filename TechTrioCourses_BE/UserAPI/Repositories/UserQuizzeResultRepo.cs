@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using TechTrioCourses.Shared.Enums;
 using UserAPI.Datas;
 using UserAPI.Models;
 using UserAPI.Repositories.Interfaces;
@@ -28,7 +29,7 @@ namespace UserAPI.Repositories
         {
             return await _context.UserQuizzeResults
             .Where(qr => qr.UserId == userId)
-            .OrderByDescending(qr => qr.StartedAt)
+            .OrderByDescending(qr => qr.AttemptNumber)
             .ToListAsync();
         }
 
@@ -36,7 +37,7 @@ namespace UserAPI.Repositories
         {
             return await _context.UserQuizzeResults
             .Where(qr => qr.QuizId == quizId)
-           .OrderByDescending(qr => qr.StartedAt)
+           .OrderByDescending(qr => qr.AttemptNumber)
                 .ToListAsync();
         }
 
@@ -48,11 +49,28 @@ namespace UserAPI.Repositories
                    .ToListAsync();
         }
 
+        public async Task<IEnumerable<UserQuizzeResult>> GetByUserQuizIdAsync(Guid userQuizId)
+        {
+            return await _context.UserQuizzeResults
+     .Where(qr => qr.UserQuizId == userQuizId)
+             .OrderByDescending(qr => qr.AttemptNumber)
+         .ToListAsync();
+        }
+        public async Task<UserQuizzeResult?> GetLatestByUserQuizIdAsync(Guid userQuizId)
+        {
+            return await _context.UserQuizzeResults
+                .Where(qr => qr.UserQuizId == userQuizId)
+                .OrderByDescending(qr => qr.AttemptNumber)
+                .FirstOrDefaultAsync();
+        }
+
+
         public async Task<UserQuizzeResult> CreateAsync(UserQuizzeResult quizzeResult)
         {
             quizzeResult.Id = Guid.NewGuid();
             quizzeResult.StartedAt = DateTime.UtcNow;
             quizzeResult.UpdatedAt = DateTime.UtcNow;
+            quizzeResult.Status = UserQuizResultStatusEnum.In_progress;
 
             _context.UserQuizzeResults.Add(quizzeResult);
             await _context.SaveChangesAsync();

@@ -13,13 +13,14 @@ export default function ProfilePage() {
     useEffect(() => {
         // Redirect if not authenticated and loading is done
         if (!loading && !isAuthenticated) {
-            router.push('/login');
+            router.push('/auth/login');
         }
     }, [loading, isAuthenticated, router]);
 
     const handleLogout = () => {
         logout();
-        router.push('auth/login');
+        router.push('/auth/login');
+        
     };
 
     const getRoleName = (role: number): string => {

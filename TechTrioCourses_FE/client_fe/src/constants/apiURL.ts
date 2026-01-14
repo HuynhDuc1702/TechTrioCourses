@@ -62,6 +62,7 @@ export const API_ENDPOINTS = {
         BY_USER_AND_QUIZ: (quizId: string) => `/api/UserQuizzes/by-user-and-quiz/${quizId}`,
         BY_USER_AND_COURSE: (courseId: string) => `/api/UserQuizzes/by-user-and-course/${courseId}`,
         IS_PASSED: (quizId: string) => `/api/UserQuizzes/is-passed/${quizId}`,
+        RETAKE: (id: string) => `/api/UserQuizzes/retake/${id}`,
     },
 
     CATEGORIES: {
@@ -88,14 +89,14 @@ export const API_ENDPOINTS = {
     USER_SELECTED_CHOICES: {
         BASE: '/api/UserSelectedChoices',
         GET_BY_ID: (id: string) => `/api/UserSelectedChoices/${id}`,
-        BY_RESULT: (resultId: string) => `/api/UserSelectedChoices/result/${resultId}`,
-        BY_RESULT_AND_QUESTION: (resultId: string, questionId: string) => `/api/UserSelectedChoices/result/${resultId}/question/${questionId}`,
+        BY_RESULT: (resultId: string) => `/api/UserSelectedChoices/by-result/${resultId}`,
+        BY_RESULT_AND_QUESTION: (resultId: string, questionId: string) => `/api/UserSelectedChoices/by-result/${resultId}/by-question/${questionId}`,
     },
     USER_INPUT_ANSWERS: {
         BASE: '/api/UserInputAnswers',
         GET_BY_ID: (id: string) => `/api/UserInputAnswers/${id}`,
-        BY_RESULT: (resultId: string) => `/api/UserInputAnswers/result/${resultId}`,
-        BY_RESULT_AND_QUESTION: (resultId: string, questionId: string) => `/api/UserInputAnswers/result/${resultId}/question/${questionId}`,
+        BY_RESULT: (resultId: string) => `/api/UserInputAnswers/by-result/${resultId}`,
+        BY_RESULT_AND_QUESTION: (resultId: string, questionId: string) => `/api/UserInputAnswers/by-result/${resultId}/by-question/${questionId}`,
     },
     USER_QUIZZE_RESULTS: {
         BASE: '/api/UserQuizzeResults',
@@ -105,5 +106,8 @@ export const API_ENDPOINTS = {
         BY_COURSE: (courseId: string) => `/api/UserQuizzeResults/by-course/${courseId}`,
         BY_USER_AND_QUIZ: (quizId: string) => `/api/UserQuizzeResults/by-user-and-quiz/${quizId}`,
         BY_USER_AND_COURSE: (courseId: string) => `/api/UserQuizzeResults/by-user-and-course/${courseId}`,
+        BY_USER_QUIZ: (userQuizId: string) => `/api/UserQuizzeResults/by-user-quiz/${userQuizId}`,
+        GET_LATEST: (userQuizId: string) => `/api/UserQuizzeResults/get-latest/${userQuizId}`,
     },
+
 }

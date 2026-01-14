@@ -1,10 +1,10 @@
-using UserAPI.Enums;
+using TechTrioCourses.Shared.Enums;
 
 namespace UserAPI.DTOs.Request.UserLesson
 {
     public class UpdateUserLessonRequest
     {
-        public UserLessonStatus? Status { get; set; }
+        public UserLessonStatusEnum? Status { get; set; }
         public DateTime? CompletedAt { get; set; }
     }
 }

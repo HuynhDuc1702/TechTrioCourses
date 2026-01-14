@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
-using UserAPI.Enums;
+using TechTrioCourses.Shared.Enums;
 using UserAPI.Models;
 
 namespace UserAPI.Datas;
@@ -76,7 +76,7 @@ public partial class TechTrioUsersContext : DbContext
             entity.Property(e => e.Progress).HasColumnName("progress");
             entity.Property(e => e.Status)
                 .HasConversion<short>()
-                .HasDefaultValue(UserCourseStatus.In_progress)
+                .HasDefaultValue(UserCourseStatusEnum.In_progress)
                 .HasColumnName("status");
             entity.Property(e => e.UpdatedAt)
                 .HasDefaultValueSql("(CURRENT_TIMESTAMP AT TIME ZONE 'UTC'::text)")
@@ -105,7 +105,7 @@ public partial class TechTrioUsersContext : DbContext
             entity.Property(e => e.CourseId).HasColumnName("course_id");
             entity.Property(e => e.Status)
                .HasConversion<short>()
-                .HasDefaultValue(UserLessonStatus.Not_Started)
+                .HasDefaultValue(UserLessonStatusEnum.Not_Started)
                 .HasColumnName("status");
             entity.Property(e => e.UpdatedAt)
                 .HasDefaultValueSql("(CURRENT_TIMESTAMP AT TIME ZONE 'UTC'::text)")
@@ -118,15 +118,16 @@ public partial class TechTrioUsersContext : DbContext
 
             entity.ToTable("user_quizze_results");
 
-            entity.HasIndex(e => e.CourseId, "idx_results_course");
-
-            entity.HasIndex(e => e.QuizId, "idx_results_quiz");
-
-            entity.HasIndex(e => e.UserId, "idx_results_user");
+            entity.HasIndex(e => e.CourseId, "idx_uqr_course");
+            entity.HasIndex(e => e.QuizId, "idx_uqr_quiz");
+            entity.HasIndex(e => e.UserId, "idx_uqr_user");
+            entity.HasIndex(e => e.UserQuizId, "idx_uqr_user_quiz");
+            entity.HasIndex(e => e.CompletedAt, "idx_uqr_completed_at");
 
             entity.Property(e => e.Id)
                 .HasDefaultValueSql("uuid_generate_v4()")
                 .HasColumnName("id");
+            entity.Property(e => e.UserQuizId).HasColumnName("user_quiz_id");
             entity.Property(e => e.AttemptNumber)
                 .HasDefaultValue(1)
                 .HasColumnName("attempt_number");
@@ -147,12 +148,19 @@ public partial class TechTrioUsersContext : DbContext
                 .HasColumnName("started_at");
             entity.Property(e => e.Status)
                .HasConversion<short>()
-                .HasDefaultValue(UserQuizzeResultStatusEnum.In_progress)
+                .HasDefaultValue(UserQuizResultStatusEnum.In_progress)
                 .HasColumnName("status");
             entity.Property(e => e.UpdatedAt)
                 .HasDefaultValueSql("(CURRENT_TIMESTAMP AT TIME ZONE 'UTC'::text)")
                 .HasColumnName("updated_at");
             entity.Property(e => e.UserId).HasColumnName("user_id");
+
+            // Configure foreign key relationship to UserQuiz
+            entity.HasOne<UserQuiz>()
+                .WithMany()
+                .HasForeignKey(e => e.UserQuizId)
+                .HasConstraintName("fk_result_user_quiz")
+                .OnDelete(DeleteBehavior.Cascade);
         });
         modelBuilder.Entity<UserInputAnswer>(entity =>
         {
@@ -233,7 +241,7 @@ public partial class TechTrioUsersContext : DbContext
             entity.Property(e => e.QuizId).HasColumnName("quiz_id");
             entity.Property(e => e.Status)
                 .HasConversion<short>()
-                .HasDefaultValue(UserQuizzStatus.Not_Started)
+                .HasDefaultValue(UserQuizStatusEnum.Not_Started)
                 .HasColumnName("status");
             entity.Property(e => e.UpdatedAt)
                 .HasDefaultValueSql("(CURRENT_TIMESTAMP AT TIME ZONE 'UTC'::text)")
