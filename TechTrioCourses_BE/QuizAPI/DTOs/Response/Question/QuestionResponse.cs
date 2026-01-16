@@ -1,4 +1,4 @@
-using QuizAPI.Enums;
+using TechTrioCourses.Shared.Enums;
 
 namespace QuizAPI.DTOs.Response.Question
 {
@@ -9,7 +9,7 @@ namespace QuizAPI.DTOs.Response.Question
         public Guid CourseId { get; set; }
         public string QuestionText { get; set; } = null!;
         public QuestionTypeEnum QuestionType { get; set; }
-        public QuestionStatusEnum Status { get; set; }
+        public PublishStatusEnum Status { get; set; }
         public double Points { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }

@@ -1,4 +1,4 @@
-﻿namespace AccountAPI.DTOs.Response
+namespace AccountAPI.DTOs.Response
 {
     public class AccountResponse
     {

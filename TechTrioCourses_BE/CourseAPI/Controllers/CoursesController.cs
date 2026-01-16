@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -24,9 +24,10 @@ namespace CourseAPI.Controllers
             _coursesService = coursesService;
         }
 
+    
         // GET: api/Courses
         [HttpGet]
-        
+
         public async Task<ActionResult<IEnumerable<CourseResponse>>> GetCourses()
         {
             var courses = await _coursesService.GetAllCoursesAsync();

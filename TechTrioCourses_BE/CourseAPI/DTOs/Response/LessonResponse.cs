@@ -1,3 +1,5 @@
+using TechTrioCourses.Shared.Enums;
+
 namespace CourseAPI.DTOs.Response
 {
     public class LessonResponse
@@ -9,7 +11,7 @@ namespace CourseAPI.DTOs.Response
         public string? MediaUrl { get; set; }
         public int? MediaType { get; set; }
       public int? OrderIndex { get; set; }
-        public int Status { get; set; }
+        public PublishStatusEnum Status { get; set; }
         public DateTime CreatedAt { get; set; }
      public DateTime UpdatedAt { get; set; }
     }

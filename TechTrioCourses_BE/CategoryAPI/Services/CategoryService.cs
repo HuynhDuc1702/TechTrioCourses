@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using CategoryAPI.Datas;
 using CategoryAPI.DTOs.Request;
 using CategoryAPI.DTOs.Response;

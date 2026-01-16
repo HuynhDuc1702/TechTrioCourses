@@ -1,6 +1,6 @@
-﻿using AccountAPI.DTOs.Request;
+using AccountAPI.DTOs.Request;
 using AccountAPI.DTOs.Response;
-using AccountAPI.Enums;
+
 using AccountAPI.Models;
 using AccountAPI.Repositories.Interfaces;
 using AccountAPI.Services.Interfaces;
@@ -12,6 +12,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using TechTrioCourses.Shared.Enums;
 
 namespace AccountAPI.Services
 {

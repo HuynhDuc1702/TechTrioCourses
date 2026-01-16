@@ -1,11 +1,14 @@
-// API URLs for microservices architecture
-export const API_URLS = {
-    ACCOUNT: process.env.NEXT_PUBLIC_ACCOUNT_API_URL || "https://localhost:7240",
-    COURSE: process.env.NEXT_PUBLIC_COURSE_API_URL || "https://localhost:7102",
-    USER: process.env.NEXT_PUBLIC_USER_API_URL || "https://localhost:7012",
-    CATEGORY: process.env.NEXT_PUBLIC_CATEGORY_API_URL || "https://localhost:7273",
-    LESSON: process.env.NEXT_PUBLIC_LESSON_API_URL || "https://localhost:7088",
+// API Gateway - Single entry point for all backend services
+export const API_URL = process.env.NEXT_PUBLIC_API_GATEWAY_URL || "https://localhost:5000";
 
+// API URLs for microservices (all now route through gateway)
+export const API_URLS = {
+    ACCOUNT: API_URL,
+    COURSE: API_URL,
+    USER: API_URL,
+    CATEGORY: API_URL,
+    LESSON: API_URL,
+    QUIZ: API_URL,
 }
 
 // API endpoints (paths only, base URL comes from API_URLS)
@@ -58,6 +61,8 @@ export const API_ENDPOINTS = {
         BY_COURSE: (courseId: string) => `/api/UserQuizzes/by-course/${courseId}`,
         BY_USER_AND_QUIZ: (quizId: string) => `/api/UserQuizzes/by-user-and-quiz/${quizId}`,
         BY_USER_AND_COURSE: (courseId: string) => `/api/UserQuizzes/by-user-and-course/${courseId}`,
+        IS_PASSED: (quizId: string) => `/api/UserQuizzes/is-passed/${quizId}`,
+        RETAKE: (id: string) => `/api/UserQuizzes/retake/${id}`,
     },
 
     CATEGORIES: {
@@ -66,4 +71,43 @@ export const API_ENDPOINTS = {
     LESSONS: {
         BASE: '/api/Lessons',
     },
+    QUIZZES: {
+        BASE: '/api/Quizzes',
+    },
+    QUESTIONS: {
+        BASE: '/api/Questions',
+    },
+    QUESTION_CHOICES: {
+        BASE: '/api/QuestionChoices',
+    },
+    QUESTION_ANSWERS: {
+        BASE: '/api/QuestionAnswers',
+    },
+    QUIZ_QUESTIONS: {
+        BASE: '/api/QuizQuestions',
+    },
+    USER_SELECTED_CHOICES: {
+        BASE: '/api/UserSelectedChoices',
+        GET_BY_ID: (id: string) => `/api/UserSelectedChoices/${id}`,
+        BY_RESULT: (resultId: string) => `/api/UserSelectedChoices/by-result/${resultId}`,
+        BY_RESULT_AND_QUESTION: (resultId: string, questionId: string) => `/api/UserSelectedChoices/by-result/${resultId}/by-question/${questionId}`,
+    },
+    USER_INPUT_ANSWERS: {
+        BASE: '/api/UserInputAnswers',
+        GET_BY_ID: (id: string) => `/api/UserInputAnswers/${id}`,
+        BY_RESULT: (resultId: string) => `/api/UserInputAnswers/by-result/${resultId}`,
+        BY_RESULT_AND_QUESTION: (resultId: string, questionId: string) => `/api/UserInputAnswers/by-result/${resultId}/by-question/${questionId}`,
+    },
+    USER_QUIZZE_RESULTS: {
+        BASE: '/api/UserQuizzeResults',
+        GET_BY_ID: (id: string) => `/api/UserQuizzeResults/${id}`,
+        BY_USER: () => `/api/UserQuizzeResults/by-user`,
+        BY_QUIZ: (quizId: string) => `/api/UserQuizzeResults/by-quiz/${quizId}`,
+        BY_COURSE: (courseId: string) => `/api/UserQuizzeResults/by-course/${courseId}`,
+        BY_USER_AND_QUIZ: (quizId: string) => `/api/UserQuizzeResults/by-user-and-quiz/${quizId}`,
+        BY_USER_AND_COURSE: (courseId: string) => `/api/UserQuizzeResults/by-user-and-course/${courseId}`,
+        BY_USER_QUIZ: (userQuizId: string) => `/api/UserQuizzeResults/by-user-quiz/${userQuizId}`,
+        GET_LATEST: (userQuizId: string) => `/api/UserQuizzeResults/get-latest/${userQuizId}`,
+    },
+
 }

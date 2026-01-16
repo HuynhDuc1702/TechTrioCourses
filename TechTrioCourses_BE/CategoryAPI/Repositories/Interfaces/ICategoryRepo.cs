@@ -1,4 +1,4 @@
-﻿using CategoryAPI.Models;
+using CategoryAPI.Models;
 
 namespace CategoryAPI.Repositories.Interfaces
 {

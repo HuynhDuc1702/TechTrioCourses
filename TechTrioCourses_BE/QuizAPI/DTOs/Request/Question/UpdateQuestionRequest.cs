@@ -1,4 +1,4 @@
-using QuizAPI.Enums;
+using TechTrioCourses.Shared.Enums;
 
 namespace QuizAPI.DTOs.Request.Question
 {
@@ -6,7 +6,7 @@ namespace QuizAPI.DTOs.Request.Question
     {
         public string? QuestionText { get; set; }
         public QuestionTypeEnum? QuestionType { get; set; }
-        public QuestionStatusEnum? Status { get; set; }
+        public PublishStatusEnum? Status { get; set; }
         public double? Points { get; set; }
     }
 }

@@ -1,4 +1,4 @@
-﻿using CourseAPI.Enums;
+using TechTrioCourses.Shared.Enums;
 using System;
 using System.Collections.Generic;
 
@@ -16,7 +16,7 @@ public partial class Course
 
     public Guid? CreatorId { get; set; }
 
-    public CourseStatusEnum Status { get; set; }
+    public PublishStatusEnum Status { get; set; }
 
     public DateTime? CreatedAt { get; set; }
 

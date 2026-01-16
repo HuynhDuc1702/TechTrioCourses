@@ -1,6 +1,6 @@
-﻿using AutoMapper;
+using AutoMapper;
 using LessonAPI.DTOs;
-using LessonAPI.Enums;
+using TechTrioCourses.Shared.Enums;
 using static LessonAPI.DTOs.Response.LessonResponse;
 using LessonAPI.DTOs.Request;
 using LessonAPI.DTOs.Response;

@@ -1,11 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using QuizAPI.DTOs.Request.Question;
 using QuizAPI.DTOs.Response.Question;
+using QuizAPI.Services;
 using QuizAPI.Services.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace QuizAPI.Controllers
 {
@@ -41,6 +42,19 @@ namespace QuizAPI.Controllers
 
             return Ok(question);
         }
+        // GET: api/Questions/5
+        [HttpGet("course/{courseId}")]
+        public async Task<ActionResult<QuestionResponse>> GetQuestionsByCourseId(Guid courseId)
+        {
+            var questions = await _questionService.GetQuestionCourseIdAsync(courseId);
+
+            if (questions == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(questions);
+        }
 
         // PUT: api/Questions/5
         [HttpPut("{id}")]
@@ -69,6 +83,33 @@ namespace QuizAPI.Controllers
         public async Task<IActionResult> DeleteQuestion(Guid id)
         {
             var result = await _questionService.DeleteQuestionAsync(id);
+
+            if (!result)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
+        }
+        // PUT: api/Questions/5/disable
+        [HttpPut("{id}/disable")]
+        public async Task<IActionResult> DisableQuestion(Guid id)
+        {
+            var result = await _questionService.DisableQuestionAsync(id);
+
+            if (!result)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
+        }
+
+        // PUT: api/Questions/5/archive
+        [HttpPut("{id}/archive")]
+        public async Task<IActionResult> ArchiveQuestion(Guid id)
+        {
+            var result = await _questionService.ArchiveQuestionAsync(id);
 
             if (!result)
             {

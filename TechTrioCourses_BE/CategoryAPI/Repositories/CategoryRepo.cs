@@ -1,4 +1,4 @@
-﻿using CategoryAPI.Datas;
+using CategoryAPI.Datas;
 using CategoryAPI.Models;
 using CategoryAPI.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;

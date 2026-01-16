@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using TechTrioCourses.Shared.Enums;
 using UserAPI.Datas;
-using UserAPI.Enums;
 using UserAPI.Models;
 using UserAPI.Repositories.Interfaces;
 
@@ -37,16 +37,16 @@ namespace UserAPI.Repositories
             return await _context.Set<UserQuiz>()
            .Where(uq => uq.QuizId == quizId)
        .ToListAsync();
-   }
-
-        public async Task<IEnumerable<UserQuiz>> GetByCourseIdAsync(Guid courseId)
-    {
-  return await _context.Set<UserQuiz>()
-     .Where(uq => uq.CourseId == courseId)
-               .ToListAsync();
         }
 
- public async Task<IEnumerable<UserQuiz>> GetByUserAndCourseAsync(Guid userId, Guid courseId)
+        public async Task<IEnumerable<UserQuiz>> GetByCourseIdAsync(Guid courseId)
+        {
+            return await _context.Set<UserQuiz>()
+               .Where(uq => uq.CourseId == courseId)
+                         .ToListAsync();
+        }
+
+        public async Task<IEnumerable<UserQuiz>> GetByUserAndCourseAsync(Guid userId, Guid courseId)
         {
             return await _context.Set<UserQuiz>()
           .Where(uq => uq.UserId == userId && uq.CourseId == courseId)
@@ -55,15 +55,18 @@ namespace UserAPI.Repositories
 
         public async Task<UserQuiz?> GetByUserAndQuizAsync(Guid userId, Guid quizId)
         {
-     return await _context.Set<UserQuiz>()
-       .FirstOrDefaultAsync(uq => uq.UserId == userId && uq.QuizId == quizId);
-   }
+            return await _context.Set<UserQuiz>()
+              .FirstOrDefaultAsync(uq => uq.UserId == userId && uq.QuizId == quizId);
+        }
 
         public async Task<UserQuiz> CreateUserQuizAsync(UserQuiz userQuiz)
         {
             userQuiz.Id = Guid.NewGuid();
             userQuiz.UpdatedAt = DateTime.UtcNow;
-            userQuiz.Status = UserQuizzStatus.Not_Started;
+            userQuiz.FirstAttemptAt = DateTime.UtcNow;
+            userQuiz.LastAttemptAt = DateTime.UtcNow;
+            userQuiz.AttemptCount = 1;
+            userQuiz.Status = UserQuizStatusEnum.In_progress;
 
             _context.Set<UserQuiz>().Add(userQuiz);
             await _context.SaveChangesAsync();
@@ -71,44 +74,21 @@ namespace UserAPI.Repositories
             return userQuiz;
         }
 
-        public async Task<bool> UpdateUserQuizAsync(Guid userId, Guid quizId, Enums.UserQuizzStatus newStatus, double? score)
+        public async Task<bool> UpdateUserQuizAsync(UserQuiz userQuiz)
         {
-            var userQuiz = await _context.Set<UserQuiz>()
-                .FirstOrDefaultAsync(x => x.UserId == userId && x.QuizId == quizId);
+            var existingResult = await _context.UserQuizzes.FindAsync(userQuiz.Id);
 
-            if (userQuiz == null)
+
+            if (existingResult == null)
                 return false;
 
-            userQuiz.UpdatedAt = DateTime.UtcNow;
-            userQuiz.LastAttemptAt = DateTime.UtcNow;
+            existingResult.UpdatedAt = DateTime.UtcNow;
 
-            // Attempt logic
-            userQuiz.AttemptCount += 1;
-
-            if (score.HasValue)
-            {
-                if (!userQuiz.BestScore.HasValue || score > userQuiz.BestScore)
-                {
-                    userQuiz.BestScore = score;
-                }
-            }
-
-            // Status transition
-            if (newStatus == Enums.UserQuizzStatus.Passed)
-            {
-                if (userQuiz.Status != Enums.UserQuizzStatus.Passed)
-                {
-                    userQuiz.PassedAt = DateTime.UtcNow;
-                }
-            }
-            if (userQuiz.Status != UserQuizzStatus.Passed)
-            {
-                userQuiz.Status = newStatus;
-            }
-            ;
 
             return await _context.SaveChangesAsync() > 0;
         }
+       
+
 
 
         public async Task<bool> DeleteUserQuizAsync(Guid id)

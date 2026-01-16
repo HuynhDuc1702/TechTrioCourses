@@ -10,8 +10,8 @@ namespace UserAPI.Repositories.Interfaces
         Task<IEnumerable<UserCourse>> GetByCourseIdAsync(Guid courseId);
         Task<UserCourse?> GetByUserAndCourseAsync(Guid userId, Guid courseId);
         Task<UserCourse> CreateUserCourseAsync(UserCourse userCourse);
-  Task<bool> UpdateUserCourseAsync(UserCourse userCourse);
-    Task<bool> DeleteUserCourseAsync(Guid id);
-      Task<bool> UserCourseExistsAsync(Guid userId, Guid courseId);
+        Task<bool> UpdateUserCourseAsync(UserCourse userCourse);
+        Task<bool> DeleteUserCourseAsync(Guid id);
+        Task<bool> UserCourseExistsAsync(Guid userId, Guid courseId);
     }
 }

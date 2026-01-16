@@ -1,4 +1,4 @@
-﻿namespace CategoryAPI.DTOs.Request
+namespace CategoryAPI.DTOs.Request
 {
     public class UpdateCategoryRequest
     {

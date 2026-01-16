@@ -1,13 +1,14 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Azure;
 using CourseAPI.DTOs.Request;
 using CourseAPI.DTOs.Response;
-using CourseAPI.Enums;
+using TechTrioCourses.Shared.Enums;
 using CourseAPI.Models;
 using CourseAPI.Repositories.Interfaces;
 using CourseAPI.Services.Interfaces;
 using Microsoft.VisualBasic;
 using static CourseAPI.DTOs.Response.CourseResponse;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace CourseAPI.Services
 {
@@ -20,8 +21,9 @@ namespace CourseAPI.Services
         private readonly HttpClient _lessonAPIClient;
         private readonly HttpClient _quizAPIClient;
         private readonly ILogger<CourseService> _logger;
+        private readonly IMemoryCache _cache;
 
-        public CourseService(ICourseRepo coursesRepo, IMapper mapper, IHttpClientFactory httpClientFactory, ILogger<CourseService> logger)
+        public CourseService(ICourseRepo coursesRepo, IMapper mapper, IHttpClientFactory httpClientFactory, ILogger<CourseService> logger, IMemoryCache cache)
         {
             _coursesRepo = coursesRepo;
             _mapper = mapper;
@@ -30,6 +32,7 @@ namespace CourseAPI.Services
             _lessonAPIClient = httpClientFactory.CreateClient("LessonAPI");
             _quizAPIClient = httpClientFactory.CreateClient("QuizAPI");
             _logger = logger;
+            _cache = cache;
         }
 
         public async Task<IEnumerable<CourseResponse>> GetAllCoursesAsync()
@@ -62,6 +65,19 @@ namespace CourseAPI.Services
 
         private async Task PopulateLessonCountsAsync(List<CourseResponse> courses, List<Guid> courseIds)
         {
+            string cacheKey = "AllLessonCounts";
+
+            // Try to get from cache
+            if (_cache.TryGetValue(cacheKey, out Dictionary<Guid, int> cachedLessonCounts))
+            {
+                _logger.LogInformation("? Using cached lesson counts");
+                foreach (var course in courses)
+                {
+                    course.TotalLessons = cachedLessonCounts.TryGetValue(course.Id, out var count) ? count : 0;
+                }
+                return;
+            }
+
             try
             {
                 // Fetch all lessons
@@ -74,9 +90,17 @@ namespace CourseAPI.Services
                     {
                         // Group lessons by CourseId and count them
                         var lessonCounts = lessons
-                    .Where(l => courseIds.Contains(l.CourseId))
+                    .Where(l => courseIds.Contains(l.CourseId)
+                    && l.Status == PublishStatusEnum.Published)
                    .GroupBy(l => l.CourseId)
                      .ToDictionary(g => g.Key, g => g.Count());
+
+                        // Cache for 30 minutes
+                        var cacheOptions = new MemoryCacheEntryOptions
+                        {
+                            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30)
+                        };
+                        _cache.Set(cacheKey, lessonCounts, cacheOptions);
 
                         // Populate the TotalLessons for each course
                         foreach (var course in courses)
@@ -104,6 +128,19 @@ namespace CourseAPI.Services
 
         private async Task PopulateQuizCountsAsync(List<CourseResponse> courses, List<Guid> courseIds)
         {
+            string cacheKey = "AllQuizCounts";
+
+            // Try to get from cache
+            if (_cache.TryGetValue(cacheKey, out Dictionary<Guid, int> cachedQuizCounts))
+            {
+                _logger.LogInformation("? Using cached quiz counts");
+                foreach (var course in courses)
+                {
+                    course.TotalQuizzes = cachedQuizCounts.TryGetValue(course.Id, out var count) ? count : 0;
+                }
+                return;
+            }
+
             try
             {
                 // Fetch all quizzes
@@ -116,9 +153,17 @@ namespace CourseAPI.Services
                     {
                         // Group quizzes by CourseId and count them
                         var quizCounts = quizzes
-                         .Where(q => courseIds.Contains(q.CourseId))
+                         .Where(q => courseIds.Contains(q.CourseId)
+                                && q.Status == PublishStatusEnum.Published)
                              .GroupBy(q => q.CourseId)
                       .ToDictionary(g => g.Key, g => g.Count());
+
+                        // Cache for 30 minutes
+                        var cacheOptions = new MemoryCacheEntryOptions
+                        {
+                            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30)
+                        };
+                        _cache.Set(cacheKey, quizCounts, cacheOptions);
 
                         // Populate the TotalQuizzes for each course
                         foreach (var course in courses)
@@ -147,98 +192,148 @@ namespace CourseAPI.Services
         public async Task PopulateCategoryNameAsync(List<CourseResponse> courses)
         {
             var categoryIds = courses
-     .Where(c => c.CategoryId.HasValue)
-     .Select(c => c.CategoryId!.Value)
-         .Distinct()
-           .ToList();
+            .Where(c => c.CategoryId.HasValue)
+            .Select(c => c.CategoryId!.Value)
+             .Distinct()
+            .ToList();
 
             if (!categoryIds.Any())
             {
                 return;
             }
-            try
+
+            string cacheKey = "AllCategories";
+            Dictionary<Guid, string>? categoryMap = null;
+
+            // Try to get from cache first
+            if (_cache.TryGetValue(cacheKey, out Dictionary<Guid, string>? cachedCategories))
             {
-                var response = await _categoryAPIClient.PostAsJsonAsync("api/categories/get-by-ids", categoryIds);
-
-                if (response.IsSuccessStatusCode)
+                _logger.LogInformation("? Using cached categories");
+                categoryMap = cachedCategories;
+            }
+            else
+            {
+                try
                 {
-                    var categories = await response.Content.ReadFromJsonAsync<List<CategoryResponse>>();
-                    if (categories != null)
-                    {
-                        var categoryMap = categories.ToDictionary(c => c.Id, c => c.Name);
+                    var response = await _categoryAPIClient.PostAsJsonAsync("api/categories/get-by-ids", categoryIds);
 
-                        foreach (var course in courses)
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var categories = await response.Content.ReadFromJsonAsync<List<CategoryResponse>>();
+                        if (categories != null)
                         {
-                            if (course.CategoryId.HasValue && categoryMap.TryGetValue(course.CategoryId.Value, out var categoryName))
+                            categoryMap = categories.ToDictionary(c => c.Id, c => c.Name);
+
+                            // Cache for 30 minutes
+                            var cacheOptions = new MemoryCacheEntryOptions
                             {
-                                course.CategoryName = categoryName;
-                            }
+                                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30)
+                            };
+                            _cache.Set(cacheKey, categoryMap, cacheOptions);
+                            _logger.LogInformation("? Cached categories");
                         }
                     }
+                    else
+                    {
+                        _logger.LogWarning("Failed to fetch categories. Status: {StatusCode}, Reason: {Reason}",
+                                     response.StatusCode,
+                       response.ReasonPhrase);
+                    }
                 }
-                else
+                catch (HttpRequestException ex)
                 {
-                    _logger.LogWarning("Failed to fetch categories. Status: {StatusCode}, Reason: {Reason}",
-           response.StatusCode,
-                 response.ReasonPhrase);
+                    _logger.LogError(ex, "HTTP error occurred while fetching category data from CategoryAPI");
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Unexpected error occurred while populating category names");
                 }
             }
-            catch (HttpRequestException ex)
+
+            // Populate category names
+            if (categoryMap != null)
             {
-                _logger.LogError(ex, "HTTP error occurred while fetching category data from CategoryAPI");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Unexpected error occurred while populating category names");
+                foreach (var course in courses)
+                {
+                    if (course.CategoryId.HasValue && categoryMap.TryGetValue(course.CategoryId.Value, out var categoryName))
+                    {
+                        course.CategoryName = categoryName;
+                    }
+                }
             }
         }
 
         public async Task PopulateCreatorNameAsync(List<CourseResponse> courses)
         {
             var creatorIds = courses
-                .Where(c => c.CreatorId.HasValue)
-                     .Select(c => c.CreatorId!.Value)
-                  .Distinct()
-                 .ToList();
+          .Where(c => c.CreatorId.HasValue)
+       .Select(c => c.CreatorId!.Value)
+      .Distinct()
+          .ToList();
 
             if (!creatorIds.Any())
             {
                 return;
             }
-            try
+
+            string cacheKey = "AllCreators";
+            Dictionary<Guid, string>? userMap = null;
+
+            // Try to get from cache first
+            if (_cache.TryGetValue(cacheKey, out Dictionary<Guid, string>? cachedUsers))
             {
-                var response = await _userAPIClient.PostAsJsonAsync("api/Users/get-by-ids", creatorIds);
-
-                if (response.IsSuccessStatusCode)
+                _logger.LogInformation("? Using cached creators");
+                userMap = cachedUsers;
+            }
+            else
+            {
+                try
                 {
-                    var users = await response.Content.ReadFromJsonAsync<List<UserResponse>>();
-                    if (users != null)
-                    {
-                        var userMap = users.ToDictionary(c => c.Id, c => c.FullName);
+                    var response = await _userAPIClient.PostAsJsonAsync("api/Users/get-by-ids", creatorIds);
 
-                        foreach (var course in courses)
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var users = await response.Content.ReadFromJsonAsync<List<UserResponse>>();
+                        if (users != null)
                         {
-                            if (course.CreatorId.HasValue && userMap.TryGetValue(course.CreatorId.Value, out var creatorName))
+                            userMap = users.ToDictionary(c => c.Id, c => c.FullName);
+
+                            // Cache for 30 minutes
+                            var cacheOptions = new MemoryCacheEntryOptions
                             {
-                                course.CreatorName = creatorName;
-                            }
+                                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30)
+                            };
+                            _cache.Set(cacheKey, userMap, cacheOptions);
+                            _logger.LogInformation("? Cached creators");
                         }
                     }
+                    else
+                    {
+                        _logger.LogWarning("Failed to fetch users. Status: {StatusCode}, Reason: {Reason}",
+                          response.StatusCode,
+                         response.ReasonPhrase);
+                    }
                 }
-                else
+                catch (HttpRequestException ex)
                 {
-                    _logger.LogWarning("Failed to fetch users. Status: {StatusCode}, Reason: {Reason}",
-                  response.StatusCode,
-            response.ReasonPhrase);
+                    _logger.LogError(ex, "HTTP error occurred while fetching users data from UserAPI");
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Unexpected error occurred while populating creator names");
                 }
             }
-            catch (HttpRequestException ex)
+
+            // Populate creator names
+            if (userMap != null)
             {
-                _logger.LogError(ex, "HTTP error occurred while fetching users data from UserAPI");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Unexpected error occurred while populating creator names");
+                foreach (var course in courses)
+                {
+                    if (course.CreatorId.HasValue && userMap.TryGetValue(course.CreatorId.Value, out var creatorName))
+                    {
+                        course.CreatorName = creatorName;
+                    }
+                }
             }
         }
 
@@ -256,72 +351,155 @@ namespace CourseAPI.Services
             int totalLessons = 0;
             int totalQuizzes = 0;
 
-            // Fetch Category
-            try
+            // Fetch Category with caching
+            if (course.CategoryId.HasValue)
             {
-                var category = await _categoryAPIClient.GetFromJsonAsync<CategoryResponse>($"api/categories/{course.CategoryId}");
+                string categoryCacheKey = $"Category_{course.CategoryId.Value}";
+
+                if (!_cache.TryGetValue(categoryCacheKey, out CategoryResponse? category))
+                {
+                    try
+                    {
+                        category = await _categoryAPIClient.GetFromJsonAsync<CategoryResponse>($"api/categories/{course.CategoryId}");
+
+                        if (category != null)
+                        {
+                            var cacheOptions = new MemoryCacheEntryOptions
+                            {
+                                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30)
+                            };
+                            _cache.Set(categoryCacheKey, category, cacheOptions);
+                            _logger.LogInformation("? Cached category {CategoryId}", course.CategoryId);
+                        }
+                    }
+                    catch (HttpRequestException ex)
+                    {
+                        _logger.LogError(ex, "Failed to fetch category with ID {CategoryId} from CategoryAPI", course.CategoryId);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Unexpected error while fetching category for course {CourseId}", course.Id);
+                    }
+                }
+                else
+                {
+                    _logger.LogInformation("? Using cached category {CategoryId}", course.CategoryId);
+                }
+
                 categoryName = category?.Name;
             }
-            catch (HttpRequestException ex)
-            {
-                _logger.LogError(ex, "Failed to fetch category with ID {CategoryId} from CategoryAPI", course.CategoryId);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Unexpected error while fetching category for course {CourseId}", course.Id);
-            }
 
-            // Fetch User / Creator
-            try
+            // Fetch User / Creator with caching
+            if (course.CreatorId.HasValue)
             {
-                var user = await _userAPIClient.GetFromJsonAsync<UserResponse>($"api/Users/{course.CreatorId}");
+                string userCacheKey = $"User_{course.CreatorId.Value}";
+
+                if (!_cache.TryGetValue(userCacheKey, out UserResponse? user))
+                {
+                    try
+                    {
+                        user = await _userAPIClient.GetFromJsonAsync<UserResponse>($"api/Users/{course.CreatorId}");
+
+                        if (user != null)
+                        {
+                            var cacheOptions = new MemoryCacheEntryOptions
+                            {
+                                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30)
+                            };
+                            _cache.Set(userCacheKey, user, cacheOptions);
+                            _logger.LogInformation("? Cached user {UserId}", course.CreatorId);
+                        }
+                    }
+                    catch (HttpRequestException ex)
+                    {
+                        _logger.LogError(ex, "Failed to fetch user with ID {CreatorId} from UserAPI", course.CreatorId);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Unexpected error while fetching creator for course {CourseId}", course.Id);
+                    }
+                }
+                else
+                {
+                    _logger.LogInformation("? Using cached user {UserId}", course.CreatorId);
+                }
+
                 creatorName = user?.FullName;
             }
-            catch (HttpRequestException ex)
-            {
-                _logger.LogError(ex, "Failed to fetch user with ID {CreatorId} from UserAPI", course.CreatorId);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Unexpected error while fetching creator for course {CourseId}", course.Id);
-            }
 
-            // Fetch Lessons Count
-            try
+            // Fetch Lessons Count with caching
+            string lessonsCacheKey = $"CourseLessons_{course.Id}";
+
+            if (!_cache.TryGetValue(lessonsCacheKey, out int cachedLessonCount))
             {
-                var lessonsResponse = await _lessonAPIClient.GetAsync($"api/Lessons/course/{course.Id}");
-                if (lessonsResponse.IsSuccessStatusCode)
+                try
                 {
-                    var lessons = await lessonsResponse.Content.ReadFromJsonAsync<List<LessonResponse>>();
-                    totalLessons = lessons?.Count ?? 0;
+                    var lessonsResponse = await _lessonAPIClient.GetAsync($"api/Lessons/course/{course.Id}");
+                    if (lessonsResponse.IsSuccessStatusCode)
+                    {
+                        var lessons = await lessonsResponse.Content.ReadFromJsonAsync<List<LessonResponse>>();
+                        totalLessons = lessons?.Count(l => l.CourseId == course.Id
+                    && l.Status == PublishStatusEnum.Published) ?? 0;
+
+                        var cacheOptions = new MemoryCacheEntryOptions
+                        {
+                            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(15)
+                        };
+                        _cache.Set(lessonsCacheKey, totalLessons, cacheOptions);
+                        _logger.LogInformation("? Cached lesson count for course {CourseId}", course.Id);
+                    }
+                }
+                catch (HttpRequestException ex)
+                {
+                    _logger.LogError(ex, "Failed to fetch lessons for course {CourseId} from LessonAPI", course.Id);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Unexpected error while fetching lessons for course {CourseId}", course.Id);
                 }
             }
-            catch (HttpRequestException ex)
+            else
             {
-                _logger.LogError(ex, "Failed to fetch lessons for course {CourseId} from LessonAPI", course.Id);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Unexpected error while fetching lessons for course {CourseId}", course.Id);
+                totalLessons = cachedLessonCount;
+                _logger.LogInformation("? Using cached lesson count for course {CourseId}", course.Id);
             }
 
-            // Fetch Quizzes Count
-            try
+            // Fetch Quizzes Count with caching
+            string quizzesCacheKey = $"CourseQuizzes_{course.Id}";
+
+            if (!_cache.TryGetValue(quizzesCacheKey, out int cachedQuizCount))
             {
-                var quizzesResponse = await _quizAPIClient.GetAsync("api/Quizzes");
-                if (quizzesResponse.IsSuccessStatusCode)
+                try
                 {
-                    var quizzes = await quizzesResponse.Content.ReadFromJsonAsync<List<QuizResponse>>();
-                    totalQuizzes = quizzes?.Count(q => q.CourseId == course.Id) ?? 0;
+                    var quizzesResponse = await _quizAPIClient.GetAsync("api/Quizzes");
+                    if (quizzesResponse.IsSuccessStatusCode)
+                    {
+                        var quizzes = await quizzesResponse.Content.ReadFromJsonAsync<List<QuizResponse>>();
+                        totalQuizzes = quizzes?
+                         .Count(q => q.CourseId == course.Id
+                          && q.Status == PublishStatusEnum.Published) ?? 0;
+
+                        var cacheOptions = new MemoryCacheEntryOptions
+                        {
+                            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(15)
+                        };
+                        _cache.Set(quizzesCacheKey, totalQuizzes, cacheOptions);
+                        _logger.LogInformation("? Cached quiz count for course {CourseId}", course.Id);
+                    }
+                }
+                catch (HttpRequestException ex)
+                {
+                    _logger.LogError(ex, "Failed to fetch quizzes for course {CourseId} from QuizAPI", course.Id);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Unexpected error while fetching quizzes for course {CourseId}", course.Id);
                 }
             }
-            catch (HttpRequestException ex)
+            else
             {
-                _logger.LogError(ex, "Failed to fetch quizzes for course {CourseId} from QuizAPI", course.Id);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Unexpected error while fetching quizzes for course {CourseId}", course.Id);
+                totalQuizzes = cachedQuizCount;
+                _logger.LogInformation("? Using cached quiz count for course {CourseId}", course.Id);
             }
 
             var result = _mapper.Map<CourseResponse>(course);
@@ -333,7 +511,6 @@ namespace CourseAPI.Services
 
             return result;
         }
-
 
         public async Task<CourseResponse> CreateCourseAsync(CreateCourseRequest request)
         {
@@ -390,12 +567,12 @@ namespace CourseAPI.Services
                 return false;
             }
 
-            if (existingCourse.Status == CourseStatusEnum.Hidden)
+            if (existingCourse.Status == PublishStatusEnum.Hidden)
             {
                 return true; // Already disabled, no need to update
             }
 
-            existingCourse.Status = CourseStatusEnum.Hidden;
+            existingCourse.Status = PublishStatusEnum.Hidden;
             existingCourse.UpdatedAt = DateTime.UtcNow;
             var updatedCourse = await _coursesRepo.UpdateAsync(existingCourse);
 
@@ -411,12 +588,12 @@ namespace CourseAPI.Services
                 return false;
             }
 
-            if (existingCourse.Status == CourseStatusEnum.Archived)
+            if (existingCourse.Status == PublishStatusEnum.Archived)
             {
                 return true; // Already archived, no need to update
             }
 
-            existingCourse.Status = CourseStatusEnum.Archived;
+            existingCourse.Status = PublishStatusEnum.Archived;
             existingCourse.UpdatedAt = DateTime.UtcNow;
             var updatedCourse = await _coursesRepo.UpdateAsync(existingCourse);
 

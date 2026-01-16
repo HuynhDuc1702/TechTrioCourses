@@ -41,7 +41,11 @@ export default function CourseDetailPage() {
 
   }, [params.id, user]);
   const enrollCourse = async () => {
-    // Implement enrollment logic here
+    if (!user?.userId) {
+      alert('Please log in to enroll in the course');
+      router.push('/auth/login');
+      return;
+    }
     try {
       await userCourseAPI.createUserCourse({
         userId: user?.userId || '',

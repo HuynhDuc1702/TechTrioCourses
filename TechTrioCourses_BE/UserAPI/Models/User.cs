@@ -1,13 +1,12 @@
-﻿using UserAPI.Enums;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using UserAPI.Enums;
+using TechTrioCourses.Shared.Enums;
 
 namespace UserAPI.Models;
 
 public partial class User
 {
-    public Guid Id { get; set; }
+  public Guid Id { get; set; }
 
     public Guid AccountId { get; set; }
 

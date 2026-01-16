@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using CategoryAPI.DTOs.Request;
 using CategoryAPI.DTOs.Response;
 using static System.Runtime.InteropServices.JavaScript.JSType;

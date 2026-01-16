@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using UserAPI.DTOs.Request.User;
 using UserAPI.DTOs.Response.User;
-using UserAPI.Enums;
+using TechTrioCourses.Shared.Enums;
 using UserAPI.Models;
 
 namespace UserAPI.MappingProfile

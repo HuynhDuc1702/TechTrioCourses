@@ -111,18 +111,10 @@ export interface UserQuizResponse {
 export interface CreateUserQuizRequest {
   userId: string;
   quizId: string;
-  attemptCount: number;
-  bestScore?: number;
+ courseId: string;
 }
 
-export interface UpdateUserQuizRequest {
-  status?: UserQuizStatus;
-  attemptCount?: number;
-  bestScore?: number;
-  firstAttemptAt?: string;
-  lastAttemptAt?: string;
-  passedAt?: string;
-}
+
 
 // ==================== USER SERVICE ====================
 
@@ -546,13 +538,13 @@ export const userQuizAPI = {
   },
 
   /**
-   * Update user quiz
-   * PUT: /api/UserQuizzes/{id}
+   * Retake user quiz
+   * PUT: /api/UserQuizzes/retake/{id}
    */
-  updateUserQuiz: async (id: string, data: UpdateUserQuizRequest): Promise<UserQuizResponse> => {
+  retakeUserQuiz: async (id: string): Promise<UserQuizResponse> => {
     const response = await userAxios.put<UserQuizResponse>(
-      API_ENDPOINTS.USER_QUIZZES.GET_BY_ID(id),
-      data
+      API_ENDPOINTS.USER_QUIZZES.RETAKE(id),
+      
     );
     return response.data;
   },
@@ -563,6 +555,16 @@ export const userQuizAPI = {
    */
   deleteUserQuiz: async (id: string): Promise<void> => {
     await userAxios.delete(API_ENDPOINTS.USER_QUIZZES.GET_BY_ID(id));
+  },
+  /**
+   * Check if user passed quiz
+   * GET: /api/UserQuizzes/is-passed/{quizId}
+   */
+  checkIsPassed: async (quizId: string): Promise<{ isPassed: boolean }> => {
+    const response = await userAxios.get<{ isPassed: boolean }>(
+      API_ENDPOINTS.USER_QUIZZES.IS_PASSED(quizId)
+    );
+    return response.data;
   },
 };
 

@@ -38,7 +38,7 @@ namespace UserAPI.Controllers
             return Ok(choice);
         }
 
-        // GET: api/UserSelectedChoices/result/5
+        // GET: api/UserSelectedChoices/by-result/5
         [HttpGet("result/{resultId}")]
         public async Task<ActionResult<IEnumerable<UserSelectedChoiceResponse>>> GetUserSelectedChoicesByResult(Guid resultId)
         {
@@ -46,8 +46,8 @@ namespace UserAPI.Controllers
             return Ok(choices);
         }
 
-        // GET: api/UserSelectedChoices/result/5/question/6
-        [HttpGet("result/{resultId}/question/{questionId}")]
+        // GET: api/UserSelectedChoices/by-result/5/by-question/6
+        [HttpGet("by-result/{resultId}/by-question/{questionId}")]
         public async Task<ActionResult<UserSelectedChoiceResponse>> GetUserSelectedChoiceByResultAndQuestion(Guid resultId, Guid questionId)
         {
             var choice = await _userSelectedChoiceService.GetUserSelectedChoiceByResultAndQuestionIdAsync(resultId, questionId);

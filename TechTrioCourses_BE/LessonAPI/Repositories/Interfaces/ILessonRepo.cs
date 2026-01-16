@@ -1,4 +1,4 @@
-﻿using LessonAPI.Models;
+using LessonAPI.Models;
 
 namespace LessonAPI.Repositories.Interfaces
 {

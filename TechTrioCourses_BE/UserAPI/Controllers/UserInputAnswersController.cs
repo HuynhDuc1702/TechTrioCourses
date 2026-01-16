@@ -39,7 +39,7 @@ namespace UserAPI.Controllers
         }
 
         // GET: api/UserInputAnswers/result/5
-        [HttpGet("result/{resultId}")]
+        [HttpGet("by-result/{resultId}")]
         public async Task<ActionResult<IEnumerable<UserInputAnswerResponse>>> GetUserInputAnswersByResult(Guid resultId)
         {
             var answers = await _userInputAnswerService.GetUserInputAnswersByResultIdAsync(resultId);
@@ -47,7 +47,7 @@ namespace UserAPI.Controllers
         }
 
         // GET: api/UserInputAnswers/result/5/question/6
-        [HttpGet("result/{resultId}/question/{questionId}")]
+        [HttpGet("by-result/{resultId}/by-question/{questionId}")]
         public async Task<ActionResult<UserInputAnswerResponse>> GetUserInputAnswerByResultAndQuestion(Guid resultId, Guid questionId)
         {
             var answer = await _userInputAnswerService.GetUserInputAnswerByResultAndQuestionIdAsync(resultId, questionId);

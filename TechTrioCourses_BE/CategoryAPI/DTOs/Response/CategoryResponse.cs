@@ -1,4 +1,4 @@
-﻿namespace CategoryAPI.DTOs.Response
+namespace CategoryAPI.DTOs.Response
 {
     public class CategoryResponse
     {

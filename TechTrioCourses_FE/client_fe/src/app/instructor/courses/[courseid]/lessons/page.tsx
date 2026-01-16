@@ -37,11 +37,11 @@ export default function InstructorCourseLessonsPage() {
     }
   };
   const navigateToCreate = () => {
-    router.push(`/instructor/courses/${params.courseid}/lessons/Create`);
+    router.push(`/instructor/courses/${params.courseid}/lessons/create`);
   };
 
   const navigateToEdit = (lessonId: string) => {
-    router.push(`/instructor/courses/${params.courseid}/lessons/${lessonId}/Edit`);
+    router.push(`/instructor/courses/${params.courseid}/lessons/${lessonId}/edit`);
   };
 
   const loadLessons = async () => {
@@ -114,8 +114,11 @@ export default function InstructorCourseLessonsPage() {
       <div className="container mx-auto px-4">
         {/* Breadcrumb */}
         <div className="mb-4">
-          <Link href="/instructor/courses" className="text-blue-600 hover:underline">
-            ← Back to Courses
+          <Link
+            href={`/instructor/courses/${params.courseid}`}
+            className="text-blue-600 hover:underline"
+          >
+            ← Back to course's details
           </Link>
         </div>
 
@@ -189,8 +192,8 @@ export default function InstructorCourseLessonsPage() {
                     <button
                       onClick={() => handleToggleStatus(lesson)}
                       className={`px-4 py-2 rounded-lg font-medium transition-colors ${lesson.status === LessonStatusEnum.Published
-                          ? 'bg-gray-50 text-gray-600 hover:bg-gray-100'
-                          : 'bg-green-50 text-green-600 hover:bg-green-100'
+                        ? 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                        : 'bg-green-50 text-green-600 hover:bg-green-100'
                         }`}
                       title={lesson.status === LessonStatusEnum.Published ? 'Hide lesson' : 'Publish lesson'}
                     >

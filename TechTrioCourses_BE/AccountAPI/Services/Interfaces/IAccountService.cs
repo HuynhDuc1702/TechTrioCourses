@@ -1,4 +1,4 @@
-﻿using AccountAPI.DTOs.Request;
+using AccountAPI.DTOs.Request;
 using AccountAPI.DTOs.Response;
 using AccountAPI.Models;
 

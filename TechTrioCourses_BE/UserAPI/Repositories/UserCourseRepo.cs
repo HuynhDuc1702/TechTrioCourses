@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using TechTrioCourses.Shared.Enums;
 using UserAPI.Datas;
-using UserAPI.Enums;
 using UserAPI.Models;
 using UserAPI.Repositories.Interfaces;
 
@@ -28,20 +28,20 @@ namespace UserAPI.Repositories
         public async Task<IEnumerable<UserCourse>> GetByUserIdAsync(Guid userId)
         {
             return await _context.Set<UserCourse>()
-       .Where(uc => uc.UserId == userId)
-           .ToListAsync();
+                .Where(uc => uc.UserId == userId)
+                .ToListAsync();
         }
 
         public async Task<IEnumerable<UserCourse>> GetByCourseIdAsync(Guid courseId)
         {
             return await _context.Set<UserCourse>()
-           .Where(uc => uc.CourseId == courseId)
-    .ToListAsync();
+                .Where(uc => uc.CourseId == courseId)
+                .ToListAsync();
         }
 
         public async Task<UserCourse?> GetByUserAndCourseAsync(Guid userId, Guid courseId)
         {
-           return await _context.Set<UserCourse>().FirstOrDefaultAsync(uc=> uc.CourseId==courseId && uc.UserId==userId);
+            return await _context.Set<UserCourse>().FirstOrDefaultAsync(uc => uc.CourseId == courseId && uc.UserId == userId);
         }
 
         public async Task<UserCourse> CreateUserCourseAsync(UserCourse userCourse)
@@ -50,7 +50,7 @@ namespace UserAPI.Repositories
             userCourse.EnrolledAt = DateTime.UtcNow;
             userCourse.UpdatedAt = DateTime.UtcNow;
             userCourse.Progress = 0;
-            userCourse.Status = UserCourseStatus.In_progress;
+            userCourse.Status = UserCourseStatusEnum.In_progress;
 
             _context.Set<UserCourse>().Add(userCourse);
             await _context.SaveChangesAsync();
@@ -81,7 +81,7 @@ namespace UserAPI.Repositories
         public async Task<bool> UserCourseExistsAsync(Guid userId, Guid courseId)
         {
             return await _context.Set<UserCourse>()
-   .AnyAsync(uc => uc.UserId == userId && uc.CourseId == courseId);
+                .AnyAsync(uc => uc.UserId == userId && uc.CourseId == courseId);
         }
     }
 }

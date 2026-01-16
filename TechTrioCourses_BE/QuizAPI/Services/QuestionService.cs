@@ -1,8 +1,9 @@
 using AutoMapper;
 using QuizAPI.DTOs.Request.Question;
 using QuizAPI.DTOs.Response.Question;
-using QuizAPI.Enums;
+using TechTrioCourses.Shared.Enums;
 using QuizAPI.Models;
+using QuizAPI.Repositories;
 using QuizAPI.Repositories.Interfaces;
 using QuizAPI.Services.Interfaces;
 
@@ -35,6 +36,17 @@ namespace QuizAPI.Services
             }
 
             return _mapper.Map<QuestionResponse>(question);
+        }
+        public async Task<IEnumerable<QuestionResponse>> GetQuestionCourseIdAsync(Guid courseId)
+        {
+            var questions = await _questionRepo.GetQuestionsByCourseId(courseId);
+
+            if (questions == null)
+            {
+                return null;
+            }
+
+            return _mapper.Map<IEnumerable<QuestionResponse>>(questions);
         }
 
         public async Task<QuestionResponse> CreateQuestionAsync(CreateQuestionRequest request)
@@ -84,5 +96,47 @@ namespace QuizAPI.Services
         {
             return await _questionRepo.DeleteAsync(id);
         }
+        public async Task<bool> DisableQuestionAsync(Guid id)
+        {
+            var existingQuestion = await _questionRepo.GetByIdAsync(id);
+
+            if (existingQuestion == null)
+            {
+                return false;
+            }
+
+            if (existingQuestion.Status == PublishStatusEnum.Hidden)
+            {
+                return true; // Already disabled, no need to update
+            }
+
+            existingQuestion.Status = PublishStatusEnum.Hidden;
+            existingQuestion.UpdatedAt = DateTime.UtcNow;
+            var updatedQuestion = await _questionRepo.UpdateAsync(existingQuestion);
+
+            return updatedQuestion != null;
+        }
+
+        public async Task<bool> ArchiveQuestionAsync(Guid id)
+        {
+            var existingQuestion = await _questionRepo.GetByIdAsync(id);
+
+            if (existingQuestion == null)
+            {
+                return false;
+            }
+
+            if (existingQuestion.Status == PublishStatusEnum.Archived)
+            {
+                return true; // Already disabled, no need to update
+            }
+
+            existingQuestion.Status = PublishStatusEnum.Archived;
+            existingQuestion.UpdatedAt = DateTime.UtcNow;
+            var updatedQuestion = await _questionRepo.UpdateAsync(existingQuestion);
+
+            return updatedQuestion != null;
+        }
     }
 }
+

@@ -1,4 +1,4 @@
-﻿using LessonAPI.Enums;
+using TechTrioCourses.Shared.Enums;
 using System;
 using System.Collections.Generic;
 
@@ -20,7 +20,7 @@ public partial class Lesson
 
     public int? OrderIndex { get; set; }
 
-    public LessonStatusEnum? Status { get; set; }
+    public PublishStatusEnum? Status { get; set; }
 
     public DateTime CreatedAt { get; set; }
 
