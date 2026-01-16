@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
-using UserAPI.DTOs.Request;
-using UserAPI.DTOs.Response;
-using UserAPI.Enums;
+using TechTrioCourses.Shared.Enums;
+using UserAPI.DTOs.Request.UserLesson;
+using UserAPI.DTOs.Response.UserLesson;
 using UserAPI.Models;
 using UserAPI.Repositories.Interfaces;
 using UserAPI.Services.Interfaces;
@@ -71,7 +71,7 @@ namespace UserAPI.Services
 
             // Create new user lesson - automatically mark as completed
             var userLesson = _mapper.Map<UserLesson>(request);
-            userLesson.Status = UserLessonStatus.Completed;
+            userLesson.Status = UserLessonStatusEnum.Completed;
             userLesson.CompletedAt = DateTime.UtcNow;
 
             var createdUserLesson = await _userLessonRepo.CreateUserLessonAsync(userLesson);

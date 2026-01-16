@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using TechTrioCourses.Shared.Enums;
 using UserAPI.Datas;
-using UserAPI.Enums;
 using UserAPI.Models;
 using UserAPI.Repositories.Interfaces;
 
@@ -50,10 +50,10 @@ namespace UserAPI.Repositories
             userLesson.Id = Guid.NewGuid();
             userLesson.UpdatedAt = DateTime.UtcNow;
 
-     _context.Set<UserLesson>().Add(userLesson);
-    await _context.SaveChangesAsync();
+            _context.Set<UserLesson>().Add(userLesson);
+            await _context.SaveChangesAsync();
 
-     return userLesson;
+            return userLesson;
         }
 
         public async Task<bool> UpdateUserLessonAsync(UserLesson userLesson)
@@ -90,9 +90,9 @@ namespace UserAPI.Repositories
 
         public async Task<IEnumerable<UserLesson>> GetByUserAndCourseAsync(Guid userId, Guid courseId)
         {
-  return await _context.Set<UserLesson>()
-      .Where(ul => ul.UserId == userId && ul.CourseId == courseId)
-          .ToListAsync();
+            return await _context.Set<UserLesson>()
+                .Where(ul => ul.UserId == userId && ul.CourseId == courseId)
+                    .ToListAsync();
         }
     }
 }

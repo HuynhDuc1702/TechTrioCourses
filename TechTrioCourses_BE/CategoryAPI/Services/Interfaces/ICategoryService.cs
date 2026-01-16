@@ -1,4 +1,4 @@
-﻿using CategoryAPI.DTOs.Request;
+using CategoryAPI.DTOs.Request;
 using CategoryAPI.DTOs.Response;
 
 namespace CategoryAPI.Services.Interfaces

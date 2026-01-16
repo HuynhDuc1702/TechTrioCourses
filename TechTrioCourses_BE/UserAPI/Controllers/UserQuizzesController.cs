@@ -1,10 +1,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using UserAPI.DTOs.Request;
-using UserAPI.DTOs.Response;
+using UserAPI.DTOs.Request.UserQuiz;
+using UserAPI.DTOs.Response.UserQuiz;
+using UserAPI.Services;
 using UserAPI.Services.Interfaces;
+using TechTrioCourses.Shared.Enums;
 
 namespace UserAPI.Controllers
 {
@@ -43,6 +44,25 @@ namespace UserAPI.Controllers
             return Ok(userQuizzes);
         }
 
+        // GET: api/UserQuizzes/is-passed/{quizId}
+        [HttpGet("is-passed/{quizId}")]
+        [Authorize]
+        public async Task<ActionResult> CheckIsPassed(Guid id)
+        {
+            // Get AccountId from Token Claims
+            var accountId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(accountId) || !Guid.TryParse(accountId, out var accountGuid))
+                return Unauthorized();
+
+            // Resolve User from AccountId
+            var user = await _userService.GetUserByAccountIdAsync(accountGuid);
+            if (user == null) return Unauthorized();
+
+            var userquizz = await _userQuizService.GetUserQuizByUserAndQuizAsync(user.Id, id);
+
+            return Ok(new { isPassed = userquizz != null && userquizz.Status == UserQuizStatusEnum.Passed });
+        }
+
         // GET: api/UserQuizzes/by-user
         [HttpGet("by-user")]
         [Authorize]
@@ -77,7 +97,7 @@ namespace UserAPI.Controllers
             return Ok(userQuizzes);
         }
 
-        // GET: api/UserQuizzes/by-user-and-quiz/{userId}/{quizId}
+        // GET: api/UserQuizzes/by-user-and-quiz/{quizId}
         [HttpGet("by-user-and-quiz/{quizId}")]
         [Authorize]
         public async Task<ActionResult<UserQuizResponse>> GetUserQuizByUserAndQuiz(Guid quizId)
@@ -135,7 +155,7 @@ namespace UserAPI.Controllers
 
         // PUT: api/UserQuizzes/{id}
         [HttpPut("{id}")]
-        public async Task<ActionResult<UserQuizResponse>> UpdateUserQuiz(Guid id, [FromBody] UpdateUserQuizRequest request)
+        public async Task<ActionResult<UserQuizResponse>> UpdateUserQuiz(Guid id, [FromBody] SubmitUserQuizRequest request)
         {
             var userQuiz = await _userQuizService.UpdateUserQuizAsync(id, request);
 
@@ -146,6 +166,20 @@ namespace UserAPI.Controllers
 
             return Ok(userQuiz);
         }
+        // PUT: api/UserQuizzes/retake/{id}
+        [HttpPut("retake/{id}")]
+        public async Task<ActionResult<UserQuizResponse>> RetakeUserQuiz(Guid id)
+        {
+            var userQuiz = await _userQuizService.RetakeUserQuizAsync(id);
+
+            if (userQuiz == null)
+            {
+                return NotFound(new { message = "User quiz not found" });
+            }
+
+            return Ok(userQuiz);
+        }
+
 
         // DELETE: api/UserQuizzes/{id}
         [HttpDelete("{id}")]

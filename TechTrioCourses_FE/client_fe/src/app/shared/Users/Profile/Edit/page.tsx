@@ -4,9 +4,11 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { userAPI, UserResponse, UpdateUserRequest } from '@/services/userAPI';
 import { accountService } from '@/services/accountAPI';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function EditProfilePage() {
   const router = useRouter();
+  const { refreshUser } = useAuth();
   const [user, setUser] = useState<UserResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -26,9 +28,9 @@ export default function EditProfilePage() {
     try {
       setLoading(true);
       setError('');
-      
+
       if (!accountService.isAuthenticated()) {
-        router.push('/login');
+        router.push('auth/login');
         return;
       }
 
@@ -72,7 +74,7 @@ export default function EditProfilePage() {
 
       const updateData: UpdateUserRequest = {
         fullName: formData.fullName.trim(),
-       
+
       };
 
       // Only include avatarUrl if it's provided
@@ -81,9 +83,12 @@ export default function EditProfilePage() {
       }
 
       const updatedUser = await userAPI.updateCurrentUserProfile(updateData);
-      
+
       if (updatedUser) {
         setUser(updatedUser);
+        // Refresh global auth state
+        await refreshUser();
+
         setSuccess('Profile updated successfully!');
         setTimeout(() => {
           router.push('/shared/Users/Profile');

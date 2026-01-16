@@ -13,13 +13,14 @@ export default function ProfilePage() {
     useEffect(() => {
         // Redirect if not authenticated and loading is done
         if (!loading && !isAuthenticated) {
-            router.push('/login');
+            router.push('/auth/login');
         }
     }, [loading, isAuthenticated, router]);
 
     const handleLogout = () => {
         logout();
-        router.push('/login');
+        router.push('/auth/login');
+        
     };
 
     const getRoleName = (role: number): string => {
@@ -78,10 +79,10 @@ export default function ProfilePage() {
                         <div className="text-center mb-6">
                             <h1 className="text-3xl font-bold text-gray-900 mb-2">{user.fullName}</h1>
                             <span className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${user.role === UserRoleEnum.Admin
-                                    ? 'bg-red-100 text-red-800'
-                                    : user.role === UserRoleEnum.Instructor
-                                        ? 'bg-green-100 text-green-800'
-                                        : 'bg-blue-100 text-blue-800'
+                                ? 'bg-red-100 text-red-800'
+                                : user.role === UserRoleEnum.Instructor
+                                    ? 'bg-green-100 text-green-800'
+                                    : 'bg-blue-100 text-blue-800'
                                 }`}>
                                 {getRoleName(user.role)}
                             </span>
@@ -90,7 +91,7 @@ export default function ProfilePage() {
                         {/* Action Buttons */}
                         <div className="flex flex-wrap gap-3 justify-center mb-6">
                             <button
-                                onClick={() => router.push('/shared/Users/Profile/Edit')}
+                                onClick={() => router.push('/shared/Users/Profile/edit')}
                                 className="flex items-center gap-2 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
                             >
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

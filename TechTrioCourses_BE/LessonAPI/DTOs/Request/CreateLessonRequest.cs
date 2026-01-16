@@ -1,4 +1,4 @@
-﻿using LessonAPI.Enums;
+using TechTrioCourses.Shared.Enums;
 
 namespace LessonAPI.DTOs.Request
 {
@@ -15,7 +15,7 @@ namespace LessonAPI.DTOs.Request
         public LessonMediaTypeEnum? MediaType { get; set; }
 
         public int? OrderIndex { get; set; }
-        public LessonStatusEnum? Status { get; set; }
+        public PublishStatusEnum? Status { get; set; }
 
     }
 }

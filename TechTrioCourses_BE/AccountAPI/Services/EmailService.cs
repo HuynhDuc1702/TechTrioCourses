@@ -80,9 +80,9 @@ namespace AccountAPI.Services
         <p style='color: #999; font-size: 12px; margin-top: 30px; border-top: 1px solid #eee; padding-top: 20px;'>
           If you didn't request this code, please ignore this email.
         </p>
-    </div>
-</body>
-</html>";
+     </div>
+    </body>
+    </html>";
         }
     }
 }

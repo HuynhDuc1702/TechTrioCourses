@@ -1,4 +1,4 @@
-﻿using LessonAPI.Datas;
+using LessonAPI.Datas;
 using LessonAPI.Models;
 using LessonAPI.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;

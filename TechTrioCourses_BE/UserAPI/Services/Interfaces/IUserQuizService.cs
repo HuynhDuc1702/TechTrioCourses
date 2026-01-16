@@ -1,5 +1,5 @@
-using UserAPI.DTOs.Request;
-using UserAPI.DTOs.Response;
+using UserAPI.DTOs.Request.UserQuiz;
+using UserAPI.DTOs.Response.UserQuiz;
 
 namespace UserAPI.Services.Interfaces
 {
@@ -13,7 +13,8 @@ namespace UserAPI.Services.Interfaces
         Task<IEnumerable<UserQuizResponse>> GetUserQuizzesByUserAndCourseAsync(Guid userId, Guid courseId);
         Task<UserQuizResponse?> GetUserQuizByUserAndQuizAsync(Guid userId, Guid quizId);
         Task<UserQuizResponse?> CreateUserQuizAsync(CreateUserQuizRequest request);
-        Task<UserQuizResponse?> UpdateUserQuizAsync(Guid id, UpdateUserQuizRequest request);
+        Task<UserQuizResponse?> UpdateUserQuizAsync(Guid id, SubmitUserQuizRequest request);
+        Task<UserQuizResponse?> RetakeUserQuizAsync(Guid id);
         Task<bool> DeleteUserQuizAsync(Guid id);
     }
 }

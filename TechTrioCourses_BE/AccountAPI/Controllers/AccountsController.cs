@@ -2,6 +2,7 @@ using AccountAPI.DTOs.Request;
 using AccountAPI.DTOs.Response;
 using AccountAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using TechTrioCourses.Shared.Enums;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AccountAPI.Controllers
@@ -29,7 +30,7 @@ namespace AccountAPI.Controllers
             if (result == null)
             {
                 var user = await _accountService.GetUserByEmailAsync(request.Email);
-                if (user != null && user.Status == AccountAPI.Enums.AccountStatusEnum.Banned)
+                if (user != null && user.Status == AccountStatusEnum.Banned)
                 {
                     return Unauthorized(new { message = "Your account has been banned please contact Admin for help" });
                 }

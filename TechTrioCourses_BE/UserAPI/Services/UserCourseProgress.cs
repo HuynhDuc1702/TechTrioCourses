@@ -1,8 +1,7 @@
 ﻿using AutoMapper;
 using System.Net.Http;
-using UserAPI.DTOs.Request;
-using UserAPI.DTOs.Response;
-using UserAPI.Enums;
+using TechTrioCourses.Shared.Enums;
+using UserAPI.DTOs.Response.UserCourse;
 using UserAPI.Models;
 using UserAPI.Repositories.Interfaces;
 using UserAPI.Services.Interfaces;
@@ -49,7 +48,7 @@ namespace UserAPI.Services
             var userLessonsList = userLessons.ToList();
 
             int totalLessons = 0;
-            int completedLessons = userLessonsList.Count(ul => ul.Status == UserLessonStatus.Completed);
+            int completedLessons = userLessonsList.Count(ul => ul.Status == UserLessonStatusEnum.Completed);
 
             // Fetch total lessons count for the course from LessonAPI
             try

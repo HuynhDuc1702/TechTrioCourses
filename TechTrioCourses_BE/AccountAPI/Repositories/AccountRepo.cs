@@ -1,4 +1,4 @@
-﻿using AccountAPI.Repositories.Interfaces;
+using AccountAPI.Repositories.Interfaces;
 using AccountAPI.Datas;
 using AccountAPI.Models;
 using Microsoft.EntityFrameworkCore;

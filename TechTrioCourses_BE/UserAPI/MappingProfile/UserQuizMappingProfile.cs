@@ -1,7 +1,6 @@
 using AutoMapper;
-using UserAPI.DTOs.Request;
-using UserAPI.DTOs.Response;
-using UserAPI.Enums;
+using UserAPI.DTOs.Request.UserQuiz;
+using UserAPI.DTOs.Response.UserQuiz;
 using UserAPI.Models;
 
 namespace UserAPI.MappingProfile
@@ -18,9 +17,7 @@ namespace UserAPI.MappingProfile
        .ForMember(dest => dest.LastAttemptAt, opt => opt.Ignore())
        .ForMember(dest => dest.PassedAt, opt => opt.Ignore());
 
-   // Map UpdateUserQuizRequest -> UserQuiz (for updating existing user quiz)
-   CreateMap<UpdateUserQuizRequest, UserQuiz>()
-   .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+  
 
  // Map UserQuiz -> UserQuizResponse
    CreateMap<UserQuiz, UserQuizResponse>();

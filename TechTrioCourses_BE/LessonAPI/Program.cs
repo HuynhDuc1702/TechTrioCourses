@@ -3,74 +3,58 @@ using LessonAPI.Repositories;
 using LessonAPI.Repositories.Interfaces;
 using LessonAPI.Services;
 using LessonAPI.Services.Interfaces;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
+using Polly;
+using Polly.Extensions.Http;
+using TechTrioCourses.Shared.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddDbContext<LessonContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("LessonContext")));
+options.UseNpgsql(builder.Configuration.GetConnectionString("LessonContext")));
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Define policies
+var retryPolicy = HttpPolicyExtensions
+    .HandleTransientHttpError()
+    .WaitAndRetryAsync(3, retryAttempt =>
+        TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
+
+var circuitBreakerPolicy = HttpPolicyExtensions
+    .HandleTransientHttpError()
+    .CircuitBreakerAsync(5, TimeSpan.FromSeconds(30));
 
 //API url
 builder.Services.AddHttpClient("CourseAPI", client =>
 {
     var config = builder.Configuration;
- var baseUrl = config["ApiSettings:CourseAPI"];
+    var baseUrl = config["ApiSettings:CourseAPI"];
     client.BaseAddress = new Uri(baseUrl);
-});
+    client.Timeout = TimeSpan.FromSeconds(10);
+})
+.AddPolicyHandler(retryPolicy)
+.AddPolicyHandler(circuitBreakerPolicy);
 
 builder.Services.AddScoped<ILessonRepo, LessonRepo>();
 builder.Services.AddScoped<ILessonService, LessonService>();
 builder.Services.AddAutoMapper(typeof(Program));
 
-// Add CORS
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowFrontend", policy =>
-    {
-        policy.WithOrigins("http://localhost:3000", "https://localhost:3000", "http://localhost:5173")
-     .AllowAnyHeader()
-   .AllowAnyMethod()
-    .AllowCredentials();
-    });
-});
+// Add shared CORS configuration
+builder.Services.AddTechTrioCors();
 
-// Configure JWT Authentication
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(options =>
-{
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-      ValidateIssuer = true,
-        ValidateAudience = true,
-   ValidateLifetime = true,
-      ValidateIssuerSigningKey = true,
-  ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
-        ValidAudience = builder.Configuration["JwtSettings:Audience"],
-   IssuerSigningKey = new SymmetricSecurityKey(
-      Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Key"] ?? "DefaultKey"))
-    };
-});
-
-builder.Services.AddAuthorization();
+// Configure shared JWT Authentication
+builder.Services.AddTechTrioJwtAuthentication(builder.Configuration);
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
+ app.UseSwagger();
     app.UseSwaggerUI();
 }
 

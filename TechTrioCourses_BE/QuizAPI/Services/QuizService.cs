@@ -1,7 +1,7 @@
 using AutoMapper;
 using QuizAPI.DTOs.Request.Quiz;
 using QuizAPI.DTOs.Response.Quiz;
-using QuizAPI.Enums;
+using TechTrioCourses.Shared.Enums;
 using QuizAPI.Models;
 using QuizAPI.Repositories.Interfaces;
 using QuizAPI.Services.Interfaces;
@@ -37,10 +37,15 @@ namespace QuizAPI.Services
             return _mapper.Map<QuizResponse>(quiz);
         }
 
+        public async Task<IEnumerable<QuizResponse>> GetQuizzesByCourseIdAsync(Guid courseId)
+        {
+            var quizzes = await _quizRepo.GetByCourseIdAsync(courseId);
+            return _mapper.Map<IEnumerable<QuizResponse>>(quizzes);
+        }
+
         public async Task<QuizResponse> CreateQuizAsync(CreateQuizRequest request)
         {
             var quiz = _mapper.Map<Quiz>(request);
-            quiz.Status = QuizzStatusEnum.Hidden;
 
             var createdQuiz = await _quizRepo.CreateAsync(quiz);
 
@@ -96,12 +101,12 @@ namespace QuizAPI.Services
                 return false;
             }
 
-            if (existingQuiz.Status == QuizzStatusEnum.Hidden)
+            if (existingQuiz.Status == PublishStatusEnum.Hidden)
             {
                 return true; // Already disabled, no need to update
             }
 
-            existingQuiz.Status = QuizzStatusEnum.Hidden;
+            existingQuiz.Status = PublishStatusEnum.Hidden;
             existingQuiz.UpdatedAt = DateTime.UtcNow;
             var updatedQuiz = await _quizRepo.UpdateAsync(existingQuiz);
 
@@ -117,12 +122,12 @@ namespace QuizAPI.Services
                 return false;
             }
 
-            if (existingQuiz.Status == QuizzStatusEnum.Archived)
+            if (existingQuiz.Status == PublishStatusEnum.Archived)
             {
                 return true; // Already archived, no need to update
             }
 
-            existingQuiz.Status = QuizzStatusEnum.Archived;
+            existingQuiz.Status = PublishStatusEnum.Archived;
             existingQuiz.UpdatedAt = DateTime.UtcNow;
             var updatedQuiz = await _quizRepo.UpdateAsync(existingQuiz);
 

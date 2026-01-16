@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using CategoryAPI.Models;
 using Microsoft.EntityFrameworkCore;

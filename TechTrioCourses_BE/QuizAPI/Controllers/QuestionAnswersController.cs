@@ -38,12 +38,12 @@ var answer = await _questionAnswerService.GetQuestionAnswerByIdAsync(id);
     return Ok(answer);
      }
 
-     // GET: api/QuestionAnswers/result/5
-   [HttpGet("result/{resultId}")]
-   public async Task<ActionResult<IEnumerable<QuestionAnswerResponse>>> GetQuestionAnswersByResult(Guid resultId)
- {
-     var answers = await _questionAnswerService.GetQuestionAnswersByResultIdAsync(resultId);
- return Ok(answers);
+     // GET: api/QuestionAnswers/question/5
+        [HttpGet("question/{questionId}")]
+   public async Task<ActionResult<IEnumerable<QuestionAnswerResponse>>> GetQuestionAnswersByQuestion(Guid questionId)
+      {
+ var answers = await _questionAnswerService.GetQuestionAnswersByQuestionIdAsync(questionId);
+   return Ok(answers);
         }
 
   // PUT: api/QuestionAnswers/5

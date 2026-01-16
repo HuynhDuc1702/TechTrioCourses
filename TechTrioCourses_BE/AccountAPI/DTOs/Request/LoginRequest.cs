@@ -1,4 +1,4 @@
-﻿namespace AccountAPI.DTOs.Request
+namespace AccountAPI.DTOs.Request
 {
     public class LoginRequest
     {

@@ -1,4 +1,4 @@
-﻿using LessonAPI.Enums;
+using TechTrioCourses.Shared.Enums;
 using LessonAPI.Models;
 
 
@@ -22,7 +22,7 @@ namespace LessonAPI.DTOs.Response
 
         public int? OrderIndex { get; set; }
 
-        public LessonStatusEnum Status { get; set; }
+        public PublishStatusEnum Status { get; set; }
 
         public DateTime CreatedAt { get; set; }
 

@@ -3,10 +3,8 @@ using AccountAPI.Repositories;
 using AccountAPI.Repositories.Interfaces;
 using AccountAPI.Services;
 using AccountAPI.Services.Interfaces;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
+using TechTrioCourses.Shared.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,17 +27,9 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 // Add HttpClient for calling UserAPI
 builder.Services.AddHttpClient();
 
-// Add CORS
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowFrontend", policy =>
-    {
-        policy.WithOrigins("http://localhost:3000", "https://localhost:3000")
-              .AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowCredentials(); // Enable credentials
-    });
-});
+// Add shared CORS configuration
+builder.Services.AddTechTrioCors();
+
 // Add AutoMapper
 builder.Services.AddAutoMapper(typeof(Program));
 
@@ -47,26 +37,9 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-// Configure JWT Authentication
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
-            ValidAudience = builder.Configuration["JwtSettings:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:SecretKey"] ?? "DefaultKey"))
-        };
-    });
-builder.Services.AddAuthorization();
+
+// Configure shared JWT Authentication
+builder.Services.AddTechTrioJwtAuthentication(builder.Configuration);
 
 var app = builder.Build();
 
@@ -79,6 +52,7 @@ if (app.Environment.IsDevelopment())
 app.UseCors("AllowFrontend");
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

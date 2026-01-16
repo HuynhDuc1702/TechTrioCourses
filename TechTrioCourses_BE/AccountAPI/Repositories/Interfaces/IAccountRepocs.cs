@@ -1,4 +1,4 @@
-﻿using AccountAPI.Models;
+using AccountAPI.Models;
 
 namespace AccountAPI.Repositories.Interfaces
 {

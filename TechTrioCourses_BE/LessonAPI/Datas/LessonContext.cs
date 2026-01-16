@@ -1,6 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using LessonAPI.Enums;
+using TechTrioCourses.Shared.Enums;
 using LessonAPI.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -49,7 +49,7 @@ public partial class LessonContext : DbContext
                 .HasColumnName("order_index");
             entity.Property(e => e.Status)
                   .HasConversion<short>()
- .HasDefaultValue(LessonStatusEnum.Hidden)
+ .HasDefaultValue(PublishStatusEnum.Hidden)
  .HasColumnName("status");
             entity.Property(e => e.Title)
                 .HasMaxLength(200)

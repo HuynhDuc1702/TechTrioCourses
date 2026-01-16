@@ -1,6 +1,7 @@
 using AutoMapper;
-using UserAPI.DTOs.Request;
-using UserAPI.DTOs.Response;
+using TechTrioCourses.Shared.Enums;
+using UserAPI.DTOs.Request.UserQuiz;
+using UserAPI.DTOs.Response.UserQuiz;
 using UserAPI.Models;
 using UserAPI.Repositories.Interfaces;
 using UserAPI.Services.Interfaces;
@@ -70,30 +71,54 @@ namespace UserAPI.Services
 
             // Create user quiz
             var userQuiz = _mapper.Map<UserQuiz>(request);
+
             var createdUserQuiz = await _userQuizRepo.CreateUserQuizAsync(userQuiz);
 
             return _mapper.Map<UserQuizResponse>(createdUserQuiz);
         }
 
-        public async Task<UserQuizResponse?> UpdateUserQuizAsync(Guid id, UpdateUserQuizRequest request)
+        public async Task<UserQuizResponse?> UpdateUserQuizAsync(Guid id, SubmitUserQuizRequest request)
         {
             var userQuiz = await _userQuizRepo.GetByIdAsync(id);
             if (userQuiz == null)
             {
                 return null;
             }
-
-            // Use AutoMapper to update user quiz - only non-null properties will be mapped
-            _mapper.Map(request, userQuiz);
-            if (request.Status == null)
+            if (request.SubmitScore > userQuiz.BestScore)
             {
-                throw new ArgumentException("Status is required");
+                userQuiz.BestScore = request.SubmitScore;
             }
 
-            await _userQuizRepo.UpdateUserQuizAsync(userQuiz.UserId,userQuiz.QuizId,request.Status.Value,request.BestScore);
 
-            return _mapper.Map<UserQuizResponse>(userQuiz);
+            if (request.isPassed == true)
+            {
+                userQuiz.Status = UserQuizStatusEnum.Passed;
+            }
+            else if (request.isPassed == false)
+            {
+                userQuiz.Status = UserQuizStatusEnum.Failed;
+            }
+
+
+            var updatedUserQuiz = await _userQuizRepo.UpdateUserQuizAsync(userQuiz);
+
+            return _mapper.Map<UserQuizResponse>(updatedUserQuiz);
         }
+        public async Task<UserQuizResponse?> RetakeUserQuizAsync(Guid id)
+        {
+            var userQuiz = await _userQuizRepo.GetByIdAsync(id);
+            if (userQuiz == null)
+            {
+                return null;
+            }
+            userQuiz.AttemptCount += 1;
+            userQuiz.LastAttemptAt = DateTime.Now;
+
+            var updatedUserQuiz = await _userQuizRepo.UpdateUserQuizAsync(userQuiz);
+
+            return _mapper.Map<UserQuizResponse>(updatedUserQuiz);
+        }
+
 
         public async Task<bool> DeleteUserQuizAsync(Guid id)
         {

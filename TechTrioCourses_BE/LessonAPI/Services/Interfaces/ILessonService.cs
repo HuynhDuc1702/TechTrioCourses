@@ -1,4 +1,4 @@
-﻿using LessonAPI.DTOs.Request;
+using LessonAPI.DTOs.Request;
 using LessonAPI.DTOs.Response;
 using static LessonAPI.DTOs.Response.LessonResponse;
 

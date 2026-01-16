@@ -1,4 +1,4 @@
-﻿using CourseAPI.Datas;
+using CourseAPI.Datas;
 using CourseAPI.Models;
 using CourseAPI.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;

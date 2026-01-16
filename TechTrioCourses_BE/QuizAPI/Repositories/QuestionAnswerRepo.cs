@@ -24,10 +24,10 @@ namespace QuizAPI.Repositories
    return await _context.QuestionAnswers.FirstOrDefaultAsync(qa => qa.Id == id);
      }
 
-  public async Task<IEnumerable<QuestionAnswer>> GetByResultIdAsync(Guid resultId)
+  public async Task<IEnumerable<QuestionAnswer>> GetByQuestionIdAsync(Guid questionId)
         {
        return await _context.QuestionAnswers
-     .Where(qa => qa.ResultId == resultId)
+     .Where(qa => qa.QuestionId == questionId)
   .ToListAsync();
 }
 

@@ -1,5 +1,5 @@
-using UserAPI.DTOs.Request;
-using UserAPI.DTOs.Response;
+using UserAPI.DTOs.Request.UserCourse;
+using UserAPI.DTOs.Response.UserCourse;
 
 namespace UserAPI.Services.Interfaces
 {
