@@ -1,10 +1,11 @@
 using AutoMapper;
 using QuizAPI.DTOs.Request.Quiz;
+using QuizAPI.DTOs.Response.AttemptQuizDetailDTOs;
 using QuizAPI.DTOs.Response.Quiz;
-using TechTrioCourses.Shared.Enums;
 using QuizAPI.Models;
 using QuizAPI.Repositories.Interfaces;
 using QuizAPI.Services.Interfaces;
+using TechTrioCourses.Shared.Enums;
 
 namespace QuizAPI.Services
 {
@@ -12,11 +13,13 @@ namespace QuizAPI.Services
     {
         private readonly IQuizRepo _quizRepo;
         private readonly IMapper _mapper;
+        private readonly IQuizQuery _quizQuery;
 
-        public QuizService(IQuizRepo quizRepo, IMapper mapper)
+        public QuizService(IQuizRepo quizRepo, IMapper mapper, IQuizQuery quizQuery)
         {
             _quizRepo = quizRepo;
             _mapper = mapper;
+            _quizQuery = quizQuery;
         }
 
         public async Task<IEnumerable<QuizResponse>> GetAllQuizzesAsync()
@@ -86,7 +89,37 @@ namespace QuizAPI.Services
 
             return _mapper.Map<QuizResponse>(updatedQuiz);
         }
+        public async Task <QuizDetailResponseDto?> GetQuizDetailForAttemptAsync( Guid quizId)
+        {
+             var projection = await _quizQuery.GetQuizDetailForAttemptAsync(quizId); 
+            if(projection == null) return null;
 
+            return new QuizDetailResponseDto
+            {
+                Id = projection.Id,
+                Name = projection.Name,
+                Description = projection.Description,
+                DurationMinutes = projection.DurationMinutes,
+
+                Questions = projection.Questions.Select(
+                        q=> new QuizQuestionDto
+                        {
+                            QuestionId=q.QuestionId,
+                            QuestionText=q.QuestionText,
+                            QuestionType  =q.QuestionType,
+                            Points = q.Points,
+                            Order=q.Order,
+
+                            Choices= q.Choices?.Select(c=> new QuestionChoiceDto
+                            {
+                                Id=c.Id,
+                                ChoiceText=c.ChoiceText,
+                            }).ToList(),
+                        }
+                    ).ToList(),
+
+            };
+        }
         public async Task<bool> DeleteQuizAsync(Guid id)
         {
             return await _quizRepo.DeleteAsync(id);

@@ -17,10 +17,10 @@ export interface UserQuizzeResultCreateRequest {
 }
 export interface UserQuizzeResultUpdateRequest {
 
-  score?: number;
+  score?: number | null;
   userquizzeResultStatus?: UserQuizzeResultStatusEnum;
   completedAt?: string;
-  durationSeconds?: number;
+  durationSeconds?: number | null;
   metadata?: string;
 }
 export interface UserQuizzeResultResponse {
@@ -37,6 +37,31 @@ export interface UserQuizzeResultResponse {
   durationSeconds?: number | null;
   updatedAt: string;
 }
+//Get user quizze result including user answers and selected choices
+export interface UserQuizzeResultQuestionAnswer {
+  questionId: string;
+  textAnswer?: string | null;
+  selectedChoiceIds?: string[] | null;
+}
+export interface UserQuizzeResultResumeResponse {
+  resultId: string;
+  quizId: string;
+  userId: string;
+  attemptNumber: number;
+  startedAt: string;
+  answers: UserQuizzeResultQuestionAnswer[];
+}
+export interface UserQuizzeResultReviewResponse {
+  resultId: string;
+  quizId: string;
+  userId: string;
+  attemptNumber: number;
+  score?: number | null;
+  startedAt: string;
+  completedAt?: string | null;
+  answers: UserQuizzeResultQuestionAnswer[];
+}
+
 // ==================== USER QUIZ API ====================
 
 export const userQuizzeResultsAPI = {
@@ -161,7 +186,28 @@ export const userQuizzeResultsAPI = {
     );
     return response.data;
   },
-
+  /**
+   * Review user quizze result
+   * GET: /api/UserQuizzeResults/review/{id}  
+    */
+  reviewUserQuizzeResult: async (id: string): Promise<UserQuizzeResultReviewResponse> => {
+    const response = await userAxios.get<UserQuizzeResultReviewResponse>(
+      API_ENDPOINTS.USER_QUIZZE_RESULTS.REVIEW(id)
+    );
+    return response.data;
+  },
+  /**
+   * Resume user quizze result
+   * GET: /api/UserQuizzeResults/resume/{id}
+  */
+   resumeUserQuizzeResult: async (id: string): Promise<UserQuizzeResultResumeResponse> => {
+    const response = await userAxios.get<UserQuizzeResultResumeResponse>(
+      API_ENDPOINTS.USER_QUIZZE_RESULTS.RESUME(id)
+    );
+    return response.data;
+  },
+ 
+ 
   /**
    * Delete user quizze result
    * DELETE: /api/UserQuizzeResults/{id}

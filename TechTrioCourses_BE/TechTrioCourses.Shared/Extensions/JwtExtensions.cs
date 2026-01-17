@@ -28,8 +28,8 @@ namespace TechTrioCourses.Shared.Extensions
                           ValidIssuer = configuration["JwtSettings:Issuer"],
                           ValidAudience = configuration["JwtSettings:Audience"],
                           IssuerSigningKey = new SymmetricSecurityKey(
-Encoding.UTF8.GetBytes(configuration["JwtSettings:Key"] ??
-  configuration["JwtSettings:SecretKey"] ?? "DefaultKey"))
+                          Encoding.UTF8.GetBytes(configuration["JwtSettings:Key"] ??
+                          configuration["JwtSettings:SecretKey"] ?? "DefaultKey"))
                       };
                   });
 

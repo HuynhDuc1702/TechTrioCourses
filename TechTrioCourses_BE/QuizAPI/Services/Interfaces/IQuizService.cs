@@ -1,4 +1,5 @@
 using QuizAPI.DTOs.Request.Quiz;
+using QuizAPI.DTOs.Response.AttemptQuizDetailDTOs;
 using QuizAPI.DTOs.Response.Quiz;
 
 namespace QuizAPI.Services.Interfaces
@@ -8,6 +9,7 @@ namespace QuizAPI.Services.Interfaces
         Task<IEnumerable<QuizResponse>> GetAllQuizzesAsync();
         Task<QuizResponse?> GetQuizByIdAsync(Guid id);
         Task<IEnumerable<QuizResponse>> GetQuizzesByCourseIdAsync(Guid courseId);
+        Task<QuizDetailResponseDto?> GetQuizDetailForAttemptAsync(Guid quizId);
         Task<QuizResponse> CreateQuizAsync(CreateQuizRequest request);
         Task<QuizResponse?> UpdateQuizAsync(Guid id, UpdateQuizRequest request);
         Task<bool> DeleteQuizAsync(Guid id);

@@ -12,7 +12,7 @@ namespace UserAPI.Services
     {
         private readonly IUserQuizRepo _userQuizRepo;
         private readonly IMapper _mapper;
-
+      
         public UserQuizService(IUserQuizRepo userQuizRepo, IMapper mapper)
         {
             _userQuizRepo = userQuizRepo;
@@ -118,7 +118,7 @@ namespace UserAPI.Services
 
             return _mapper.Map<UserQuizResponse>(updatedUserQuiz);
         }
-
+       
 
         public async Task<bool> DeleteUserQuizAsync(Guid id)
         {

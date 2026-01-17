@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using UserAPI.DTOs.Request.UserQuizzeResult;
+using UserAPI.DTOs.Response.AttemptUserQuizzeResultDetailDTOs;
 using UserAPI.DTOs.Response.UserQuizzeResult;
 using UserAPI.Services;
 using UserAPI.Services.Interfaces;
@@ -13,6 +14,7 @@ namespace UserAPI.Controllers
     {
         private readonly IUserQuizzeResultService _quizzeResultService;
         private readonly IUserService _userService;
+        
 
         public UserQuizzeResultsController(IUserQuizzeResultService quizzeResultService, IUserService userService)
         {
@@ -90,6 +92,27 @@ namespace UserAPI.Controllers
             var results = await _quizzeResultService.GetLatestUserQuizzeResult(userQuizId);
             return Ok(results);
         }
+        [HttpGet("review/{id}")]
+        public async Task<ActionResult<UserQuizzeResultReviewResponseDtos>> GetUserQuizDetailForAttemptReviewAsync(Guid id)
+        {
+            var result = await _quizzeResultService.GetUserQuizzeResultDetailForAttemptReviewAsync(id);
+
+            if (result == null)
+                return NotFound();
+
+            return Ok(result);
+        }
+        [HttpGet("resume/{id}")]
+        public async Task<ActionResult<UserQuizzeResultReviewResponseDtos>> GetUserQuizDetailForAttemptResumeAsync(Guid id)
+        {
+            var result = await _quizzeResultService.GetUserQuizzeResultDetailForAttemptResumeAsync(id);
+
+            if (result == null)
+                return NotFound();
+
+            return Ok(result);
+        }
+
 
         // PUT: api/QuizzeResults/5
         [HttpPut("{id}")]

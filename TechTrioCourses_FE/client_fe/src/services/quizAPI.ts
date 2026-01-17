@@ -119,6 +119,27 @@ export interface QuizQuestionResponse {
     questionOrder?: number | null;
     overridePoints?: number | null;
 }
+// Full Quiz with Questions interface
+export interface QuestionChoice {
+  id: string;          
+  choiceText: string;
+}
+export interface QuizQuestion {
+  questionId: string;       
+  questionText: string;
+  questionType: QuestionTypeEnum;
+  points: number;
+  order?: number | null;    
+  choices?: QuestionChoice[] | null;
+}
+export interface QuizDetailResponse {
+  id: string;               
+  name: string;
+  description?: string | null;
+  durationMinutes: number;
+
+  questions: QuizQuestion[];
+}
 
 export const quizAPI = {
     // Create a new quiz
@@ -137,13 +158,18 @@ export const quizAPI = {
         return response.data;
     },
     // Get all quizzes
-    async getAllQuizzes(): Promise<QuizResponse[]> {
+    async getAllQuizzes(): Promise<QuizResponse[]> {    
         const response = await quizAxios.get<QuizResponse[]>(API_ENDPOINTS.QUIZZES.BASE);
         return response.data;
     },
     // Get quizzes by Course ID
     async getQuizzesByCourseId(courseId: string): Promise<QuizResponse[]> {
         const response = await quizAxios.get<QuizResponse[]>(`${API_ENDPOINTS.QUIZZES.BASE}/course/${courseId}`);
+        return response.data;
+    },
+    // Get detailed quiz by ID (including questions)
+    async getQuizDetailById(id: string): Promise<QuizDetailResponse> {
+        const response = await quizAxios.get<QuizDetailResponse>(API_ENDPOINTS.QUIZZES.DETAIL(id));
         return response.data;
     },
     // Delete a quiz

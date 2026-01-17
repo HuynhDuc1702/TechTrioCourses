@@ -73,6 +73,7 @@ export const API_ENDPOINTS = {
     },
     QUIZZES: {
         BASE: '/api/Quizzes',
+        DETAIL: (id: string) => `/api/Quizzes/detail/${id}`,
     },
     QUESTIONS: {
         BASE: '/api/Questions',
@@ -108,6 +109,8 @@ export const API_ENDPOINTS = {
         BY_USER_AND_COURSE: (courseId: string) => `/api/UserQuizzeResults/by-user-and-course/${courseId}`,
         BY_USER_QUIZ: (userQuizId: string) => `/api/UserQuizzeResults/by-user-quiz/${userQuizId}`,
         GET_LATEST: (userQuizId: string) => `/api/UserQuizzeResults/get-latest/${userQuizId}`,
+        REVIEW:(id: string) => `/api/UserQuizzeResults/review/${id}`,
+        RESUME: (id: string) => `/api/UserQuizzeResults/resume/${id}`,
     },
 
 }

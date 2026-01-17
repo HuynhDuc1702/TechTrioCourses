@@ -1,6 +1,7 @@
 using AutoMapper;
 using TechTrioCourses.Shared.Enums;
 using UserAPI.DTOs.Request.UserQuizzeResult;
+using UserAPI.DTOs.Response.AttemptUserQuizzeResultDetailDTOs;
 using UserAPI.DTOs.Response.UserQuizzeResult;
 using UserAPI.Models;
 using UserAPI.Repositories.Interfaces;
@@ -12,11 +13,12 @@ namespace UserAPI.Services
     {
         private readonly IUserQuizzeResultRepo _quizzeResultRepo;
         private readonly IMapper _mapper;
-
-        public UserQuizzeResultService(IUserQuizzeResultRepo quizzeResultRepo, IMapper mapper)
+        private readonly IUserQuizzeResultQueryRepo _userQuizzeResultQueryRepo;
+        public UserQuizzeResultService(IUserQuizzeResultRepo quizzeResultRepo, IMapper mapper, IUserQuizzeResultQueryRepo quizzeResultQueryRepo)
         {
             _quizzeResultRepo = quizzeResultRepo;
             _mapper = mapper;
+            _userQuizzeResultQueryRepo = quizzeResultQueryRepo;
         }
 
         public async Task<IEnumerable<UserQuizzeResultResponse>> GetAllQuizzeResultsAsync()
@@ -77,7 +79,61 @@ namespace UserAPI.Services
             var createdResult = await _quizzeResultRepo.CreateAsync(quizzeResult);
             return _mapper.Map<UserQuizzeResultResponse>(createdResult);
         }
+        public async Task<UserQuizzeResultReviewResponseDtos?> GetUserQuizzeResultDetailForAttemptReviewAsync(Guid id)
+        {
+            var projection = await _userQuizzeResultQueryRepo.GetUserQuizzeResultDetailForAttemptAsync(id);
+            if (projection == null) return null;
 
+            return new UserQuizzeResultReviewResponseDtos
+
+            {
+                ResultId = projection.ResultId,
+                QuizId = projection.QuizId,
+                UserId = projection.UserId,
+                AttemptNumber = projection.AttemptNumber,
+                Score = projection.Score,
+                StartedAt = projection.StartedAt,
+                CompletedAt = projection.CompletedAt,
+
+                Answers = projection.Answers.Select(
+                       a => new UserQuizzeResultQuestionAnswerDtos
+                       {
+                           QuestionId = a.QuestionId,
+                           TextAnswer = a.TextAnswer,
+
+                           SelectedChoiceIds = a.SelectedChoiceIds
+                       }
+
+                 ).ToList()
+            };
+        }
+        public async Task<UserQuizzeResultResumeResponseDto?> GetUserQuizzeResultDetailForAttemptResumeAsync(Guid id)
+        {
+            var projection = await _userQuizzeResultQueryRepo.GetUserQuizzeResultDetailForAttemptAsync(id);
+            if (projection == null) return null;
+
+            return new UserQuizzeResultResumeResponseDto
+
+            {
+                ResultId = projection.ResultId,
+                QuizId = projection.QuizId,
+                UserId = projection.UserId,
+                AttemptNumber = projection.AttemptNumber,
+                StartedAt = projection.StartedAt,
+
+
+                Answers = projection.Answers.Select(
+                       a => new UserQuizzeResultQuestionAnswerDtos
+                       {
+                           QuestionId = a.QuestionId,
+                           TextAnswer = a.TextAnswer,
+
+                           SelectedChoiceIds = a.SelectedChoiceIds
+                       }
+
+                 ).ToList()
+            };
+        }
         public async Task<UserQuizzeResultResponse?> UpdateQuizzeResultAsync(Guid id, UpdateUserQuizzeResultRequest request)
         {
             var existingResult = await _quizzeResultRepo.GetByIdAsync(id);

@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using UserAPI.DTOs.Request.UserQuiz;
 using UserAPI.DTOs.Response.UserQuiz;
-using UserAPI.Services;
 using UserAPI.Services.Interfaces;
 using TechTrioCourses.Shared.Enums;
 
@@ -179,7 +178,7 @@ namespace UserAPI.Controllers
 
             return Ok(userQuiz);
         }
-
+      
 
         // DELETE: api/UserQuizzes/{id}
         [HttpDelete("{id}")]

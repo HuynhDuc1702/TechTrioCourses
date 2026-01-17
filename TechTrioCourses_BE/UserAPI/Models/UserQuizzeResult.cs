@@ -31,4 +31,9 @@ public partial class UserQuizzeResult
     public string? Metadata { get; set; }
 
     public DateTime UpdatedAt { get; set; }
+    public virtual ICollection<UserInputAnswer> UserInputAnswers { get; set; }
+       = new List<UserInputAnswer>();
+
+    public virtual ICollection<UserSelectedChoice> UserSelectedChoices { get; set; }
+        = new List<UserSelectedChoice>();
 }
