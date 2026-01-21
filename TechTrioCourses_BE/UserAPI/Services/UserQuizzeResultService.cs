@@ -1,11 +1,17 @@
-using AutoMapper;
+﻿using AutoMapper;
+using MassTransit;
+using TechTrioCourses.Shared.Contracts;
 using TechTrioCourses.Shared.Enums;
+using UserAPI.DTOs.Request.SubmitQuizDTOs;
+using UserAPI.DTOs.Request.UserInputAnswer;
 using UserAPI.DTOs.Request.UserQuizzeResult;
+using UserAPI.DTOs.Request.UserSelectedChoice;
 using UserAPI.DTOs.Response.AttemptUserQuizzeResultDetailDTOs;
 using UserAPI.DTOs.Response.UserQuizzeResult;
 using UserAPI.Models;
 using UserAPI.Repositories.Interfaces;
 using UserAPI.Services.Interfaces;
+using static MassTransit.ValidationResultExtensions;
 
 namespace UserAPI.Services
 {
@@ -14,11 +20,22 @@ namespace UserAPI.Services
         private readonly IUserQuizzeResultRepo _quizzeResultRepo;
         private readonly IMapper _mapper;
         private readonly IUserQuizzeResultQueryRepo _userQuizzeResultQueryRepo;
-        public UserQuizzeResultService(IUserQuizzeResultRepo quizzeResultRepo, IMapper mapper, IUserQuizzeResultQueryRepo quizzeResultQueryRepo)
+        private readonly IUserSelectedChoiceService _userSelectedChoiceService;
+        private readonly IUserInputAnswerService _userInputAnswerService;
+        private readonly IPublishEndpoint _publishEndpoint;
+        public UserQuizzeResultService(IUserQuizzeResultRepo quizzeResultRepo,
+            IMapper mapper,
+            IUserQuizzeResultQueryRepo quizzeResultQueryRepo,
+            IUserSelectedChoiceService userSelectedChoiceService,
+            IUserInputAnswerService userInputAnswerService,
+            IPublishEndpoint publishEndpoint)
         {
             _quizzeResultRepo = quizzeResultRepo;
             _mapper = mapper;
             _userQuizzeResultQueryRepo = quizzeResultQueryRepo;
+            _userSelectedChoiceService = userSelectedChoiceService;
+            _userInputAnswerService = userInputAnswerService;
+            _publishEndpoint = publishEndpoint;
         }
 
         public async Task<IEnumerable<UserQuizzeResultResponse>> GetAllQuizzeResultsAsync()
@@ -75,9 +92,89 @@ namespace UserAPI.Services
             latestQuizzeResult == null
            ? 1
            : latestQuizzeResult.AttemptNumber + 1;
-           
+
             var createdResult = await _quizzeResultRepo.CreateAsync(quizzeResult);
             return _mapper.Map<UserQuizzeResultResponse>(createdResult);
+        }
+        public async Task SaveUserAnswersAsync(Guid resultId, List<QuestionAnswersDtos> answers)
+        {
+            foreach (var answer in answers)
+            {
+                
+                if (answer.SelectedChoices?.Any() == true)
+                {
+                    foreach (var choiceId in answer.SelectedChoices)
+                    {
+                        await _userSelectedChoiceService.SaveUserSelectedChoice(
+                            new CreateUserSelectedChoiceRequest
+                            {
+                                ResultId = resultId,
+                                ChoiceId = choiceId,
+                                QuestionId = answer.QuestionId,
+                            });
+
+                    }
+                }
+                if (!string.IsNullOrWhiteSpace(answer.InputAnswer))
+                {
+                    await _userInputAnswerService.SaveUserInputAnswer(
+
+                        new CreateUserInputAnswerRequest
+                        {
+                            ResultId = resultId,
+                            QuestionId = answer.QuestionId,
+                            AnswerText = answer.InputAnswer,
+                        }
+                    );
+
+                }
+            }
+        }
+        public async Task<SubmitQuizResponseDto?> SubmitQuizAsync(SubmitQuizRequestDto request)
+        {
+            var quizResult = await _quizzeResultRepo.GetByIdAsync(request.ResultId);
+            if (quizResult == null || quizResult.Status != UserQuizResultStatusEnum.In_progress)
+            {
+                return null;
+            }
+            await SaveUserAnswersAsync(request.ResultId, request.Answers);
+            if (!request.isFinalSubmisson)
+            {
+                return new SubmitQuizResponseDto
+                {
+                    ResultId = request.ResultId,
+                    Message = "Quiz progress saved",
+                    Status = UserQuizResultStatusEnum.In_progress
+                };
+            }
+            quizResult.Status = UserQuizResultStatusEnum.Grading;
+            quizResult.CompletedAt = DateTime.UtcNow;
+            quizResult.DurationSeconds = request.DurationSeconds;
+            await _quizzeResultRepo.UpdateAsync(quizResult);
+
+            await _publishEndpoint.Publish(new QuizSubmittedEvent
+            {
+                ResultId = request.ResultId,
+                QuizId = quizResult.QuizId,
+                UserQuizId = request.UserQuizId,
+                Answers = request.Answers.Select(a => new QuestionAnswerEventDto
+                {
+                    QuestionId = a.QuestionId,
+                    QuestionType = a.QuestionType,
+                    SelectedChoices = a.SelectedChoices,
+                    InputAnswer = a.InputAnswer
+                }).ToList(),
+                SubmittedAt = DateTime.UtcNow
+            });
+            return new SubmitQuizResponseDto
+            {
+                ResultId = request.ResultId,
+                UserQuizId= request.UserQuizId,
+                Message = "Quiz submitted successfully! Grading in progress...",
+                Status = UserQuizResultStatusEnum.Grading,
+                Score = null,
+                IsPased = null
+            };
         }
         public async Task<UserQuizzeResultReviewResponseDtos?> GetUserQuizzeResultDetailForAttemptReviewAsync(Guid id)
         {
@@ -146,8 +243,9 @@ namespace UserAPI.Services
             if (request.Score.HasValue)
                 existingResult.Score = request.Score.Value;
 
-            if (request.Status.HasValue)
-                existingResult.Status = request.Status.Value;
+            existingResult.Status = request.IsPassed
+       ? UserQuizResultStatusEnum.Passed
+       : UserQuizResultStatusEnum.Failed;
 
             if (request.CompletedAt.HasValue)
                 existingResult.CompletedAt = request.CompletedAt.Value;

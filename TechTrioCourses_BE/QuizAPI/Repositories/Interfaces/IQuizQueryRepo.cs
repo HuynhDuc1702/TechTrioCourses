@@ -1,9 +1,11 @@
 ﻿namespace QuizAPI.Repositories.Interfaces
 {
     using QuizAPI.DTOs.Projections.AttemptQuizDetailProjections;
+    using QuizAPI.DTOs.Projections.FullQuizDetailProjections;
 
-    public interface IQuizQuery
+    public interface IQuizQueryRepo
     {
-        Task<QuizDetailResponseProjection?> GetQuizDetailForAttemptAsync(Guid quizId);
+        Task<AttemptQuizDetailResponseProjection?> GetQuizDetailForAttemptAsync(Guid quizId);
+        Task<QuizDetailProjection?> GetQuizDetailAsync(Guid quizId);
     }
 }

@@ -5,6 +5,7 @@ using UserAPI.DTOs.Request.UserQuiz;
 using UserAPI.DTOs.Response.UserQuiz;
 using UserAPI.Services.Interfaces;
 using TechTrioCourses.Shared.Enums;
+using UserAPI.DTOs.Request.SubmitQuizDTOs;
 
 namespace UserAPI.Controllers
 {
@@ -46,7 +47,7 @@ namespace UserAPI.Controllers
         // GET: api/UserQuizzes/is-passed/{quizId}
         [HttpGet("is-passed/{quizId}")]
         [Authorize]
-        public async Task<ActionResult> CheckIsPassed(Guid id)
+        public async Task<ActionResult> CheckIsPassed(Guid quizId)
         {
             // Get AccountId from Token Claims
             var accountId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -57,11 +58,11 @@ namespace UserAPI.Controllers
             var user = await _userService.GetUserByAccountIdAsync(accountGuid);
             if (user == null) return Unauthorized();
 
-            var userquizz = await _userQuizService.GetUserQuizByUserAndQuizAsync(user.Id, id);
+            var userquizz = await _userQuizService.GetUserQuizByUserAndQuizAsync(user.Id, quizId);
 
             return Ok(new { isPassed = userquizz != null && userquizz.Status == UserQuizStatusEnum.Passed });
         }
-
+       
         // GET: api/UserQuizzes/by-user
         [HttpGet("by-user")]
         [Authorize]
@@ -154,7 +155,7 @@ namespace UserAPI.Controllers
 
         // PUT: api/UserQuizzes/{id}
         [HttpPut("{id}")]
-        public async Task<ActionResult<UserQuizResponse>> UpdateUserQuiz(Guid id, [FromBody] SubmitUserQuizRequest request)
+        public async Task<ActionResult<UserQuizResponse>> UpdateUserQuiz(Guid id, [FromBody] ApplyQuizGradingResultRequest request)
         {
             var userQuiz = await _userQuizService.UpdateUserQuizAsync(id, request);
 

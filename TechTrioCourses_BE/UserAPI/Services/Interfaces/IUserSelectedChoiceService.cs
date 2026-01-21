@@ -7,10 +7,11 @@ namespace UserAPI.Services.Interfaces
     {
         Task<IEnumerable<UserSelectedChoiceResponse>> GetAllUserSelectedChoicesAsync();
         Task<UserSelectedChoiceResponse?> GetUserSelectedChoiceByIdAsync(Guid id);
- Task<IEnumerable<UserSelectedChoiceResponse>> GetUserSelectedChoicesByResultIdAsync(Guid resultId);
-    Task<UserSelectedChoiceResponse?> GetUserSelectedChoiceByResultAndQuestionIdAsync(Guid resultId, Guid questionId);
-  Task<UserSelectedChoiceResponse> CreateUserSelectedChoiceAsync(CreateUserSelectedChoiceRequest request);
-  Task<UserSelectedChoiceResponse?> UpdateUserSelectedChoiceAsync(Guid id, UpdateUserSelectedChoiceRequest request);
- Task<bool> DeleteUserSelectedChoiceAsync(Guid id);
+        Task<IEnumerable<UserSelectedChoiceResponse>> GetUserSelectedChoicesByResultIdAsync(Guid resultId);
+        Task<UserSelectedChoiceResponse?> GetUserSelectedChoiceByResultAndQuestionIdAsync(Guid resultId, Guid questionId);
+        Task<UserSelectedChoiceResponse> CreateUserSelectedChoiceAsync(CreateUserSelectedChoiceRequest request);
+        Task SaveUserSelectedChoice(CreateUserSelectedChoiceRequest request);
+        Task<UserSelectedChoiceResponse?> UpdateUserSelectedChoiceAsync(Guid id, UpdateUserSelectedChoiceRequest request);
+        Task<bool> DeleteUserSelectedChoiceAsync(Guid id);
     }
 }

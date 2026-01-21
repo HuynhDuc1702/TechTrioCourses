@@ -1,3 +1,4 @@
+using UserAPI.DTOs.Request.SubmitQuizDTOs;
 using UserAPI.DTOs.Request.UserQuizzeResult;
 using UserAPI.DTOs.Response.AttemptUserQuizzeResultDetailDTOs;
 using UserAPI.DTOs.Response.UserQuizzeResult;
@@ -16,6 +17,8 @@ namespace UserAPI.Services.Interfaces
         Task<IEnumerable<UserQuizzeResultResponse>> GetQuizzeResultsByUserQuizIdAsync(Guid userQuizId);
         Task<UserQuizzeResultResponse> GetLatestUserQuizzeResult(Guid userQuizId);
         Task<UserQuizzeResultResponse> CreateQuizzeResultAsync(CreateUserQuizzeResultRequest request);
+        Task SaveUserAnswersAsync(Guid resultId, List<QuestionAnswersDtos> answers);
+        Task<SubmitQuizResponseDto?> SubmitQuizAsync(SubmitQuizRequestDto request);
         Task<UserQuizzeResultResponse?> UpdateQuizzeResultAsync(Guid id, UpdateUserQuizzeResultRequest request);
         Task<bool> DeleteQuizzeResultAsync(Guid id);
     }

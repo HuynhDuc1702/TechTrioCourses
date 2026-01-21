@@ -7,6 +7,7 @@ namespace QuizAPI.Repositories.Interfaces
         Task<IEnumerable<QuestionChoice>> GetAllAsync();
         Task<QuestionChoice?> GetByIdAsync(Guid id);
         Task<IEnumerable<QuestionChoice>> GetByQuestionIdAsync(Guid questionId);
+        
         Task<QuestionChoice> CreateAsync(QuestionChoice questionChoice);
         Task<QuestionChoice?> UpdateAsync(QuestionChoice questionChoice);
         Task<bool> DeleteAsync(Guid id);

@@ -1,12 +1,12 @@
-﻿namespace QuizAPI.DTOs.Projections.AttemptQuizDetailProjections
+﻿namespace QuizAPI.DTOs.Response.AttemptQuizDetailDTOs
 {
-    public class QuizDetailResponseProjection
+    public class AttemptQuizDetailResponseDto
     {
         public Guid Id { get; set; }
         public string Name { get; set; } = null!;
         public string? Description { get; set; }
         public double DurationMinutes { get; set; }
 
-        public List<QuizQuestionProjection> Questions { get; set; } = [];
+        public List<AttemptQuizQuestionDto> Questions { get; set; } = [];
     }
 }

@@ -2,7 +2,7 @@
 
 namespace QuizAPI.DTOs.Projections.AttemptQuizDetailProjections
 {
-    public class QuizQuestionProjection
+    public class AttemptQuizQuestionProjection
     {
         public Guid QuestionId { get; set; }
         public string QuestionText { get; set; } = null!;
@@ -10,6 +10,6 @@ namespace QuizAPI.DTOs.Projections.AttemptQuizDetailProjections
         public double Points { get; set; }
         public int? Order { get; set; }
 
-        public List<QuestionChoiceProjection>? Choices { get; set; }
+        public List<AttemptQuestionChoiceProjection>? Choices { get; set; }
     }
 }

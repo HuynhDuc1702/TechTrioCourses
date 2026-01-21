@@ -1,6 +1,8 @@
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using TechTrioCourses.Shared.Enums;
 using TechTrioCourses.Shared.Extensions;
+using UserAPI.Consumers;
 using UserAPI.Datas;
 using UserAPI.Repositories;
 using UserAPI.Repositories.Interfaces;
@@ -21,6 +23,7 @@ builder.Services.AddScoped<IUserQuizRepo, UserQuizRepo>();
 builder.Services.AddScoped<IUserQuizzeResultRepo, UserQuizzeResultRepo>();
 builder.Services.AddScoped<IUserInputAnswerRepo, UserInputAnswerRepo>();
 builder.Services.AddScoped<IUserSelectedChoiceRepo, UserSelectedChoiceRepo>();
+builder.Services.AddScoped<IUserQuizzeResultQueryRepo, UserQuizzeResultQueryRepo>();
 
 // Register services
 builder.Services.AddScoped<IUserService, UserService>();
@@ -57,6 +60,31 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+// UserAPI/Program.cs
+builder.Services.AddMassTransit(x =>
+{
+    // Register consumers
+    x.AddConsumer<QuizGradedConsumer>();
+
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host("localhost", "/", h =>
+        {
+            h.Username("guest");
+            h.Password("guest");
+        });
+
+        // Retry configuration
+        cfg.UseMessageRetry(r =>
+        {
+            r.Interval(3, TimeSpan.FromSeconds(5));
+            
+        });
+
+        // Configure endpoints
+        cfg.ConfigureEndpoints(context);
+    });
+});
 
 var app = builder.Build();
 

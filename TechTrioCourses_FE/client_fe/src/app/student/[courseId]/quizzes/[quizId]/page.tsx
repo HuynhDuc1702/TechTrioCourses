@@ -10,13 +10,10 @@ import {
   userQuizAPI,
   UserQuizResponse,
   UserQuizStatus,
- 
 } from "@/services/userAPI";
 import {
   UserQuizzeResultResponse,
-  
   userQuizzeResultsAPI,
-  UserQuizzeResultStatusEnum
 } from "@/services/UserAPI/userQuizzeResultAPI";
 
 
@@ -39,8 +36,8 @@ export default function QuizzDetailPage() {
       try {
 
         const data = await quizAPI.getQuizById(quizId);
-
         setQuiz(data);
+
       } catch (err) {
         setError(err instanceof Error ? err.message : "An unknown error occurred");
       } finally {
@@ -66,12 +63,8 @@ export default function QuizzDetailPage() {
       return;
     }
     try {
-       const userQuizData = await userQuizAPI.getUserQuizByUserAndQuiz(quizId);
-    setUserQuiz(userQuizData);
-
-    const latestResult =
-      await userQuizzeResultsAPI.getLatestUserQuizzeResultByUserQuizId(userQuizData.id);
-    setLatestUserQuizResult(latestResult);
+      const userQuizData = await userQuizAPI.getUserQuizByUserAndQuiz(quizId);
+      setUserQuiz(userQuizData);
 
       if (userQuizData) {
         const latestResult = await userQuizzeResultsAPI.getLatestUserQuizzeResultByUserQuizId(userQuizData.id);
@@ -151,7 +144,7 @@ export default function QuizzDetailPage() {
         );
       case UserQuizStatus.Passed:
       case UserQuizStatus.Failed:
-        if (latestUserQuizResult?.userquizzeResultStatus === UserQuizzeResultStatusEnum.Completed) {
+        
           return (
             <button
               onClick={handleRetakeQuiz}
@@ -163,18 +156,7 @@ export default function QuizzDetailPage() {
               Retake Quiz
             </button>
           );
-        } else {
-          <button
-            onClick={handleContinueQuiz}
-            className="w-full md:w-auto bg-gradient-to-r from-yellow-500 to-orange-600
-             text-white font-bold py-3 px-8 rounded-lg
-             hover:from-yellow-600 hover:to-orange-700
-             transition-all duration-300 shadow-lg hover:shadow-xl"
-          >
-            Continue Quiz
-          </button>
-
-        }
+        
       default:
         return null;
     }
@@ -199,11 +181,8 @@ export default function QuizzDetailPage() {
         courseId: quiz?.courseId || '',
         quizId: quizId,
         userQuizId: createdUserQuiz.id,
-
-
       });
       router.push(`/student/quizzes/${quizId}/attempt/${createdUserQuizzeResult.id}`);
-
 
     } catch (err) {
       alert('Failed to start quiz ');
@@ -213,6 +192,7 @@ export default function QuizzDetailPage() {
 
     if (!user?.userId) {
       alert('Please log in to start the quiz');
+      router.push('/auth/login');
       return;
     }
     try {
@@ -237,6 +217,7 @@ export default function QuizzDetailPage() {
 
     if (!user?.userId) {
       alert('Please log in to start the quiz');
+      router.push('/auth/login');
       return;
     }
     router.push(`/student/quizzes/${quizId}/attempt/${latestUserQuizResult?.id}`);

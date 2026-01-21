@@ -1,3 +1,5 @@
+using QuizAPI.DTOs.Projections.AttemptQuizDetailProjections;
+using QuizAPI.DTOs.Response.QuizQuestion;
 using TechTrioCourses.Shared.Enums;
 
 namespace QuizAPI.DTOs.Response.Quiz
@@ -13,5 +15,6 @@ namespace QuizAPI.DTOs.Response.Quiz
         public double DurationMinutes { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+        public List<QuizQuestionResponse> QuizQuestions { get; set; } = [];
     }
 }

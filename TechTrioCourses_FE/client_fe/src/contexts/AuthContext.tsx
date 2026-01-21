@@ -33,17 +33,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
 
   const syncUserSession = (userData: User, refreshTokenExpiresAt?: string) => {
-   
+
     setUser(userData);
 
-  
+
     localStorage.setItem('user', JSON.stringify(userData));
 
 
- 
+
 
     const refreshTokenExpiresAtStr = Cookies.get('refreshTokenExpiresAt');
-    let expiresOpt: Date | number = 7; 
+    let expiresOpt: Date | number = 7;
 
     if (refreshTokenExpiresAtStr) {
       expiresOpt = new Date(refreshTokenExpiresAtStr);
@@ -79,20 +79,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const refreshUser = async () => {
     try {
-      if (!user) return; 
+      if (!user) return;
       const userInfo = await userAPI.getUserByAccountId(user.accountId);
 
       const userData: User = {
         accountId: userInfo.accountId,
         userId: userInfo.id,
-        email: user.email, 
+        email: user.email,
         fullName: userInfo.fullName,
         avatarUrl: userInfo.avatarUrl,
         role: userInfo.role,
         createdAt: userInfo.createdAt,
       };
 
-     
+
       syncUserSession(userData);
 
     } catch (error) {
@@ -107,9 +107,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const authResult: AuthResult = await accountService.login({ email, password });
       console.log('DEBUG] Login successful, tokens received');
 
-      // Decode JWT to get accountId
       const tokenPayload = JSON.parse(atob(authResult.accessToken.split('.')[1]));
-      // Try multiple claim names (sub, accountId, nameid, or the full URI for NameIdentifier)
+
       const accountId = tokenPayload.sub ||
         tokenPayload.accountId ||
         tokenPayload.nameid ||
@@ -117,7 +116,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.log('[DEBUG] Token payload:', tokenPayload);
       console.log('[DEBUG] Decoded accountId from token:', accountId);
 
-      // After login, fetch user details
+
       const userInfo = await userAPI.getUserByAccountId(accountId);
       console.log('[DEBUG] User info fetched:', userInfo);
 

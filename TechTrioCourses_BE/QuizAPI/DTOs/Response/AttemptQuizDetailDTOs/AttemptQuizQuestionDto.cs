@@ -2,7 +2,7 @@
 
 namespace QuizAPI.DTOs.Response.AttemptQuizDetailDTOs
 {
-    public class QuizQuestionDto
+    public class AttemptQuizQuestionDto
     {
         public Guid QuestionId { get; set; }
         public string QuestionText { get; set; } = null!;
@@ -10,6 +10,6 @@ namespace QuizAPI.DTOs.Response.AttemptQuizDetailDTOs
         public double Points { get; set; }
         public int? Order { get; set; }
 
-        public List<QuestionChoiceDto>? Choices { get; set; }
+        public List<AttemptQuestionChoiceDto>? Choices { get; set; }
     }
 }

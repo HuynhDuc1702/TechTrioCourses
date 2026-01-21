@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using UserAPI.DTOs.Request.SubmitQuizDTOs;
 using UserAPI.DTOs.Request.UserQuizzeResult;
 using UserAPI.DTOs.Response.AttemptUserQuizzeResultDetailDTOs;
 using UserAPI.DTOs.Response.UserQuizzeResult;
@@ -84,6 +85,18 @@ namespace UserAPI.Controllers
             var results = await _quizzeResultService.GetQuizzeResultsByUserQuizIdAsync(userQuizId);
             return Ok(results);
         }
+        //POST :api/UserQuizzes/submit/{id}
+        [HttpPost("submit/{id}")]
+        public async Task<IActionResult> SubmitQuiz(Guid id, [FromBody] SubmitQuizRequestDto request)
+        {
+            if (id != request.ResultId)
+            {
+                return BadRequest("ResultId mismatch");
+            }
+            var response =await _quizzeResultService.SubmitQuizAsync(request);
+            return Ok(response);
+        }
+
 
         // GET: api/UserQuizzeResults/get-latest/{userQuizId}
         [HttpGet("get-latest/{userQuizId}")]
