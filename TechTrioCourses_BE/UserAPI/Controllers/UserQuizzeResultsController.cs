@@ -85,7 +85,7 @@ namespace UserAPI.Controllers
             var results = await _quizzeResultService.GetQuizzeResultsByUserQuizIdAsync(userQuizId);
             return Ok(results);
         }
-        //POST :api/UserQuizzes/submit/{id}
+        //POST :api/UserQuizzesResults/submit/{id}
         [HttpPost("submit/{id}")]
         public async Task<IActionResult> SubmitQuiz(Guid id, [FromBody] SubmitQuizRequestDto request)
         {

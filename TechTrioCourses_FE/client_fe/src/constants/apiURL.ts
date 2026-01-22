@@ -74,6 +74,7 @@ export const API_ENDPOINTS = {
     QUIZZES: {
         BASE: '/api/Quizzes',
         DETAIL: (id: string) => `/api/Quizzes/detail/${id}`,
+        ATTEMPT: (id: string) => `/api/Quizzes/attempt/${id}`,
     },
     QUESTIONS: {
         BASE: '/api/Questions',
@@ -111,6 +112,7 @@ export const API_ENDPOINTS = {
         GET_LATEST: (userQuizId: string) => `/api/UserQuizzeResults/get-latest/${userQuizId}`,
         REVIEW:(id: string) => `/api/UserQuizzeResults/review/${id}`,
         RESUME: (id: string) => `/api/UserQuizzeResults/resume/${id}`,
+        SUBMIT: (id: string) => `/api/UserQuizzeResults/submit/${id}`,
     },
 
 }

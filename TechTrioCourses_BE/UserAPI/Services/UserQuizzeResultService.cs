@@ -138,7 +138,7 @@ namespace UserAPI.Services
                 return null;
             }
             await SaveUserAnswersAsync(request.ResultId, request.Answers);
-            if (!request.isFinalSubmisson)
+            if (!request.IsFinalSubmisson)
             {
                 return new SubmitQuizResponseDto
                 {
@@ -172,8 +172,6 @@ namespace UserAPI.Services
                 UserQuizId= request.UserQuizId,
                 Message = "Quiz submitted successfully! Grading in progress...",
                 Status = UserQuizResultStatusEnum.Grading,
-                Score = null,
-                IsPased = null
             };
         }
         public async Task<UserQuizzeResultReviewResponseDtos?> GetUserQuizzeResultDetailForAttemptReviewAsync(Guid id)
@@ -186,11 +184,15 @@ namespace UserAPI.Services
             {
                 ResultId = projection.ResultId,
                 QuizId = projection.QuizId,
-                UserId = projection.UserId,
+                UserQuizId= projection.UserQuizId,
                 AttemptNumber = projection.AttemptNumber,
                 Score = projection.Score,
                 StartedAt = projection.StartedAt,
                 CompletedAt = projection.CompletedAt,
+                Status = (UserQuizResultStatusEnum)projection.Status,
+                DurationSeconds = projection.DurationSeconds,
+                Metadata = projection.Metadata,
+
 
                 Answers = projection.Answers.Select(
                        a => new UserQuizzeResultQuestionAnswerDtos
@@ -214,7 +216,7 @@ namespace UserAPI.Services
             {
                 ResultId = projection.ResultId,
                 QuizId = projection.QuizId,
-                UserId = projection.UserId,
+                UserQuizId = projection.QuizId,
                 AttemptNumber = projection.AttemptNumber,
                 StartedAt = projection.StartedAt,
 

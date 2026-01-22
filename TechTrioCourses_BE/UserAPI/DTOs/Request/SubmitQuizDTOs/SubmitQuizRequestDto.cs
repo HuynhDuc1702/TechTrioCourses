@@ -9,7 +9,7 @@ namespace UserAPI.DTOs.Request.SubmitQuizDTOs
         public List<QuestionAnswersDtos> Answers { get; set; } = [];
 
         public int? DurationSeconds { get; set; }
-        public bool isFinalSubmisson { get; set; }
+        public bool IsFinalSubmisson { get; set; }
     }
     public class QuestionAnswersDtos
     {

@@ -1,5 +1,6 @@
 import { API_ENDPOINTS } from '@/constants/apiURL';
 import { userAxios } from '@/middleware/axiosMiddleware';
+import { QuestionTypeEnum } from '../quizAPI';
 
 export enum UserQuizzeResultStatusEnum {
 
@@ -46,7 +47,7 @@ export interface UserQuizzeResultQuestionAnswer {
 export interface UserQuizzeResultResumeResponse {
   resultId: string;
   quizId: string;
-  userId: string;
+  userQuizId: string;
   attemptNumber: number;
   startedAt: string;
   answers: UserQuizzeResultQuestionAnswer[];
@@ -54,14 +55,39 @@ export interface UserQuizzeResultResumeResponse {
 export interface UserQuizzeResultReviewResponse {
   resultId: string;
   quizId: string;
-  userId: string;
+  userQuizId: string;
   attemptNumber: number;
   score?: number | null;
   startedAt: string;
   completedAt?: string | null;
+  durationSeconds?: number | null;
+  status: UserQuizzeResultStatusEnum;
+  metadata?: string | null;
   answers: UserQuizzeResultQuestionAnswer[];
 }
+//Submit user quizze result including user answers and selected choices
+export interface SubmitQuizRequestDto{
+  resultId: string;
+  userquizId: string;
+  durationSeconds?: number | null;
+  IsFinalSubmission: boolean;
+  answers: QuestionAnswersDtos[];
 
+}
+export interface QuestionAnswersDtos{
+  questionId: string;
+  questionType: QuestionTypeEnum;
+  selectedChoiceIds?: string[] | null;
+  inputAnswer?: string | null;
+}
+export interface SubmitQuizResponseDto{
+  resultId: string;
+  userquizId: string;
+  message?: string | null;
+  status: UserQuizzeResultStatusEnum;
+  score?: number | null;
+  ispassed?: boolean | null;
+}
 // ==================== USER QUIZ API ====================
 
 export const userQuizzeResultsAPI = {
@@ -203,6 +229,17 @@ export const userQuizzeResultsAPI = {
    resumeUserQuizzeResult: async (id: string): Promise<UserQuizzeResultResumeResponse> => {
     const response = await userAxios.get<UserQuizzeResultResumeResponse>(
       API_ENDPOINTS.USER_QUIZZE_RESULTS.RESUME(id)
+    );
+    return response.data;
+  },
+  /**
+   * Submit user quizze result
+   * POST: /api/UserQuizzeResults/submit/{id}
+   */
+   submitUserQuizzeResult: async (id: string, data: SubmitQuizRequestDto): Promise<SubmitQuizResponseDto> => {
+    const response = await userAxios.post<SubmitQuizResponseDto>(
+      API_ENDPOINTS.USER_QUIZZE_RESULTS.SUBMIT(id),
+      data
     );
     return response.data;
   },

@@ -119,26 +119,54 @@ export interface QuizQuestionResponse {
     questionOrder?: number | null;
     overridePoints?: number | null;
 }
-// Full Quiz with Questions interface
-export interface QuestionChoice {
+// Quiz Detail with Questions interface for attempting quizzes
+export interface AttemptQuestionChoiceDto {
   id: string;          
   choiceText: string;
 }
-export interface QuizQuestion {
+export interface AttemptQuizQuestionDto {
   questionId: string;       
   questionText: string;
   questionType: QuestionTypeEnum;
   points: number;
   order?: number | null;    
-  choices?: QuestionChoice[] | null;
+  choices?: AttemptQuestionChoiceDto[] | null;
 }
-export interface QuizDetailResponse {
+export interface AttemptQuizDetailResponseDto {
   id: string;               
   name: string;
   description?: string | null;
   durationMinutes: number;
 
-  questions: QuizQuestion[];
+  questions: AttemptQuizQuestionDto[];
+}
+//Quiz Detail with Questions interface for reviewing quizzes
+export interface QuizQuestionChoicesDetailDto {
+  id: string;          
+  choiceText: string;
+    isCorrect: boolean;
+}
+export interface QuizQuestionAnswersDetailDto {
+  id: string;          
+  answerText: string;
+}
+export interface QuizQuestionDetailDto {
+  questionId: string;       
+  questionText: string;
+  questionType: QuestionTypeEnum;
+  points: number;
+  order?: number | null;    
+  choices?: QuizQuestionChoicesDetailDto[] | null;
+  answer? : QuizQuestionAnswersDetailDto [] | null;
+}
+export interface QuizDetailResponseDto {
+  id: string;               
+  name: string;
+  description?: string | null;
+  totalMarks: number;
+  durationMinutes: number;
+
+  questions: QuizQuestionDetailDto[];
 }
 
 export const quizAPI = {
@@ -167,9 +195,14 @@ export const quizAPI = {
         const response = await quizAxios.get<QuizResponse[]>(`${API_ENDPOINTS.QUIZZES.BASE}/course/${courseId}`);
         return response.data;
     },
-    // Get detailed quiz by ID (including questions)
-    async getQuizDetailById(id: string): Promise<QuizDetailResponse> {
-        const response = await quizAxios.get<QuizDetailResponse>(API_ENDPOINTS.QUIZZES.DETAIL(id));
+    // Get detailed quiz by ID (including questions) for attempting
+    async GetQuizDetailForAttempt(id: string): Promise<AttemptQuizDetailResponseDto> {
+        const response = await quizAxios.get<AttemptQuizDetailResponseDto>(API_ENDPOINTS.QUIZZES.ATTEMPT(id));
+        return response.data;
+    },
+    // Get detailed quiz by ID (including questions) for reviewing
+    async GetQuizDetailForReview(id: string): Promise<QuizDetailResponseDto> {
+        const response = await quizAxios.get<QuizDetailResponseDto>(API_ENDPOINTS.QUIZZES.DETAIL(id));
         return response.data;
     },
     // Delete a quiz

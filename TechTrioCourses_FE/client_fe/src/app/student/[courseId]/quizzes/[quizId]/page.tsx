@@ -24,7 +24,6 @@ export default function QuizzDetailPage() {
   const [userQuiz, setUserQuiz] = useState<UserQuizResponse | null>(null);
   const [latestUserQuizResult, setLatestUserQuizResult] = useState<UserQuizzeResultResponse | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isStarted, setIsStarted] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
 
