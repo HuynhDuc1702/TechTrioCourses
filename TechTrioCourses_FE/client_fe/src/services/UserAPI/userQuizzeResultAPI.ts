@@ -3,9 +3,10 @@ import { userAxios } from '@/middleware/axiosMiddleware';
 import { QuestionTypeEnum } from '../quizAPI';
 
 export enum UserQuizzeResultStatusEnum {
-
   InProgress = 1,
-  Completed = 2
+  Grading = 2,
+  Passed = 3,
+  Failed = 4
 }
 
 export interface UserQuizzeResultCreateRequest {
@@ -13,7 +14,7 @@ export interface UserQuizzeResultCreateRequest {
   courseId: string;
   quizId: string;
   userQuizId: string;
- 
+
 
 }
 export interface UserQuizzeResultUpdateRequest {
@@ -34,7 +35,7 @@ export interface UserQuizzeResultResponse {
   attemptNumber: number;
   metadata?: string;
   startedAt: string;
-  completedAt?: string | null; 
+  completedAt?: string | null;
   durationSeconds?: number | null;
   updatedAt: string;
 }
@@ -55,7 +56,7 @@ export interface UserQuizzeResultBase {
 }
 
 export interface UserQuizzeResultResumeResponse
-  extends UserQuizzeResultBase {}
+  extends UserQuizzeResultBase { }
 export interface UserQuizzeResultReviewResponse
   extends UserQuizzeResultBase {
   score?: number | null;
@@ -64,21 +65,21 @@ export interface UserQuizzeResultReviewResponse
   metadata?: string | null;
 }
 //Submit user quizze result including user answers and selected choices
-export interface SubmitQuizRequestDto{
+export interface SubmitQuizRequestDto {
   resultId: string;
   userquizId: string;
   durationSeconds?: number | null;
-  isFinalSubmission: boolean;
+  IsFinalSubmisson: boolean;  // Backend has typo: "IsFinalSubmisson" not "IsFinalSubmission"
   answers: UserQuestionAnswersDto[];
 
 }
-export interface UserQuestionAnswersDto{
+export interface UserQuestionAnswersDto {
   questionId: string;
   questionType: QuestionTypeEnum;
-  selectedChoiceIds?: string[] | null;
+  SelectedChoices?: string[] | null;  // Backend expects "SelectedChoices" not "selectedChoiceIds"
   textAnswer?: string | null;
 }
-export interface SubmitQuizResponseDto{
+export interface SubmitQuizResponseDto {
   resultId: string;
   userquizId: string;
   message?: string | null;
@@ -152,7 +153,7 @@ export const userQuizzeResultsAPI = {
     );
     return response.data;
   },
-  
+
   /**
    * Get latest user quizze result by userQuiz ID
    * GET: /api/UserQuizzeResults/by-course/{courseId}
@@ -224,7 +225,7 @@ export const userQuizzeResultsAPI = {
    * Resume user quizze result
    * GET: /api/UserQuizzeResults/resume/{id}
   */
-   resumeUserQuizzeResult: async (id: string): Promise<UserQuizzeResultResumeResponse> => {
+  resumeUserQuizzeResult: async (id: string): Promise<UserQuizzeResultResumeResponse> => {
     const response = await userAxios.get<UserQuizzeResultResumeResponse>(
       API_ENDPOINTS.USER_QUIZZE_RESULTS.RESUME(id)
     );
@@ -234,15 +235,15 @@ export const userQuizzeResultsAPI = {
    * Submit user quizze result
    * POST: /api/UserQuizzeResults/submit/{id}
    */
-   submitUserQuizzeResult: async (id: string, data: SubmitQuizRequestDto): Promise<SubmitQuizResponseDto> => {
+  submitUserQuizzeResult: async (id: string, data: SubmitQuizRequestDto): Promise<SubmitQuizResponseDto> => {
     const response = await userAxios.post<SubmitQuizResponseDto>(
       API_ENDPOINTS.USER_QUIZZE_RESULTS.SUBMIT(id),
       data
     );
     return response.data;
   },
- 
- 
+
+
   /**
    * Delete user quizze result
    * DELETE: /api/UserQuizzeResults/{id}

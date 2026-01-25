@@ -34,7 +34,7 @@ namespace QuizAPI.Consumers
                         QuestionId = a.QuestionId,
                         QuestionType = a.QuestionType,
                         SelectedChoices = a.SelectedChoices,
-                        InputAnswer = a.InputAnswer,
+                        TextAnswer = a.TextAnswer,
                     }).ToList(),
                 });
                 if (gradingResult == null)

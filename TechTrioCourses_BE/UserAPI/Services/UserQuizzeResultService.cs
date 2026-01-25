@@ -176,7 +176,7 @@ namespace UserAPI.Services
         }
         public async Task<UserQuizzeResultReviewResponseDtos?> GetUserQuizzeResultDetailForAttemptReviewAsync(Guid id)
         {
-            var projection = await _userQuizzeResultQueryRepo.GetUserQuizzeResultDetailForAttemptAsync(id);
+            var projection = await _userQuizzeResultQueryRepo.GetUserQuizzeResultDetailAsync(id);
             if (projection == null) return null;
 
             return new UserQuizzeResultReviewResponseDtos
@@ -189,7 +189,7 @@ namespace UserAPI.Services
                 Score = projection.Score,
                 StartedAt = projection.StartedAt,
                 CompletedAt = projection.CompletedAt,
-                Status = (UserQuizResultStatusEnum)projection.Status,
+                Status = projection.Status,
                 DurationSeconds = projection.DurationSeconds,
                 Metadata = projection.Metadata,
 
@@ -208,7 +208,7 @@ namespace UserAPI.Services
         }
         public async Task<UserQuizzeResultResumeResponseDto?> GetUserQuizzeResultDetailForAttemptResumeAsync(Guid id)
         {
-            var projection = await _userQuizzeResultQueryRepo.GetUserQuizzeResultDetailForAttemptAsync(id);
+            var projection = await _userQuizzeResultQueryRepo.GetUserQuizzeResultDetailAsync(id);
             if (projection == null) return null;
 
             return new UserQuizzeResultResumeResponseDto
@@ -216,7 +216,7 @@ namespace UserAPI.Services
             {
                 ResultId = projection.ResultId,
                 QuizId = projection.QuizId,
-                UserQuizId = projection.QuizId,
+                UserQuizId = projection.UserQuizId,
                 DurationSeconds=projection.DurationSeconds,
                 AttemptNumber = projection.AttemptNumber,
                 StartedAt = projection.StartedAt,

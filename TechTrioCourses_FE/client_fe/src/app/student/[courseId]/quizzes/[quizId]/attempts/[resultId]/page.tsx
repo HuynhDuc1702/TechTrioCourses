@@ -75,105 +75,142 @@ export default function QuizAttemptPage() {
       fetchQuizAttempt();
     }
   }, [quizId, resultId]);
-  
-//Auto-save progress to localStorage
-useEffect(() => {
-  if (!quizViewModel) return;
 
-  const payload = {
-    savedAt: new Date().toISOString(),
-    questions: quizViewModel.questions.map(q => ({
-      questionId: q.questionId,
-      userAnswer: q.userAnswer,
-    })),
-  };
+  //Auto-save progress to localStorage
+  useEffect(() => {
+    if (!quizViewModel) return;
 
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
-}, [quizViewModel]);
+    const payload = {
+      savedAt: new Date().toISOString(),
+      questions: quizViewModel.questions.map(q => ({
+        questionId: q.questionId,
+        userAnswer: q.userAnswer,
+      })),
+    };
 
-// Merge quiz detail and user answers into view model 
- useEffect(() => {
-  if (!quizDetail || !userQuizResult) return;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+  }, [quizViewModel]);
 
-  const local = localStorage.getItem(STORAGE_KEY);
-  let localAnswers = new Map<string, UserQuizQuestionAnswerBase>();
+  // Merge quiz detail and user answers into view model 
+  useEffect(() => {
+    if (!quizDetail || !userQuizResult) return;
 
-  if (local) {
-    const parsed = JSON.parse(local);
-    localAnswers = new Map(
-      parsed.questions.map((q: any) => [q.questionId, q.userAnswer])
+    const local = localStorage.getItem(STORAGE_KEY);
+    let localAnswers = new Map<string, UserQuizQuestionAnswerBase>();
+
+    if (local) {
+      const parsed = JSON.parse(local);
+      localAnswers = new Map(
+        parsed.questions.map((q: any) => [q.questionId, q.userAnswer])
+      );
+    }
+
+    const serverAnswers = new Map(
+      userQuizResult.answers.map(a => [a.questionId, a])
     );
-  }
 
-  const serverAnswers = new Map(
-    userQuizResult.answers.map(a => [a.questionId, a])
-  );
+    const vm: AttemptQuizViewModel = {
+      ...quizDetail,
+      questions: quizDetail.questions.map(q => ({
+        ...q,
+        userAnswer:
+          localAnswers.get(q.questionId) ??
+          serverAnswers.get(q.questionId),
+      })),
+    };
 
-  const vm: AttemptQuizViewModel = {
-    ...quizDetail,
-    questions: quizDetail.questions.map(q => ({
-      ...q,
-      userAnswer:
-        localAnswers.get(q.questionId) ??
-        serverAnswers.get(q.questionId),
-    })),
+    setQuizViewModel(vm);
+  }, [quizDetail, userQuizResult]);
+
+  const saveQuizProgress = async (isFinalSubmission: boolean) => {
+    if (!quizViewModel || !userQuizResult) return;
+
+    try {
+      const payload = {
+        resultId,
+        userquizId: userQuizResult.userQuizId,
+        durationSeconds: userQuizResult.durationSeconds,
+        IsFinalSubmisson: isFinalSubmission,  // Backend has typo: "IsFinalSubmisson" not "IsFinalSubmission"
+        answers: quizViewModel.questions.map(q => ({
+          questionId: q.questionId,
+          questionType: q.questionType,
+          SelectedChoices: q.userAnswer?.selectedChoiceIds, // Backend expects "SelectedChoices"
+          textAnswer: q.userAnswer?.textAnswer,
+        })),
+      };
+
+      console.log("📤 Submitting quiz to backend...", {
+        resultId,
+        isFinalSubmission,
+        questionCount: quizViewModel.questions.length
+      });
+      console.log("📋 Full payload:", JSON.stringify(payload, null, 2));
+      console.log("🔍 Answers detail:", payload.answers);
+
+      const response = await userQuizzeResultsAPI.submitUserQuizzeResult(resultId, payload);
+
+      console.log("✅ Backend response:", response);
+      return response;
+    } catch (error) {
+      console.error("❌ Failed to submit quiz:", error);
+      throw error; // Re-throw so calling function can handle it
+    }
   };
 
-  setQuizViewModel(vm);
-}, [quizDetail, userQuizResult]);
 
- const saveQuizProgress = async (isFinalSubmission: boolean) => {
-  if (!quizViewModel || !userQuizResult) return;
 
-  await userQuizzeResultsAPI.submitUserQuizzeResult(resultId, {
-    resultId,
-    userquizId: userQuizResult.userQuizId,
-    durationSeconds: userQuizResult.durationSeconds,
-    isFinalSubmission,
-    answers: quizViewModel.questions.map(q => ({
-      questionId: q.questionId,
-      questionType: q.questionType,
-      selectedChoiceIds: q.userAnswer?.selectedChoiceIds,
-      inputAnswer: q.userAnswer?.textAnswer,
-    })),
-  });
-};
 
   const handleSubmitQuiz = async () => {
     if (!quizViewModel) return;
     try {
       setLoading(true);
-      await saveQuizProgress(true);
+      setError(null);
 
-      
+      const result = await saveQuizProgress(true);
+
+      if (result) {
+        alert(`Quiz submitted! Score: ${result.score ?? 'Pending grading'}`);
+
+        localStorage.removeItem(STORAGE_KEY);
+        router.push(`/student/${courseId}/quizzes/${quizId}/results/${resultId}`);
+
+      }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An unknown error occurred");
+      console.error("Submit error:", err);
+      setError(err instanceof Error ? err.message : "Failed to submit quiz");
+      setLoading(false);
     }
   }
- 
-   const handleManualSaveQuiz = async () => {
+
+  const handleManualSaveQuiz = async () => {
     if (!quizViewModel) return;
     try {
       setLoading(true);
-     
+      setError(null);
+
       await saveQuizProgress(false);
 
-      
+
+
+      alert("Progress saved successfully!");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An unknown error occurred");
+      console.error("Save error:", err);
+      setError(err instanceof Error ? err.message : "Failed to save progress");
+    } finally {
+      setLoading(false);
     }
   }
-// Auto-save every 5 minutes
-useEffect(() => {
-  if (!quizViewModel) return;
+  // Auto-save every 5 minutes
+  useEffect(() => {
+    if (!quizViewModel) return;
 
-  const interval = setInterval(() => {
-    console.log("⏱ Auto-saving quiz progress...");
-    saveQuizProgress(false);
-  }, 5 * 60 * 1000); 
+    const interval = setInterval(() => {
+      console.log("⏱ Auto-saving quiz progress...");
+      saveQuizProgress(false);
+    }, 5 * 60 * 1000);
 
-  return () => clearInterval(interval);
-}, [quizViewModel]);
+    return () => clearInterval(interval);
+  }, [quizViewModel]);
 
 
   const renderQuestion = (q: QuizQuestionViewModel) => {
@@ -217,22 +254,27 @@ useEffect(() => {
       if (!prev) return prev;
       return {
         ...prev,
-        questions: prev.questions.map(q=>{
-          if(q.questionId !== questionId) return q;
+        questions: prev.questions.map(q => {
+          if (q.questionId !== questionId) return q;
 
           const selectedChoices = q.userAnswer?.selectedChoiceIds || [];
 
-          const next= selectedChoices.includes(choiceId)? selectedChoices
-          .filter(id=>id!==choiceId):[...selectedChoices, choiceId];
+          const next = selectedChoices.includes(choiceId) ? selectedChoices
+            .filter(id => id !== choiceId) : [...selectedChoices, choiceId];
+
+          console.log("✅ Multiple choice toggled:", { questionId, choiceId, oldSelection: selectedChoices, newSelection: next });
+
           return {
             ...q,
-            userAnswer:{
+            userAnswer: {
               questionId,
-               selectedChoiceIds: next}}
+              selectedChoiceIds: next
+            }
+          }
         })
       }
     },
-  )
+    )
   }
   const renderTrueFalse = (q: QuizQuestionViewModel) => {
     return (
@@ -270,22 +312,24 @@ useEffect(() => {
     )
   }
   const updateTextAnswer = (questionId: string, text: string) => {
-      setQuizViewModel(prev => {
+    setQuizViewModel(prev => {
       if (!prev) return prev;
       return {
         ...prev,
-        
-        questions: prev.questions.map(q=>{
-          if(q.questionId !== questionId) return q;
+
+        questions: prev.questions.map(q => {
+          if (q.questionId !== questionId) return q;
           return {
             ...q,
-            userAnswer:{
+            userAnswer: {
               questionId,
-              textAnswer: text}}
+              textAnswer: text
+            }
+          }
         })
       }
     },
-  )
+    )
   }
 
   const toggleTrueFalseAnswer = (questionId: string, choiceId: string) => {
@@ -293,17 +337,22 @@ useEffect(() => {
       if (!prev) return prev;
       return {
         ...prev,
-        questions: prev.questions.map(q=>{
-          if(q.questionId !== questionId) return q;
+        questions: prev.questions.map(q => {
+          if (q.questionId !== questionId) return q;
+
+          console.log("✅ True/False selected:", { questionId, choiceId });
+
           return {
             ...q,
-            userAnswer:{
+            userAnswer: {
               questionId,
-               selectedChoiceIds: [choiceId]}}
+              selectedChoiceIds: [choiceId]
+            }
+          }
         })
       }
     },
-  )
+    )
   }
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
@@ -319,6 +368,23 @@ useEffect(() => {
           {renderQuestion(q)}
         </div>
       ))}
+      <div style={{ marginTop: 24, display: "flex", gap: 12 }}>
+        <button
+          onClick={handleManualSaveQuiz}
+          disabled={loading}
+        >
+          💾 Save progress
+        </button>
+
+        <button
+          onClick={handleSubmitQuiz}
+          disabled={loading}
+          style={{ backgroundColor: "#e53935", color: "white" }}
+        >
+          🚀 Submit quiz
+        </button>
+      </div>
     </div>
+
   );
 }

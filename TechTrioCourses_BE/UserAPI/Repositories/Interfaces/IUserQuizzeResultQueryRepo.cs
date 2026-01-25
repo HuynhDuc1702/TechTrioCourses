@@ -4,6 +4,6 @@ namespace UserAPI.Repositories.Interfaces
 {
     public interface IUserQuizzeResultQueryRepo
     {
-        Task<UserQuizzeResultDetailResponseProjection?> GetUserQuizzeResultDetailForAttemptAsync(Guid id);
+        Task<UserQuizzeResultDetailResponseProjection?> GetUserQuizzeResultDetailAsync(Guid id);
     }
 }

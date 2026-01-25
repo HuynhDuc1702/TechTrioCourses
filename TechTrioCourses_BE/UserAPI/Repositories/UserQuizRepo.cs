@@ -71,15 +71,7 @@ namespace UserAPI.Repositories
 
         public async Task<bool> UpdateUserQuizAsync(UserQuiz userQuiz)
         {
-            var existingResult = await _context.UserQuizzes.FindAsync(userQuiz.Id);
-
-
-            if (existingResult == null)
-                return false;
-
-          
-
-
+            _context.UserQuizzes.Update(userQuiz);
             return await _context.SaveChangesAsync() > 0;
         }
        

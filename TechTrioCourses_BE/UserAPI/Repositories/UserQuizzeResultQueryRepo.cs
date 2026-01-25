@@ -15,7 +15,7 @@ namespace UserAPI.Repositories
             _context = context;
         }
 
-        public async Task <UserQuizzeResultDetailResponseProjection?> GetUserQuizzeResultDetailForAttemptAsync (Guid id)
+        public async Task <UserQuizzeResultDetailResponseProjection?> GetUserQuizzeResultDetailAsync (Guid id)
         {
             return await _context.UserQuizzeResults
                 .Where(r => r.Id == id)
@@ -23,8 +23,9 @@ namespace UserAPI.Repositories
                 {
                     ResultId = r.Id,
                     QuizId= r.QuizId,
-                   
+                   UserQuizId=r.UserQuizId,
                     AttemptNumber= r.AttemptNumber,
+                    Status= r.Status,
                     Score= r.Score,
                     StartedAt= r.StartedAt,
                     CompletedAt= r.CompletedAt,

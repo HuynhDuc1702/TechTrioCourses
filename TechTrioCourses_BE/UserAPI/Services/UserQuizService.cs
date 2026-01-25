@@ -1,4 +1,5 @@
 using AutoMapper;
+using System.Diagnostics;
 using System.Reflection.Metadata.Ecma335;
 using TechTrioCourses.Shared.Enums;
 using UserAPI.DTOs.Request.UserQuiz;
@@ -13,11 +14,12 @@ namespace UserAPI.Services
     {
         private readonly IUserQuizRepo _userQuizRepo;
         private readonly IMapper _mapper;
-
-        public UserQuizService(IUserQuizRepo userQuizRepo, IMapper mapper)
+        private readonly ILogger<UserQuizService> _logger;
+        public UserQuizService(IUserQuizRepo userQuizRepo, IMapper mapper, ILogger<UserQuizService> logger)
         {
             _userQuizRepo = userQuizRepo;
             _mapper = mapper;
+            _logger = logger;
         }
 
         public async Task<UserQuizResponse?> GetUserQuizByIdAsync(Guid id)
@@ -86,6 +88,12 @@ namespace UserAPI.Services
 
         public async Task<UserQuizResponse?> UpdateUserQuizAsync(Guid id, ApplyQuizGradingResultRequest request)
         {
+            _logger.LogInformation(
+     "Before update UserQuiz: IsPassed{IsPassed}, Score {}",
+     request.IsPassed,
+     request.SubmitScore
+     
+ );
             var userQuiz = await _userQuizRepo.GetByIdAsync(id);
             var now= DateTime.UtcNow;
             if (userQuiz == null)

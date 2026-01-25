@@ -58,7 +58,7 @@ namespace QuizAPI.Services
                                     ?.Trim()
                                     .ToLower();
 
-            var userAnswer = userAnswers.InputAnswer?.Trim().ToLower();
+            var userAnswer = userAnswers.TextAnswer?.Trim().ToLower();
             return correctAnswer == userAnswer;
         }
 
