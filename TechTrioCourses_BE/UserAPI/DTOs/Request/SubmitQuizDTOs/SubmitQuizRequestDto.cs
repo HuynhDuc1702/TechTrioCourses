@@ -6,17 +6,17 @@ namespace UserAPI.DTOs.Request.SubmitQuizDTOs
     {
         public Guid ResultId { get; set; }
         public Guid UserQuizId { get; set; }
-        public List<QuestionAnswersDtos> Answers { get; set; } = [];
+        public List<UserQuestionAnswersDtos> Answers { get; set; } = [];
 
         public int? DurationSeconds { get; set; }
         public bool IsFinalSubmisson { get; set; }
     }
-    public class QuestionAnswersDtos
+    public class UserQuestionAnswersDtos
     {
         public Guid QuestionId { get; set; }
         public QuestionTypeEnum QuestionType { get; set; }
         public List<Guid>? SelectedChoices { get; set; }
-        public string? InputAnswer { get; set; }
+        public string? TextAnswer { get; set; }
     }
     public class SubmitQuizResponseDto
     {

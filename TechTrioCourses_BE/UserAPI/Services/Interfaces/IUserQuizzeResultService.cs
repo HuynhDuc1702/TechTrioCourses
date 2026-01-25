@@ -17,7 +17,7 @@ namespace UserAPI.Services.Interfaces
         Task<IEnumerable<UserQuizzeResultResponse>> GetQuizzeResultsByUserQuizIdAsync(Guid userQuizId);
         Task<UserQuizzeResultResponse> GetLatestUserQuizzeResult(Guid userQuizId);
         Task<UserQuizzeResultResponse> CreateQuizzeResultAsync(CreateUserQuizzeResultRequest request);
-        Task SaveUserAnswersAsync(Guid resultId, List<QuestionAnswersDtos> answers);
+        Task SaveUserAnswersAsync(Guid resultId, List<UserQuestionAnswersDtos> answers);
         Task<SubmitQuizResponseDto?> SubmitQuizAsync(SubmitQuizRequestDto request);
         Task<UserQuizzeResultResponse?> UpdateQuizzeResultAsync(Guid id, UpdateUserQuizzeResultRequest request);
         Task<bool> DeleteQuizzeResultAsync(Guid id);

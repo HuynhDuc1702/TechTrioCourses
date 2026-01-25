@@ -20,6 +20,6 @@ namespace TechTrioCourses.Shared.Contracts
         public Guid QuestionId { get; set; }
         public QuestionTypeEnum QuestionType { get; set; }
         public List<Guid>? SelectedChoices { get; set; }
-        public string? InputAnswer { get; set; }
+        public string? TextAnswer { get; set; }
     }
 }

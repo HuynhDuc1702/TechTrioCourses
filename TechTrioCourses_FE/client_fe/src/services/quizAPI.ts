@@ -119,55 +119,57 @@ export interface QuizQuestionResponse {
     questionOrder?: number | null;
     overridePoints?: number | null;
 }
-// Quiz Detail with Questions interface for attempting quizzes
-export interface AttemptQuestionChoiceDto {
-  id: string;          
-  choiceText: string;
+
+
+export interface QuizBaseDto {
+  id: string;
+  name: string;
+  description?: string | null;
+  durationMinutes: number;
 }
-export interface AttemptQuizQuestionDto {
-  questionId: string;       
+
+
+export interface QuizQuestionBaseDto {
+  questionId: string;
   questionText: string;
   questionType: QuestionTypeEnum;
   points: number;
-  order?: number | null;    
+  order?: number | null;
+}
+
+export interface AttemptQuestionChoiceDto {
+  id: string;
+  choiceText: string;
+}
+
+
+export interface AttemptQuizQuestionDto extends QuizQuestionBaseDto {
   choices?: AttemptQuestionChoiceDto[] | null;
 }
-export interface AttemptQuizDetailResponseDto {
-  id: string;               
-  name: string;
-  description?: string | null;
-  durationMinutes: number;
 
+export interface AttemptQuizDetailResponseDto extends QuizBaseDto {
   questions: AttemptQuizQuestionDto[];
 }
-//Quiz Detail with Questions interface for reviewing quizzes
-export interface QuizQuestionChoicesDetailDto {
-  id: string;          
-  choiceText: string;
-    isCorrect: boolean;
+
+export interface QuizQuestionChoicesDetailDto extends AttemptQuestionChoiceDto {
+  isCorrect: boolean;
 }
+
 export interface QuizQuestionAnswersDetailDto {
-  id: string;          
+  id: string;
   answerText: string;
 }
-export interface QuizQuestionDetailDto {
-  questionId: string;       
-  questionText: string;
-  questionType: QuestionTypeEnum;
-  points: number;
-  order?: number | null;    
-  choices?: QuizQuestionChoicesDetailDto[] | null;
-  answer? : QuizQuestionAnswersDetailDto [] | null;
-}
-export interface QuizDetailResponseDto {
-  id: string;               
-  name: string;
-  description?: string | null;
-  totalMarks: number;
-  durationMinutes: number;
 
+export interface QuizQuestionDetailDto extends QuizQuestionBaseDto {
+  choices?: QuizQuestionChoicesDetailDto[] | null;
+  answers?: QuizQuestionAnswersDetailDto[] | null;
+}
+
+export interface QuizDetailResponseDto extends QuizBaseDto {
+  totalMarks: number;
   questions: QuizQuestionDetailDto[];
 }
+
 
 export const quizAPI = {
     // Create a new quiz
@@ -200,7 +202,7 @@ export const quizAPI = {
         const response = await quizAxios.get<AttemptQuizDetailResponseDto>(API_ENDPOINTS.QUIZZES.ATTEMPT(id));
         return response.data;
     },
-    // Get detailed quiz by ID (including questions) for reviewing
+    // Get detailed quiz by ID (including questions and Answers) for reviewing
     async GetQuizDetailForReview(id: string): Promise<QuizDetailResponseDto> {
         const response = await quizAxios.get<QuizDetailResponseDto>(API_ENDPOINTS.QUIZZES.DETAIL(id));
         return response.data;

@@ -181,7 +181,7 @@ export default function QuizzDetailPage() {
         quizId: quizId,
         userQuizId: createdUserQuiz.id,
       });
-      router.push(`/student/quizzes/${quizId}/attempt/${createdUserQuizzeResult.id}`);
+      router.push(`/student/${courseId}/quizzes/${quizId}/attempts/${createdUserQuizzeResult.id}`);
 
     } catch (err) {
       alert('Failed to start quiz ');
@@ -206,7 +206,7 @@ export default function QuizzDetailPage() {
         userQuizId: userQuiz!.id,
 
       });
-      router.push(`/student/quizzes/${quizId}/attempt/${createdUserQuizzeResult.id}`);
+      router.push(`/student/${courseId}/quizzes/${quizId}/attempts/${createdUserQuizzeResult.id}`);
 
     } catch (err) {
       alert('Failed to start quiz ');
@@ -219,7 +219,7 @@ export default function QuizzDetailPage() {
       router.push('/auth/login');
       return;
     }
-    router.push(`/student/quizzes/${quizId}/attempt/${latestUserQuizResult?.id}`);
+    router.push(`/student/${courseId}/quizzes/${quizId}/attempts/${latestUserQuizResult?.id}`);
   }
 
   if (loading) {

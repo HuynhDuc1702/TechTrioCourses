@@ -4,20 +4,20 @@ import { userAxios } from '@/middleware/axiosMiddleware';
 export interface UserInputAnswerCreateRequest {
     resultId: string;
     questionId: string;
-    answerText: string;
+    textAnswer: string;
 }
 
 export interface UserInputAnswerUpdateRequest {
     resultId?: string;
     questionId?: string;
-    answerText?: string;
+    textAnswer?: string;
 }
 
 export interface UserInputAnswerResponse {
     id: string;
     resultId: string;
     questionId: string;
-    answerText: string;
+    textAnswer: string;
     createdAt: string;
     updatedAt: string;
 }

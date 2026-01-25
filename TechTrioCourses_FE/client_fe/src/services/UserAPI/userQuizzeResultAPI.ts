@@ -39,46 +39,44 @@ export interface UserQuizzeResultResponse {
   updatedAt: string;
 }
 //Get user quizze result including user answers and selected choices
-export interface UserQuizzeResultQuestionAnswer {
+export interface UserQuizQuestionAnswerBase {
   questionId: string;
-  textAnswer?: string | null;
   selectedChoiceIds?: string[] | null;
+  textAnswer?: string | null;
 }
-export interface UserQuizzeResultResumeResponse {
+export interface UserQuizzeResultBase {
   resultId: string;
   quizId: string;
   userQuizId: string;
   attemptNumber: number;
-  startedAt: string;
-  answers: UserQuizzeResultQuestionAnswer[];
-}
-export interface UserQuizzeResultReviewResponse {
-  resultId: string;
-  quizId: string;
-  userQuizId: string;
-  attemptNumber: number;
-  score?: number | null;
-  startedAt: string;
-  completedAt?: string | null;
   durationSeconds?: number | null;
+  startedAt: string;
+  answers: UserQuizQuestionAnswerBase[];
+}
+
+export interface UserQuizzeResultResumeResponse
+  extends UserQuizzeResultBase {}
+export interface UserQuizzeResultReviewResponse
+  extends UserQuizzeResultBase {
+  score?: number | null;
+  completedAt?: string | null;
   status: UserQuizzeResultStatusEnum;
   metadata?: string | null;
-  answers: UserQuizzeResultQuestionAnswer[];
 }
 //Submit user quizze result including user answers and selected choices
 export interface SubmitQuizRequestDto{
   resultId: string;
   userquizId: string;
   durationSeconds?: number | null;
-  IsFinalSubmission: boolean;
-  answers: QuestionAnswersDtos[];
+  isFinalSubmission: boolean;
+  answers: UserQuestionAnswersDto[];
 
 }
-export interface QuestionAnswersDtos{
+export interface UserQuestionAnswersDto{
   questionId: string;
   questionType: QuestionTypeEnum;
   selectedChoiceIds?: string[] | null;
-  inputAnswer?: string | null;
+  textAnswer?: string | null;
 }
 export interface SubmitQuizResponseDto{
   resultId: string;

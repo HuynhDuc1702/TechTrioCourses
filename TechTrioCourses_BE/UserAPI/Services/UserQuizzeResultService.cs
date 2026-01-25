@@ -96,7 +96,7 @@ namespace UserAPI.Services
             var createdResult = await _quizzeResultRepo.CreateAsync(quizzeResult);
             return _mapper.Map<UserQuizzeResultResponse>(createdResult);
         }
-        public async Task SaveUserAnswersAsync(Guid resultId, List<QuestionAnswersDtos> answers)
+        public async Task SaveUserAnswersAsync(Guid resultId, List<UserQuestionAnswersDtos> answers)
         {
             foreach (var answer in answers)
             {
@@ -115,7 +115,7 @@ namespace UserAPI.Services
 
                     }
                 }
-                if (!string.IsNullOrWhiteSpace(answer.InputAnswer))
+                if (!string.IsNullOrWhiteSpace(answer.TextAnswer))
                 {
                     await _userInputAnswerService.SaveUserInputAnswer(
 
@@ -123,7 +123,7 @@ namespace UserAPI.Services
                         {
                             ResultId = resultId,
                             QuestionId = answer.QuestionId,
-                            AnswerText = answer.InputAnswer,
+                            AnswerText = answer.TextAnswer,
                         }
                     );
 
@@ -162,7 +162,7 @@ namespace UserAPI.Services
                     QuestionId = a.QuestionId,
                     QuestionType = a.QuestionType,
                     SelectedChoices = a.SelectedChoices,
-                    InputAnswer = a.InputAnswer
+                    TextAnswer = a.TextAnswer
                 }).ToList(),
                 SubmittedAt = DateTime.UtcNow
             });
@@ -217,6 +217,7 @@ namespace UserAPI.Services
                 ResultId = projection.ResultId,
                 QuizId = projection.QuizId,
                 UserQuizId = projection.QuizId,
+                DurationSeconds=projection.DurationSeconds,
                 AttemptNumber = projection.AttemptNumber,
                 StartedAt = projection.StartedAt,
 

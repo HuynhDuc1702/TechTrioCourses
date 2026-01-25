@@ -23,7 +23,7 @@ namespace UserAPI.Repositories
                 {
                     ResultId = r.Id,
                     QuizId= r.QuizId,
-                    UserId= r.UserId,
+                   
                     AttemptNumber= r.AttemptNumber,
                     Score= r.Score,
                     StartedAt= r.StartedAt,
