@@ -1,10 +1,12 @@
 import { API_ENDPOINTS } from '@/constants/apiURL';
 import { userAxios } from '@/middleware/axiosMiddleware';
+import { QuestionTypeEnum } from '../quizAPI';
 
 export enum UserQuizzeResultStatusEnum {
-
   InProgress = 1,
-  Completed = 2
+  Grading = 2,
+  Passed = 3,
+  Failed = 4
 }
 
 export interface UserQuizzeResultCreateRequest {
@@ -12,15 +14,15 @@ export interface UserQuizzeResultCreateRequest {
   courseId: string;
   quizId: string;
   userQuizId: string;
- 
+
 
 }
 export interface UserQuizzeResultUpdateRequest {
 
-  score?: number;
-  userquizzeResultStatus?: UserQuizzeResultStatusEnum;
+  score?: number | null;
+  status?: UserQuizzeResultStatusEnum;
   completedAt?: string;
-  durationSeconds?: number;
+  durationSeconds?: number | null;
   metadata?: string;
 }
 export interface UserQuizzeResultResponse {
@@ -29,13 +31,61 @@ export interface UserQuizzeResultResponse {
   courseId: string;
   quizId: string;
   score?: number | null;
-  userquizzeResultStatus: UserQuizzeResultStatusEnum;
+  status: UserQuizzeResultStatusEnum;
   attemptNumber: number;
   metadata?: string;
   startedAt: string;
-  completedAt?: string | null; 
+  completedAt?: string | null;
   durationSeconds?: number | null;
   updatedAt: string;
+}
+//Get user quizze result including user answers and selected choices
+export interface UserQuizQuestionAnswerBase {
+  questionId: string;
+  selectedChoiceIds?: string[] | null;
+  textAnswer?: string | null;
+}
+export interface UserQuizzeResultBase {
+  resultId: string;
+  quizId: string;
+  userQuizId: string;
+  attemptNumber: number;
+  durationSeconds?: number | null;
+  startedAt: string;
+  answers: UserQuizQuestionAnswerBase[];
+}
+
+export interface UserQuizzeResultResumeResponse
+  extends UserQuizzeResultBase { }
+export interface UserQuizzeResultReviewResponse
+  extends UserQuizzeResultBase {
+  score?: number | null;
+  completedAt?: string | null;
+  status: UserQuizzeResultStatusEnum;
+  metadata?: string | null;
+}
+//Submit user quizze result including user answers and selected choices
+export interface SubmitQuizRequestDto {
+  resultId: string;
+  userquizId: string;
+  durationSeconds?: number | null;
+  IsFinalSubmisson: boolean;  // Backend has typo: "IsFinalSubmisson" not "IsFinalSubmission"
+  answers: UserQuestionAnswersDto[];
+
+}
+export interface UserQuestionAnswersDto {
+  questionId: string;
+  questionType: QuestionTypeEnum;
+  SelectedChoices?: string[] | null;  // Backend expects "SelectedChoices" not "selectedChoiceIds"
+  textAnswer?: string | null;
+}
+export interface SubmitQuizResponseDto {
+  resultId: string;
+  userquizId: string;
+  message?: string | null;
+  status: UserQuizzeResultStatusEnum;
+  score?: number | null;
+  ispassed?: boolean | null;
 }
 // ==================== USER QUIZ API ====================
 
@@ -103,7 +153,7 @@ export const userQuizzeResultsAPI = {
     );
     return response.data;
   },
-  
+
   /**
    * Get latest user quizze result by userQuiz ID
    * GET: /api/UserQuizzeResults/by-course/{courseId}
@@ -161,6 +211,38 @@ export const userQuizzeResultsAPI = {
     );
     return response.data;
   },
+  /**
+   * Review user quizze result
+   * GET: /api/UserQuizzeResults/review/{id}  
+    */
+  reviewUserQuizzeResult: async (id: string): Promise<UserQuizzeResultReviewResponse> => {
+    const response = await userAxios.get<UserQuizzeResultReviewResponse>(
+      API_ENDPOINTS.USER_QUIZZE_RESULTS.REVIEW(id)
+    );
+    return response.data;
+  },
+  /**
+   * Resume user quizze result
+   * GET: /api/UserQuizzeResults/resume/{id}
+  */
+  resumeUserQuizzeResult: async (id: string): Promise<UserQuizzeResultResumeResponse> => {
+    const response = await userAxios.get<UserQuizzeResultResumeResponse>(
+      API_ENDPOINTS.USER_QUIZZE_RESULTS.RESUME(id)
+    );
+    return response.data;
+  },
+  /**
+   * Submit user quizze result
+   * POST: /api/UserQuizzeResults/submit/{id}
+   */
+  submitUserQuizzeResult: async (id: string, data: SubmitQuizRequestDto): Promise<SubmitQuizResponseDto> => {
+    const response = await userAxios.post<SubmitQuizResponseDto>(
+      API_ENDPOINTS.USER_QUIZZE_RESULTS.SUBMIT(id),
+      data
+    );
+    return response.data;
+  },
+
 
   /**
    * Delete user quizze result

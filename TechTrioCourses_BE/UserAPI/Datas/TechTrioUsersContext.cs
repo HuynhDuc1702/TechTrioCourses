@@ -186,6 +186,12 @@ public partial class TechTrioUsersContext : DbContext
             entity.Property(e => e.UpdatedAt)
                 .HasDefaultValueSql("(CURRENT_TIMESTAMP AT TIME ZONE 'UTC'::text)")
                 .HasColumnName("updated_at");
+
+            entity.HasOne<UserQuizzeResult>()
+                .WithMany(e => e.UserInputAnswers)
+                .HasForeignKey(e => e.ResultId)
+                .HasConstraintName("fk_user_input_answers_result")
+                .OnDelete(DeleteBehavior.Cascade);
         });
         modelBuilder.Entity<UserSelectedChoice>(entity =>
         {
@@ -211,6 +217,12 @@ public partial class TechTrioUsersContext : DbContext
             entity.Property(e => e.UpdatedAt)
                 .HasDefaultValueSql("(CURRENT_TIMESTAMP AT TIME ZONE 'UTC'::text)")
                 .HasColumnName("updated_at");
+
+            entity.HasOne<UserQuizzeResult>()
+                .WithMany(e => e.UserSelectedChoices)
+                .HasForeignKey(e => e.ResultId)
+                .HasConstraintName("fk_user_selected_choices_result")
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<UserQuiz>(entity =>

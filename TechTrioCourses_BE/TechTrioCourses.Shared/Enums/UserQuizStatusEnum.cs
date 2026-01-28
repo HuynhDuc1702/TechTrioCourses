@@ -9,7 +9,7 @@ namespace TechTrioCourses.Shared.Enums
         [Description("In_progress")]
         In_progress = 2,
         [Description("Passed")]
-  Passed = 3,
+        Passed = 3,
         [Description("Failed")]
         Failed = 4
     }

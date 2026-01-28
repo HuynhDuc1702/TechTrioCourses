@@ -1,4 +1,5 @@
 using AutoMapper;
+using QuizAPI.DTOs.Request.GradeQuizDTOs;
 using QuizAPI.DTOs.Request.QuestionChoice;
 using QuizAPI.DTOs.Response.QuestionChoice;
 using QuizAPI.Models;
@@ -8,78 +9,106 @@ using QuizAPI.Services.Interfaces;
 namespace QuizAPI.Services
 {
     public class QuestionChoiceService : IQuestionChoiceService
- {
+    {
         private readonly IQuestionChoiceRepo _questionChoiceRepo;
-   private readonly IMapper _mapper;
+        private readonly IMapper _mapper;
 
         public QuestionChoiceService(IQuestionChoiceRepo questionChoiceRepo, IMapper mapper)
-   {
-    _questionChoiceRepo = questionChoiceRepo;
-       _mapper = mapper;
- }
+        {
+            _questionChoiceRepo = questionChoiceRepo;
+            _mapper = mapper;
+        }
 
-   public async Task<IEnumerable<QuestionChoiceResponse>> GetAllQuestionChoicesAsync()
-{
-  var choices = await _questionChoiceRepo.GetAllAsync();
-      return _mapper.Map<IEnumerable<QuestionChoiceResponse>>(choices);
-      }
+        public async Task<IEnumerable<QuestionChoiceResponse>> GetAllQuestionChoicesAsync()
+        {
+            var choices = await _questionChoiceRepo.GetAllAsync();
+            return _mapper.Map<IEnumerable<QuestionChoiceResponse>>(choices);
+        }
 
         public async Task<QuestionChoiceResponse?> GetQuestionChoiceByIdAsync(Guid id)
         {
-       var choice = await _questionChoiceRepo.GetByIdAsync(id);
+            var choice = await _questionChoiceRepo.GetByIdAsync(id);
 
-       if (choice == null)
-   {
-       return null;
- }
+            if (choice == null)
+            {
+                return null;
+            }
 
-  return _mapper.Map<QuestionChoiceResponse>(choice);
+            return _mapper.Map<QuestionChoiceResponse>(choice);
         }
 
         public async Task<IEnumerable<QuestionChoiceResponse>> GetQuestionChoicesByQuestionIdAsync(Guid questionId)
- {
-   var choices = await _questionChoiceRepo.GetByQuestionIdAsync(questionId);
- return _mapper.Map<IEnumerable<QuestionChoiceResponse>>(choices);
-}
+        {
+            var choices = await _questionChoiceRepo.GetByQuestionIdAsync(questionId);
+            return _mapper.Map<IEnumerable<QuestionChoiceResponse>>(choices);
+        }
+       
+        public async Task<bool> GradeMultipleQuestion(UserQuestionAnswersDtos userAnswers)
+        {
+            var correctChoiceIds = (await
+                GetQuestionChoicesByQuestionIdAsync(userAnswers.QuestionId))
+                .Where(c => c.IsCorrect)
+                .Select(c => c.Id)
+                .ToHashSet();
+
+            var userChoiceIds = userAnswers.SelectedChoices?
+                .ToHashSet() ?? new HashSet<Guid>();
+
+            
+            return correctChoiceIds.SetEquals(userChoiceIds);
+        }
+        public async Task<bool> GradeTrueFalseQuestion(UserQuestionAnswersDtos userAnswers)
+        {
+            var correctChoiceId = (await 
+                GetQuestionChoicesByQuestionIdAsync(userAnswers.QuestionId))
+                .Where(c => c.IsCorrect)
+                .Select(c => c.Id)
+                .Single();
+
+            var userChoiceId = userAnswers.SelectedChoices?
+                .Single();
+
+            return correctChoiceId == userChoiceId;
+        }
 
         public async Task<QuestionChoiceResponse> CreateQuestionChoiceAsync(CreateQuestionChoiceRequest request)
         {
- var choice = _mapper.Map<QuestionChoice>(request);
+            var choice = _mapper.Map<QuestionChoice>(request);
 
-   var createdChoice = await _questionChoiceRepo.CreateAsync(choice);
+            var createdChoice = await _questionChoiceRepo.CreateAsync(choice);
 
-       return _mapper.Map<QuestionChoiceResponse>(createdChoice);
+            return _mapper.Map<QuestionChoiceResponse>(createdChoice);
         }
 
-      public async Task<QuestionChoiceResponse?> UpdateQuestionChoiceAsync(Guid id, UpdateQuestionChoiceRequest request)
+        public async Task<QuestionChoiceResponse?> UpdateQuestionChoiceAsync(Guid id, UpdateQuestionChoiceRequest request)
         {
-       var existingChoice = await _questionChoiceRepo.GetByIdAsync(id);
+            var existingChoice = await _questionChoiceRepo.GetByIdAsync(id);
 
-   if (existingChoice == null)
-      {
-return null;
-       }
+            if (existingChoice == null)
+            {
+                return null;
+            }
 
-    // Map only non-null properties from request to existing choice
-      if (request.ChoiceText != null)
-         existingChoice.ChoiceText = request.ChoiceText;
+            // Map only non-null properties from request to existing choice
+            if (request.ChoiceText != null)
+                existingChoice.ChoiceText = request.ChoiceText;
 
             if (request.IsCorrect.HasValue)
-        existingChoice.IsCorrect = request.IsCorrect.Value;
+                existingChoice.IsCorrect = request.IsCorrect.Value;
 
-       var updatedChoice = await _questionChoiceRepo.UpdateAsync(existingChoice);
+            var updatedChoice = await _questionChoiceRepo.UpdateAsync(existingChoice);
 
             if (updatedChoice == null)
-   {
-     return null;
- }
+            {
+                return null;
+            }
 
-    return _mapper.Map<QuestionChoiceResponse>(updatedChoice);
+            return _mapper.Map<QuestionChoiceResponse>(updatedChoice);
         }
 
-   public async Task<bool> DeleteQuestionChoiceAsync(Guid id)
-  {
-return await _questionChoiceRepo.DeleteAsync(id);
-    }
+        public async Task<bool> DeleteQuestionChoiceAsync(Guid id)
+        {
+            return await _questionChoiceRepo.DeleteAsync(id);
+        }
     }
 }

@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 using TechTrioCourses.Shared.Enums;
 using UserAPI.Datas;
 using UserAPI.Models;

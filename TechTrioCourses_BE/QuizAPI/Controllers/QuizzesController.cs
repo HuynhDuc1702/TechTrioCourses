@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using QuizAPI.DTOs.Request.Quiz;
+using QuizAPI.DTOs.Response.AttemptQuizDetailDTOs;
+using QuizAPI.DTOs.Response.FullQuizDetailDTOs;
 using QuizAPI.DTOs.Response.Quiz;
 using QuizAPI.Services.Interfaces;
 
@@ -39,6 +41,31 @@ namespace QuizAPI.Controllers
                 return NotFound();
             }
 
+            return Ok(quiz);
+        }
+
+        // GET: api/Quizzes/attempt/5
+        [HttpGet("attempt/{id}")]
+        public async Task<ActionResult<AttemptQuizDetailResponseDto>> GetQuizDetailForAttempt(Guid id)
+        {
+            var quiz = await _quizService.GetQuizDetailForAttemptAsync(id);
+
+            if (quiz == null)
+            {
+                return NotFound();
+            }
+            return Ok(quiz);
+        }
+        // GET: api/Quizzes/detail/5
+        [HttpGet("detail/{id}")]
+        public async Task<ActionResult<QuizDetailResponseDto>> GetQuizDetail(Guid id)
+        {
+            var quiz = await _quizService.GetQuizDetailAsync(id);
+
+            if (quiz == null)
+            {
+                return NotFound();
+            }
             return Ok(quiz);
         }
 

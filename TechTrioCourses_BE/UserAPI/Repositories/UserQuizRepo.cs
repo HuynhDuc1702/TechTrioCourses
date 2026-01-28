@@ -61,12 +61,7 @@ namespace UserAPI.Repositories
 
         public async Task<UserQuiz> CreateUserQuizAsync(UserQuiz userQuiz)
         {
-            userQuiz.Id = Guid.NewGuid();
-            userQuiz.UpdatedAt = DateTime.UtcNow;
-            userQuiz.FirstAttemptAt = DateTime.UtcNow;
-            userQuiz.LastAttemptAt = DateTime.UtcNow;
-            userQuiz.AttemptCount = 1;
-            userQuiz.Status = UserQuizStatusEnum.In_progress;
+            
 
             _context.Set<UserQuiz>().Add(userQuiz);
             await _context.SaveChangesAsync();
@@ -76,19 +71,11 @@ namespace UserAPI.Repositories
 
         public async Task<bool> UpdateUserQuizAsync(UserQuiz userQuiz)
         {
-            var existingResult = await _context.UserQuizzes.FindAsync(userQuiz.Id);
-
-
-            if (existingResult == null)
-                return false;
-
-            existingResult.UpdatedAt = DateTime.UtcNow;
-
-
+            _context.UserQuizzes.Update(userQuiz);
             return await _context.SaveChangesAsync() > 0;
         }
        
-
+        
 
 
         public async Task<bool> DeleteUserQuizAsync(Guid id)

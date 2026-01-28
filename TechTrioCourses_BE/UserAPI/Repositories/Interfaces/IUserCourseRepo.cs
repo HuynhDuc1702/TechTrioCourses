@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using UserAPI.Models;
 
 namespace UserAPI.Repositories.Interfaces

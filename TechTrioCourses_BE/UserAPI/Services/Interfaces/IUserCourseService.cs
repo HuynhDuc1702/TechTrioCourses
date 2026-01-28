@@ -1,5 +1,6 @@
 using UserAPI.DTOs.Request.UserCourse;
 using UserAPI.DTOs.Response.UserCourse;
+using System.Linq.Expressions;
 
 namespace UserAPI.Services.Interfaces
 {
@@ -12,6 +13,7 @@ namespace UserAPI.Services.Interfaces
         Task<UserCourseResponse?> GetUserCourseByUserAndCourseAsync(Guid userId, Guid courseId);
         Task<UserCourseResponse?> CreateUserCourseAsync(CreateUserCourseRequest request);
         Task<UserCourseResponse?> UpdateUserCourseAsync(Guid id);
+
         Task<bool> DeleteUserCourseAsync(Guid id);
     }
 }
