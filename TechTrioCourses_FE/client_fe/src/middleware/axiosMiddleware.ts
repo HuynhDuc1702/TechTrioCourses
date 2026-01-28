@@ -2,7 +2,6 @@ import axios, { AxiosInstance, InternalAxiosRequestConfig, AxiosError } from 'ax
 import { API_URLS, API_ENDPOINTS } from '@/constants/apiURL';
 import Cookies from 'js-cookie';
 
-// ==================== TOKEN MANAGEMENT ====================
 
 export class TokenManager {
   private static readonly ACCESS_TOKEN_KEY = 'accessToken';
@@ -11,39 +10,28 @@ export class TokenManager {
   private static readonly REFRESH_EXPIRY_KEY = 'refreshTokenExpiresAt';
   private static readonly USER_KEY = 'user';
 
-  /**
-   * Get access token from cookies
-   */
+
   static getAccessToken(): string | null {
     return Cookies.get(this.ACCESS_TOKEN_KEY) || null;
   }
 
-  /**
-   * Get refresh token from cookies
-   */
   static getRefreshToken(): string | null {
     return Cookies.get(this.REFRESH_TOKEN_KEY) || null;
   }
 
-  /**
-   * Set access token in cookies
-   */
+
   static setAccessToken(token: string): void {
     Cookies.set(this.ACCESS_TOKEN_KEY, token, { secure: true, sameSite: 'Lax' });
   }
 
-  /**
-   * Set refresh token in cookies
-   */
+
   static setRefreshToken(token: string): void {
     Cookies.set(this.REFRESH_TOKEN_KEY, token, { secure: true, sameSite: 'Lax' });
   }
 
-  /**
-   * Set both tokens with expiration times
-   */
+
   static setTokens(accessToken: string, refreshToken: string, accessExpiresAt: string, refreshExpiresAt: string): void {
-    // Calculate expiration days/fractions for js-cookie
+
     const accessDate = new Date(accessExpiresAt);
     const refreshDate = new Date(refreshExpiresAt);
 
@@ -54,9 +42,7 @@ export class TokenManager {
     Cookies.set(this.REFRESH_EXPIRY_KEY, refreshExpiresAt, { expires: refreshDate, secure: true, sameSite: 'Lax' });
   }
 
-  /**
-   * Clear all tokens and user data
-   */
+
   static clearTokens(): void {
     Cookies.remove(this.ACCESS_TOKEN_KEY);
     Cookies.remove(this.REFRESH_TOKEN_KEY);
@@ -69,33 +55,24 @@ export class TokenManager {
     localStorage.removeItem(this.USER_KEY);
   }
 
-  /**
-   * Check if access token is expired
-   */
   static isAccessTokenExpired(): boolean {
     const expiresAt = Cookies.get(this.ACCESS_EXPIRY_KEY);
     if (!expiresAt) return true;
     return new Date(expiresAt) <= new Date();
   }
 
-  /**
-   * Check if refresh token is expired
-   */
   static isRefreshTokenExpired(): boolean {
     const expiresAt = Cookies.get(this.REFRESH_EXPIRY_KEY);
     if (!expiresAt) return true;
     return new Date(expiresAt) <= new Date();
   }
 
-  /**
-   * Check if user is authenticated with valid session (valid refresh token)
-   */
+
   static isAuthenticated(): boolean {
     return !!this.getRefreshToken() && !this.isRefreshTokenExpired();
   }
 }
 
-// ==================== TOKEN REFRESH ====================
 
 interface RefreshTokenResponse {
   accessToken: string;
@@ -122,9 +99,7 @@ const processQueue = (error: any = null, token: string | null = null): void => {
   failedQueue = [];
 };
 
-/**
- * Refresh the access token using the refresh token
- */
+
 const refreshAccessToken = async (): Promise<string> => {
   const refreshToken = TokenManager.getRefreshToken();
 
@@ -149,11 +124,6 @@ const refreshAccessToken = async (): Promise<string> => {
   }
 };
 
-// ==================== AXIOS INTERCEPTORS ====================
-
-/**
- * Request interceptor - adds authorization header
- */
 const requestInterceptor = (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
   const token = TokenManager.getAccessToken();
 
@@ -164,27 +134,21 @@ const requestInterceptor = (config: InternalAxiosRequestConfig): InternalAxiosRe
   return config;
 };
 
-/**
- * Request error interceptor
- */
+
 const requestErrorInterceptor = (error: any): Promise<never> => {
   return Promise.reject(error);
 };
 
-/**
- * Response interceptor - handles successful responses
- */
+
 const responseInterceptor = (response: any) => {
   return response;
 };
 
-/**
- * Response error interceptor - handles token refresh on 401
- */
+
 const responseErrorInterceptor = async (error: AxiosError): Promise<any> => {
   const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
-  // AUTH ENDPOINTS - SKIP REFRESH & REDIRECT
+
   const authEndpoints = [
     API_ENDPOINTS.ACCOUNTS.LOGIN,
     API_ENDPOINTS.ACCOUNTS.REGISTER,
@@ -194,7 +158,7 @@ const responseErrorInterceptor = async (error: AxiosError): Promise<any> => {
     API_ENDPOINTS.ACCOUNTS.CHANGE_PASSWORD,
   ];
 
-  // Check if this is an auth endpoint - if yes, just reject without refresh/redirect
+
   const isAuthEndpoint = authEndpoints.some(endpoint =>
     originalRequest.url?.includes(endpoint)
   );
@@ -203,10 +167,10 @@ const responseErrorInterceptor = async (error: AxiosError): Promise<any> => {
     return Promise.reject(error);
   }
 
-  // If error is 401 and we haven't retried yet
+
   if (error.response?.status === 401 && !originalRequest._retry) {
     if (isRefreshing) {
-      // If already refreshing, queue this request
+
       return new Promise((resolve, reject) => {
         failedQueue.push({ resolve, reject });
       })
@@ -236,7 +200,6 @@ const responseErrorInterceptor = async (error: AxiosError): Promise<any> => {
     } catch (refreshError) {
       processQueue(refreshError, null);
 
-      // Redirect to login page
       if (typeof window !== 'undefined') {
         window.location.href = '/auth/login';
       }
@@ -250,24 +213,20 @@ const responseErrorInterceptor = async (error: AxiosError): Promise<any> => {
   return Promise.reject(error);
 };
 
-// ==================== AXIOS INSTANCE FACTORY ====================
 
-/**
- * Create an axios instance with token interceptors
- */
 export const createAxiosInstance = (baseURL: string): AxiosInstance => {
   const instance = axios.create({
     baseURL,
     withCredentials: true,
   });
 
-  // Add request interceptors
+
   instance.interceptors.request.use(
     requestInterceptor,
     requestErrorInterceptor
   );
 
-  // Add response interceptors
+
   instance.interceptors.response.use(
     responseInterceptor,
     responseErrorInterceptor
@@ -276,31 +235,17 @@ export const createAxiosInstance = (baseURL: string): AxiosInstance => {
   return instance;
 };
 
-// ==================== PRE-CONFIGURED INSTANCES ====================
 
-/**
- * Axios instance for Account API
- */
 export const accountAxios = createAxiosInstance(API_URLS.ACCOUNT);
 
-/**
- * Axios instance for User API
- */
+
 export const userAxios = createAxiosInstance(API_URLS.USER);
 
-/**
- * Axios instance for Course API
- */
+
 export const courseAxios = createAxiosInstance(API_URLS.COURSE);
-/**
- * Axios instance for Category API
- */
+
 export const categoryAxios = createAxiosInstance(API_URLS.CATEGORY);
-/**
- * Axios instance for Lesson API
- */
+
 export const lessonAxios = createAxiosInstance(API_URLS.LESSON);
-/**
- * Axios instance for Quiz API
- */
+
 export const quizAxios = createAxiosInstance(API_URLS.QUIZ);

@@ -10,13 +10,11 @@ import {
   userQuizAPI,
   UserQuizResponse,
   UserQuizStatus,
- 
 } from "@/services/userAPI";
 import {
   UserQuizzeResultResponse,
-  
   userQuizzeResultsAPI,
-  UserQuizzeResultStatusEnum
+  UserQuizzeResultStatusEnum,
 } from "@/services/UserAPI/userQuizzeResultAPI";
 
 
@@ -27,7 +25,6 @@ export default function QuizzDetailPage() {
   const [userQuiz, setUserQuiz] = useState<UserQuizResponse | null>(null);
   const [latestUserQuizResult, setLatestUserQuizResult] = useState<UserQuizzeResultResponse | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isStarted, setIsStarted] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
 
@@ -39,8 +36,8 @@ export default function QuizzDetailPage() {
       try {
 
         const data = await quizAPI.getQuizById(quizId);
-
         setQuiz(data);
+
       } catch (err) {
         setError(err instanceof Error ? err.message : "An unknown error occurred");
       } finally {
@@ -66,12 +63,8 @@ export default function QuizzDetailPage() {
       return;
     }
     try {
-       const userQuizData = await userQuizAPI.getUserQuizByUserAndQuiz(quizId);
-    setUserQuiz(userQuizData);
-
-    const latestResult =
-      await userQuizzeResultsAPI.getLatestUserQuizzeResultByUserQuizId(userQuizData.id);
-    setLatestUserQuizResult(latestResult);
+      const userQuizData = await userQuizAPI.getUserQuizByUserAndQuiz(quizId);
+      setUserQuiz(userQuizData);
 
       if (userQuizData) {
         const latestResult = await userQuizzeResultsAPI.getLatestUserQuizzeResultByUserQuizId(userQuizData.id);
@@ -136,8 +129,8 @@ export default function QuizzDetailPage() {
         </button>
       );
     }
-    switch (userQuiz?.status) {
-      case UserQuizStatus.In_progress:
+    switch (latestUserQuizResult?.status) {
+      case UserQuizzeResultStatusEnum.InProgress:
         return (
           <button
             onClick={handleContinueQuiz}
@@ -149,9 +142,9 @@ export default function QuizzDetailPage() {
             Continue Quiz
           </button>
         );
-      case UserQuizStatus.Passed:
-      case UserQuizStatus.Failed:
-        if (latestUserQuizResult?.userquizzeResultStatus === UserQuizzeResultStatusEnum.Completed) {
+      case UserQuizzeResultStatusEnum.Passed:
+      case UserQuizzeResultStatusEnum.Failed:
+        
           return (
             <button
               onClick={handleRetakeQuiz}
@@ -163,18 +156,7 @@ export default function QuizzDetailPage() {
               Retake Quiz
             </button>
           );
-        } else {
-          <button
-            onClick={handleContinueQuiz}
-            className="w-full md:w-auto bg-gradient-to-r from-yellow-500 to-orange-600
-             text-white font-bold py-3 px-8 rounded-lg
-             hover:from-yellow-600 hover:to-orange-700
-             transition-all duration-300 shadow-lg hover:shadow-xl"
-          >
-            Continue Quiz
-          </button>
-
-        }
+        
       default:
         return null;
     }
@@ -199,11 +181,8 @@ export default function QuizzDetailPage() {
         courseId: quiz?.courseId || '',
         quizId: quizId,
         userQuizId: createdUserQuiz.id,
-
-
       });
-      router.push(`/student/quizzes/${quizId}/attempt/${createdUserQuizzeResult.id}`);
-
+      router.push(`/student/${courseId}/quizzes/${quizId}/attempts/${createdUserQuizzeResult.id}`);
 
     } catch (err) {
       alert('Failed to start quiz ');
@@ -213,6 +192,7 @@ export default function QuizzDetailPage() {
 
     if (!user?.userId) {
       alert('Please log in to start the quiz');
+      router.push('/auth/login');
       return;
     }
     try {
@@ -227,7 +207,7 @@ export default function QuizzDetailPage() {
         userQuizId: userQuiz!.id,
 
       });
-      router.push(`/student/quizzes/${quizId}/attempt/${createdUserQuizzeResult.id}`);
+      router.push(`/student/${courseId}/quizzes/${quizId}/attempts/${createdUserQuizzeResult.id}`);
 
     } catch (err) {
       alert('Failed to start quiz ');
@@ -237,9 +217,10 @@ export default function QuizzDetailPage() {
 
     if (!user?.userId) {
       alert('Please log in to start the quiz');
+      router.push('/auth/login');
       return;
     }
-    router.push(`/student/quizzes/${quizId}/attempt/${latestUserQuizResult?.id}`);
+    router.push(`/student/${courseId}/quizzes/${quizId}/attempts/${latestUserQuizResult?.id}`);
   }
 
   if (loading) {

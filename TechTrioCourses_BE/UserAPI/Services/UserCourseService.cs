@@ -1,4 +1,5 @@
 using AutoMapper;
+using System.Linq.Expressions;
 using UserAPI.DTOs.Request.UserCourse;
 using UserAPI.DTOs.Response.UserCourse;
 using UserAPI.Models;

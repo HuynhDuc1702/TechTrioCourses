@@ -17,8 +17,8 @@ namespace UserAPI.Services
         private readonly ILogger<UserLessonService> _logger;
 
         public UserLessonService(
-            IUserLessonRepo userLessonRepo, 
-            IMapper mapper, 
+            IUserLessonRepo userLessonRepo,
+            IMapper mapper,
             IUserCourseProgress userCourseProgress,
             ILogger<UserLessonService> logger)
         {
@@ -66,7 +66,7 @@ namespace UserAPI.Services
             if (existingUserLesson != null)
             {
                 // Already exists, return existing
-              return _mapper.Map<UserLessonResponse>(existingUserLesson);
+                return _mapper.Map<UserLessonResponse>(existingUserLesson);
             }
 
             // Create new user lesson - automatically mark as completed
@@ -83,8 +83,8 @@ namespace UserAPI.Services
             }
             catch (Exception ex)
             {
-       _logger.LogError(ex, "Error during course progress recalculation for CourseId: {CourseId}, UserId: {UserId}", 
-         request.CourseId, request.UserId);
+                _logger.LogError(ex, "Error during course progress recalculation for CourseId: {CourseId}, UserId: {UserId}",
+                  request.CourseId, request.UserId);
             }
 
             return _mapper.Map<UserLessonResponse>(createdUserLesson);
@@ -108,6 +108,6 @@ namespace UserAPI.Services
             return _mapper.Map<IEnumerable<UserLessonResponse>>(userLessons);
         }
 
-       
+
     }
 }

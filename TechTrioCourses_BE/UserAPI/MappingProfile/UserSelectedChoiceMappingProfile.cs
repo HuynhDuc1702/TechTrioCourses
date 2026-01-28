@@ -7,13 +7,15 @@ namespace UserAPI.MappingProfile
 {
     public class UserSelectedChoiceMappingProfile : Profile
     {
-  public UserSelectedChoiceMappingProfile()
-      {
-    // UserSelectedChoice mappings
-   CreateMap<UserSelectedChoice, UserSelectedChoiceResponse>();
-  CreateMap<CreateUserSelectedChoiceRequest, UserSelectedChoice>();
-   CreateMap<UpdateUserSelectedChoiceRequest, UserSelectedChoice>()
-                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
-    }
+        public UserSelectedChoiceMappingProfile()
+        {
+            // UserSelectedChoice mappings
+            CreateMap<UserSelectedChoice, UserSelectedChoiceResponse>();
+            CreateMap<CreateUserSelectedChoiceRequest, UserSelectedChoice>();
+            CreateMap<UpdateUserSelectedChoiceRequest, UserSelectedChoice>()
+                         .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+
+            CreateMap<UserSelectedChoice, UserSelectedChoiceResponse>();
+        }
     }
 }

@@ -8,12 +8,14 @@ namespace UserAPI.MappingProfile
     public class UserQuizzeResultMappingProfile : Profile
     {
         public UserQuizzeResultMappingProfile()
-   {
-          // UserQuizzeResult mappings
-  CreateMap<UserQuizzeResult, UserQuizzeResultResponse>();
-CreateMap<CreateUserQuizzeResultRequest, UserQuizzeResult>();
-  CreateMap<UpdateUserQuizzeResultRequest, UserQuizzeResult>()
-    .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
-     }
-  }
+        {
+            // UserQuizzeResult mappings
+            CreateMap<UserQuizzeResult, UserQuizzeResultResponse>();
+            CreateMap<CreateUserQuizzeResultRequest, UserQuizzeResult>();
+            CreateMap<UpdateUserQuizzeResultRequest, UserQuizzeResult>()
+              .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+
+            CreateMap<UserQuizzeResult, UserQuizzeResultResponse>();
+        }
+    }
 }

@@ -9,18 +9,18 @@ namespace UserAPI.MappingProfile
     {
         public UserQuizMappingProfile()
         {
-   // Map CreateUserQuizRequest -> UserQuiz
-       CreateMap<CreateUserQuizRequest, UserQuiz>()
- .ForMember(dest => dest.Id, opt => opt.Ignore())
-     .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore())
-         .ForMember(dest => dest.FirstAttemptAt, opt => opt.Ignore())
-       .ForMember(dest => dest.LastAttemptAt, opt => opt.Ignore())
-       .ForMember(dest => dest.PassedAt, opt => opt.Ignore());
+            // Map CreateUserQuizRequest -> UserQuiz
+            CreateMap<CreateUserQuizRequest, UserQuiz>()
+            .ForMember(dest => dest.Id, opt => opt.Ignore())
+            .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore())
+            .ForMember(dest => dest.FirstAttemptAt, opt => opt.Ignore())
+            .ForMember(dest => dest.LastAttemptAt, opt => opt.Ignore())
+            .ForMember(dest => dest.PassedAt, opt => opt.Ignore());
 
-  
 
- // Map UserQuiz -> UserQuizResponse
-   CreateMap<UserQuiz, UserQuizResponse>();
+
+            // Map UserQuiz -> UserQuizResponse
+            CreateMap<UserQuiz, UserQuizResponse>();
         }
-}
+    }
 }

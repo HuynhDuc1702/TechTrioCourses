@@ -16,19 +16,20 @@ namespace QuizAPI.Repositories
 
         public async Task<IEnumerable<Quiz>> GetAllAsync()
         {
-            return await _context.Quizzes.ToListAsync();
+            return await _context.Quizzes.Include(q => q.QuizQuestions).ToListAsync();
         }
 
         public async Task<Quiz?> GetByIdAsync(Guid id)
         {
-            return await _context.Quizzes.FirstOrDefaultAsync(q => q.Id == id);
+            return await _context.Quizzes.Include(q => q.QuizQuestions).FirstOrDefaultAsync(q => q.Id == id);
         }
 
         public async Task<IEnumerable<Quiz>> GetByCourseIdAsync(Guid courseId)
         {
             return await _context.Quizzes
-      .Where(q => q.CourseId == courseId)
-     .ToListAsync();
+                .Include(q => q.QuizQuestions)
+                .Where(q => q.CourseId == courseId)
+                .ToListAsync();
         }
 
         public async Task<Quiz> CreateAsync(Quiz quiz)
