@@ -20,7 +20,7 @@ export interface UserQuizzeResultCreateRequest {
 export interface UserQuizzeResultUpdateRequest {
 
   score?: number | null;
-  userquizzeResultStatus?: UserQuizzeResultStatusEnum;
+  status?: UserQuizzeResultStatusEnum;
   completedAt?: string;
   durationSeconds?: number | null;
   metadata?: string;
@@ -31,7 +31,7 @@ export interface UserQuizzeResultResponse {
   courseId: string;
   quizId: string;
   score?: number | null;
-  userquizzeResultStatus: UserQuizzeResultStatusEnum;
+  status: UserQuizzeResultStatusEnum;
   attemptNumber: number;
   metadata?: string;
   startedAt: string;

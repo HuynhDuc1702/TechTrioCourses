@@ -6,5 +6,6 @@ namespace UserAPI.DTOs.Request.UserQuiz
          public double? SubmitScore { get; set; }
      
         public bool IsPassed { get; set; }
+        
  }
 }

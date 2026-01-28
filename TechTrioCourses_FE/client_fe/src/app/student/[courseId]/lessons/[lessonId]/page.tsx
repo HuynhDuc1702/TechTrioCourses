@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { lessonAPI, LessonResponse, LessonMediaTypeEnum, getMediaTypeLabel } from "@/services/lessonAPI";
+import { lessonAPI, LessonResponse, LessonMediaTypeEnum, getMediaTypeLabel, LessonStatusEnum } from "@/services/lessonAPI";
 import { userLessonAPI } from "@/services/userAPI";
 import { useAuth } from "@/contexts/AuthContext";
 import LessonSideNavigation from "@/components/student/LessonSideNavigation";
@@ -40,7 +40,8 @@ export default function StudentLessonPage() {
 
             // Fetch all lessons for the course (for side navigation)
             const courseLessons = await lessonAPI.getLessonsByCourseId(courseId);
-            const sortedLessons = courseLessons.sort((a, b) => (a.orderIndex || 0) - (b.orderIndex || 0));
+            const publishedLessons = courseLessons.filter(lesson => lesson.status === LessonStatusEnum.Published);
+            const sortedLessons = publishedLessons.sort((a, b) => (a.orderIndex || 0) - (b.orderIndex || 0));
             setAllLessons(sortedLessons);
 
             // Check if lesson is completed

@@ -14,6 +14,7 @@ import {
 import {
   UserQuizzeResultResponse,
   userQuizzeResultsAPI,
+  UserQuizzeResultStatusEnum,
 } from "@/services/UserAPI/userQuizzeResultAPI";
 
 
@@ -128,8 +129,8 @@ export default function QuizzDetailPage() {
         </button>
       );
     }
-    switch (userQuiz?.status) {
-      case UserQuizStatus.In_progress:
+    switch (latestUserQuizResult?.status) {
+      case UserQuizzeResultStatusEnum.InProgress:
         return (
           <button
             onClick={handleContinueQuiz}
@@ -141,8 +142,8 @@ export default function QuizzDetailPage() {
             Continue Quiz
           </button>
         );
-      case UserQuizStatus.Passed:
-      case UserQuizStatus.Failed:
+      case UserQuizzeResultStatusEnum.Passed:
+      case UserQuizzeResultStatusEnum.Failed:
         
           return (
             <button

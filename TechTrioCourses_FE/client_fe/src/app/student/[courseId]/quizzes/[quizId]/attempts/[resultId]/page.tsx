@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import {
   quizAPI,
@@ -30,6 +30,7 @@ export interface QuizQuestionViewModel
 
 export interface AttemptQuizViewModel
   extends AttemptQuizDetailResponseDto {
+    startedAt: string;
   questions: QuizQuestionViewModel[];
 }
 
@@ -44,11 +45,15 @@ export default function QuizAttemptPage() {
     useState<AttemptQuizViewModel | null>(null);
   const { user } = useAuth();
   const [error, setError] = useState<string | null>(null);
+  const [remainingMs, setRemainingMs] = useState<number>(0);
+  const endTimeRef = useRef<number | null>(null);
+const minutes = Math.floor(remainingMs / 60000);
+const seconds = Math.floor((remainingMs % 60000) / 1000);
 
   const quizId = params.quizId as string;
   const courseId = params.courseId as string;
   const resultId = params.resultId as string;
-
+  const hasSubmittedRef = useRef(false);
   const STORAGE_KEY = `quiz_attempt_${resultId}`;
 
   useEffect(() => {
@@ -75,22 +80,6 @@ export default function QuizAttemptPage() {
       fetchQuizAttempt();
     }
   }, [quizId, resultId]);
-
-  //Auto-save progress to localStorage
-  useEffect(() => {
-    if (!quizViewModel) return;
-
-    const payload = {
-      savedAt: new Date().toISOString(),
-      questions: quizViewModel.questions.map(q => ({
-        questionId: q.questionId,
-        userAnswer: q.userAnswer,
-      })),
-    };
-
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
-  }, [quizViewModel]);
-
   // Merge quiz detail and user answers into view model 
   useEffect(() => {
     if (!quizDetail || !userQuizResult) return;
@@ -111,6 +100,7 @@ export default function QuizAttemptPage() {
 
     const vm: AttemptQuizViewModel = {
       ...quizDetail,
+      startedAt: userQuizResult.startedAt,
       questions: quizDetail.questions.map(q => ({
         ...q,
         userAnswer:
@@ -122,6 +112,23 @@ export default function QuizAttemptPage() {
     setQuizViewModel(vm);
   }, [quizDetail, userQuizResult]);
 
+  //Auto-save progress to localStorage
+  useEffect(() => {
+    if (!quizViewModel) return;
+
+    const payload = {
+      savedAt: new Date().toISOString(),
+      questions: quizViewModel.questions.map(q => ({
+        questionId: q.questionId,
+        userAnswer: q.userAnswer,
+      })),
+    };
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+  }, [quizViewModel]);
+
+  
+
   const saveQuizProgress = async (isFinalSubmission: boolean) => {
     if (!quizViewModel || !userQuizResult) return;
 
@@ -130,30 +137,30 @@ export default function QuizAttemptPage() {
         resultId,
         userquizId: userQuizResult.userQuizId,
         durationSeconds: userQuizResult.durationSeconds,
-        IsFinalSubmisson: isFinalSubmission,  // Backend has typo: "IsFinalSubmisson" not "IsFinalSubmission"
+        IsFinalSubmisson: isFinalSubmission,  
         answers: quizViewModel.questions.map(q => ({
           questionId: q.questionId,
           questionType: q.questionType,
-          SelectedChoices: q.userAnswer?.selectedChoiceIds, // Backend expects "SelectedChoices"
+          SelectedChoices: q.userAnswer?.selectedChoiceIds, 
           textAnswer: q.userAnswer?.textAnswer,
         })),
       };
 
-      console.log("📤 Submitting quiz to backend...", {
+      console.log("Submitting quiz to backend...", {
         resultId,
         isFinalSubmission,
         questionCount: quizViewModel.questions.length
       });
-      console.log("📋 Full payload:", JSON.stringify(payload, null, 2));
-      console.log("🔍 Answers detail:", payload.answers);
+      console.log("Full payload:", JSON.stringify(payload, null, 2));
+      console.log("Answers detail:", payload.answers);
 
       const response = await userQuizzeResultsAPI.submitUserQuizzeResult(resultId, payload);
 
-      console.log("✅ Backend response:", response);
+      console.log("Backend response:", response);
       return response;
     } catch (error) {
-      console.error("❌ Failed to submit quiz:", error);
-      throw error; // Re-throw so calling function can handle it
+      console.error("Failed to submit quiz:", error);
+      throw error; 
     }
   };
 
@@ -162,6 +169,8 @@ export default function QuizAttemptPage() {
 
   const handleSubmitQuiz = async () => {
     if (!quizViewModel) return;
+    if (hasSubmittedRef.current) return; 
+    hasSubmittedRef.current = true;
     try {
       setLoading(true);
       setError(null);
@@ -170,10 +179,9 @@ export default function QuizAttemptPage() {
 
       if (result) {
         alert(`Quiz submitted! Score: ${result.score ?? 'Pending grading'}`);
-
+        // Clear localStorage after successful submission
         localStorage.removeItem(STORAGE_KEY);
-        router.push(`/student/${courseId}/quizzes/${quizId}/results/${resultId}`);
-
+        router.push(`/student/${courseId}/quizzes/${quizId}/results/${result.resultId}`);
       }
     } catch (err) {
       console.error("Submit error:", err);
@@ -190,8 +198,6 @@ export default function QuizAttemptPage() {
 
       await saveQuizProgress(false);
 
-
-
       alert("Progress saved successfully!");
     } catch (err) {
       console.error("Save error:", err);
@@ -205,13 +211,60 @@ export default function QuizAttemptPage() {
     if (!quizViewModel) return;
 
     const interval = setInterval(() => {
-      console.log("⏱ Auto-saving quiz progress...");
+      console.log("Auto-saving quiz progress...");
       saveQuizProgress(false);
     }, 5 * 60 * 1000);
 
     return () => clearInterval(interval);
   }, [quizViewModel]);
 
+
+   // Timer
+  useEffect(() => {
+    if (!quizViewModel?.startedAt) return;
+
+    const endTime= new Date(quizViewModel.startedAt).getTime() + quizViewModel.durationMinutes * 60 * 1000;
+
+    const remainingTime = endTime - Date.now();
+
+    if (remainingTime <= 0) {
+      console.log("Time is already up, submitting quiz...");
+      handleSubmitQuiz();
+      return;
+    }
+
+    const timeout = setTimeout(() => {
+      console.log("Time up, submitting quiz...");
+      handleSubmitQuiz();
+    }, remainingTime);
+
+    return () => clearTimeout(timeout);
+  },  [quizViewModel?.startedAt, quizViewModel?.durationMinutes]);
+
+//Render timer for UI
+  useEffect(() => {
+    if (!quizViewModel?.startedAt) return;  
+    endTimeRef.current= new Date(quizViewModel.startedAt).getTime() + 
+    quizViewModel.durationMinutes * 60 * 1000;
+
+    const updateRemainingTime = () => {
+    
+      const remaining = (endTimeRef.current ?? 0) - Date.now();
+      setRemainingMs(prev => {
+      const next = Math.max(0, remaining);
+      return prev !== next ? next : prev;
+    });
+
+    if (remaining <= 0) {
+      clearInterval(interval);
+    }
+    };
+    updateRemainingTime();
+
+    const interval = setInterval(updateRemainingTime, 1000);
+    return () => clearInterval(interval);
+
+  }, [quizViewModel?.startedAt, quizViewModel?.durationMinutes]);
 
   const renderQuestion = (q: QuizQuestionViewModel) => {
     switch (q.questionType) {
@@ -249,6 +302,13 @@ export default function QuizAttemptPage() {
     )
 
   }
+  const renderTimer = () => {
+    return (
+      <div>
+        Time Remaining: {minutes}:{seconds.toString().padStart(2, '0')}
+      </div>
+    );
+  }
   const toggleMultipleChoiceAnswer = (questionId: string, choiceId: string) => {
     setQuizViewModel(prev => {
       if (!prev) return prev;
@@ -262,7 +322,7 @@ export default function QuizAttemptPage() {
           const next = selectedChoices.includes(choiceId) ? selectedChoices
             .filter(id => id !== choiceId) : [...selectedChoices, choiceId];
 
-          console.log("✅ Multiple choice toggled:", { questionId, choiceId, oldSelection: selectedChoices, newSelection: next });
+          console.log("Multiple choice toggled:", { questionId, choiceId, oldSelection: selectedChoices, newSelection: next });
 
           return {
             ...q,
@@ -340,7 +400,7 @@ export default function QuizAttemptPage() {
         questions: prev.questions.map(q => {
           if (q.questionId !== questionId) return q;
 
-          console.log("✅ True/False selected:", { questionId, choiceId });
+          console.log("True/False selected:", { questionId, choiceId });
 
           return {
             ...q,
@@ -362,6 +422,7 @@ export default function QuizAttemptPage() {
     <div>
       <h1>{quizViewModel.name}</h1>
       <p>Time limit: {quizViewModel.durationMinutes} minutes</p>
+      {renderTimer()}
       {quizViewModel.questions.map((q, index) => (
         <div key={q.questionId}>
           <h3>Question {index + 1}: {q.questionText}</h3>

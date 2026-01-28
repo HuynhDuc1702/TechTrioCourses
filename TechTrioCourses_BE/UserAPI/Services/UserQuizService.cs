@@ -15,11 +15,13 @@ namespace UserAPI.Services
         private readonly IUserQuizRepo _userQuizRepo;
         private readonly IMapper _mapper;
         private readonly ILogger<UserQuizService> _logger;
-        public UserQuizService(IUserQuizRepo userQuizRepo, IMapper mapper, ILogger<UserQuizService> logger)
+        private readonly IUserCourseProgress _userCourseProgress;
+        public UserQuizService(IUserQuizRepo userQuizRepo, IMapper mapper, ILogger<UserQuizService> logger, IUserCourseProgress userCourseProgress)
         {
             _userQuizRepo = userQuizRepo;
             _mapper = mapper;
             _logger = logger;
+            _userCourseProgress = userCourseProgress;
         }
 
         public async Task<UserQuizResponse?> GetUserQuizByIdAsync(Guid id)
@@ -109,6 +111,20 @@ namespace UserAPI.Services
                 {
                     userQuiz.Status= UserQuizStatusEnum.Passed;
                     userQuiz.PassedAt = now;
+              
+                    try
+
+                    {
+                        var courseId = userQuiz.CourseId
+                        ?? throw new InvalidOperationException("Passed quiz must have CourseId");
+
+                        await _userCourseProgress.RecaculateCourseProgress(courseId, userQuiz.UserId);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Error during course progress recalculation for CourseId: {CourseId}, UserId: {UserId}",
+                          userQuiz.CourseId, userQuiz.UserId);
+                    }
                 }
                 else
                 {

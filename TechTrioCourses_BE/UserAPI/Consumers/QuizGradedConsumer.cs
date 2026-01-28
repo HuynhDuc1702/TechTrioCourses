@@ -50,6 +50,8 @@ namespace UserAPI.Consumers
                     {
                         IsPassed = evt.IsPassed,
                         SubmitScore = evt.TotalPointsEarned,
+                      
+
                     });
 
                 _logger.LogInformation(
