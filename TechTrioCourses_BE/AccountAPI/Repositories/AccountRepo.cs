@@ -7,9 +7,9 @@ namespace AccountAPI.Repositories
 {
     public class AccountRepo : IAccountRepo
     {
-        private readonly AccountContext _context;
+        private readonly AccountDbContext _context;
 
-        public AccountRepo(AccountContext context)
+        public AccountRepo(AccountDbContext context)
         {
             _context = context;
         }

@@ -7,9 +7,9 @@ namespace CategoryAPI.Repositories
 {
     public class CategoryRepo: ICategoryRepo
     {
-        private readonly CategoryContext _context;
+        private readonly CategoryDbContext _context;
 
-        public CategoryRepo(CategoryContext context)
+        public CategoryRepo(CategoryDbContext context)
         {
             _context = context;
 
@@ -39,7 +39,7 @@ namespace CategoryAPI.Repositories
         {
             Category.Id = Guid.NewGuid();
             
-
+            Category.CreatedAt = DateTime.Now;
             _context.Categories.Add(Category);
             await _context.SaveChangesAsync();
 
@@ -54,7 +54,7 @@ namespace CategoryAPI.Repositories
                 return null;
             }
 
-           
+           Category.UpdatedAt = DateTime.Now;
             _context.Entry(existingCategory).CurrentValues.SetValues(Category);
 
             try

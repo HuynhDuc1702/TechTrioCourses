@@ -62,7 +62,7 @@ namespace UserAPI.Services
                 {
                     var lessons = await lessonsResponse.Content.ReadFromJsonAsync<List<LessonResponse>>();
                     totalLessons = lessons?
-                        .Count(l => l.PublishStatus == PublishStatusEnum.Published) ?? 0;
+                        .Count(l => l.Status == PublishStatusEnum.Published) ?? 0;
                 }
                 else
                 {
@@ -93,7 +93,7 @@ namespace UserAPI.Services
                 {
                     var quizzes = await quizResponse.Content.ReadFromJsonAsync<List<QuizResponse>>();
                     totalQuiz = quizzes?
-                    .Count(q=> q.PublishStatus == PublishStatusEnum.Published) ?? 0;
+                    .Count(q=> q.Status == PublishStatusEnum.Published) ?? 0;
                 }
                 else
                 {
@@ -138,13 +138,13 @@ namespace UserAPI.Services
         public Guid Id { get; set; }
         public string Title { get; set; } = string.Empty;
         public Guid CourseId { get; set; }
-        public PublishStatusEnum PublishStatus { get; set; }
+        public PublishStatusEnum Status { get; set; }
     }
     public class QuizResponse
     {
         public Guid Id { get; set; }
         public Guid CourseId { get; set; }
         public string Name { get; set; } = null!;
-        public PublishStatusEnum PublishStatus { get; set; }
+        public PublishStatusEnum Status { get; set; }
     }
 }

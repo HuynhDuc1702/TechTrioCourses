@@ -5,13 +5,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CategoryAPI.Datas;
 
-public partial class CategoryContext : DbContext
+public partial class CategoryDbContext : DbContext
 {
-    public CategoryContext()
+    public CategoryDbContext()
     {
     }
 
-    public CategoryContext(DbContextOptions<CategoryContext> options)
+    public CategoryDbContext(DbContextOptions<CategoryDbContext> options)
         : base(options)
     {
     }
@@ -38,6 +38,12 @@ public partial class CategoryContext : DbContext
             entity.Property(e => e.Name)
                 .HasMaxLength(100)
                 .HasColumnName("name");
+            entity.Property(e => e.CreatedAt)
+               .HasDefaultValueSql("(CURRENT_TIMESTAMP AT TIME ZONE 'UTC'::text)")
+               .HasColumnName("created_at");
+            entity.Property(e => e.UpdatedAt)
+               .HasDefaultValueSql("(CURRENT_TIMESTAMP AT TIME ZONE 'UTC'::text)")
+               .HasColumnName("updated_at");
         });
 
         OnModelCreatingPartial(modelBuilder);

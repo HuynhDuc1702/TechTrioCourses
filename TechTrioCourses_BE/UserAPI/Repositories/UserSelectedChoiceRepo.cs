@@ -7,9 +7,9 @@ namespace UserAPI.Repositories
 {
     public class UserSelectedChoiceRepo : IUserSelectedChoiceRepo
     {
-        private readonly TechTrioUsersContext _context;
+        private readonly UserDbContext _context;
 
-        public UserSelectedChoiceRepo(TechTrioUsersContext context)
+        public UserSelectedChoiceRepo(UserDbContext context)
         {
             _context = context;
         }

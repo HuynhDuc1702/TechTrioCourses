@@ -6,13 +6,13 @@ using UserAPI.Models;
 
 namespace UserAPI.Datas;
 
-public partial class TechTrioUsersContext : DbContext
+public partial class UserDbContext : DbContext
 {
-    public TechTrioUsersContext()
+    public UserDbContext()
     {
     }
 
-    public TechTrioUsersContext(DbContextOptions<TechTrioUsersContext> options)
+    public UserDbContext(DbContextOptions<UserDbContext> options)
         : base(options)
     {
     }

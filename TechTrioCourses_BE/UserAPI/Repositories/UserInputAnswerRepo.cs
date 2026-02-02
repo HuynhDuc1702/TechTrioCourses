@@ -7,9 +7,9 @@ namespace UserAPI.Repositories
 {
     public class UserInputAnswerRepo : IUserInputAnswerRepo
     {
-        private readonly TechTrioUsersContext _context;
+        private readonly UserDbContext _context;
 
-        public UserInputAnswerRepo(TechTrioUsersContext context)
+        public UserInputAnswerRepo(UserDbContext context)
         {
             _context = context;
         }

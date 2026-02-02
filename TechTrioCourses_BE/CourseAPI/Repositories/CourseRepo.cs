@@ -7,9 +7,9 @@ namespace CourseAPI.Repositories
 {
     public class CourseRepo : ICourseRepo
     {
-        private readonly TechTrioCoursesContext _context;
+        private readonly CourseDbContext _context;
 
-        public CourseRepo(TechTrioCoursesContext context)
+        public CourseRepo(CourseDbContext context)
         {
             _context = context;
         }

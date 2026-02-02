@@ -8,9 +8,9 @@ namespace UserAPI.Repositories
 {
     public class UserQuizzeResultQueryRepo : IUserQuizzeResultQueryRepo
     {
-        private readonly TechTrioUsersContext _context;
+        private readonly UserDbContext _context;
 
-        public UserQuizzeResultQueryRepo(TechTrioUsersContext context)
+        public UserQuizzeResultQueryRepo(UserDbContext context)
         {
             _context = context;
         }

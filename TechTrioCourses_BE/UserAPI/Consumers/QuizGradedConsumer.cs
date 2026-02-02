@@ -23,7 +23,7 @@ namespace UserAPI.Consumers
         }
 
         public async Task Consume(ConsumeContext<QuizGradedEvent> context)
-        {
+      {
             var evt = context.Message;
 
             _logger.LogInformation(

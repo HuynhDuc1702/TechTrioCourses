@@ -12,7 +12,7 @@ using UserAPI.Services.Interfaces;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddDbContext<TechTrioUsersContext>(options =>
+builder.Services.AddDbContext<UserDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("TechTrioUsersContext")));
 
 // Register repositories

@@ -6,13 +6,13 @@ using QuizAPI.Models;
 
 namespace QuizAPI.Datas;
 
-public partial class QuizzesContext : DbContext
+public partial class QuizDbContext : DbContext
 {
-    public QuizzesContext()
+    public QuizDbContext()
     {
     }
 
-    public QuizzesContext(DbContextOptions<QuizzesContext> options)
+    public QuizDbContext(DbContextOptions<QuizDbContext> options)
         : base(options)
     {
     }

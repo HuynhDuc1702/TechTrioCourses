@@ -7,9 +7,9 @@ namespace QuizAPI.Repositories
 {
     public class QuestionRepo : IQuestionRepo
     {
-        private readonly QuizzesContext _context;
+        private readonly QuizDbContext _context;
 
-        public QuestionRepo(QuizzesContext context)
+        public QuestionRepo(QuizDbContext context)
         {
             _context = context;
         }

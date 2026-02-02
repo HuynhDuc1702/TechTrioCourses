@@ -7,9 +7,9 @@ namespace LessonAPI.Repositories
 {
     public class LessonRepo : ILessonRepo
     {
-        private readonly LessonContext _context;
+        private readonly LessonDbContext _context;
 
-        public LessonRepo(LessonContext context)
+        public LessonRepo(LessonDbContext context)
         {
             _context = context;
         }

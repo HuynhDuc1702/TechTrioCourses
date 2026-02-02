@@ -11,7 +11,7 @@ using QuizAPI.Services.Interfaces;
 using TechTrioCourses.Shared.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddDbContext<QuizzesContext>(options =>
+builder.Services.AddDbContext<QuizDbContext>(options =>
   options.UseNpgsql(builder.Configuration.GetConnectionString("QuizzesContext")));
 
 // Add services to the container.

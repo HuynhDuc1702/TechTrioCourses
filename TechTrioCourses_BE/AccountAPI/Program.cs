@@ -9,7 +9,7 @@ using TechTrioCourses.Shared.Extensions;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddDbContext<AccountContext>(options =>
+builder.Services.AddDbContext<AccountDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("AccountContext")));
 builder.Services.AddHttpClient("UserAPI", client =>
 {

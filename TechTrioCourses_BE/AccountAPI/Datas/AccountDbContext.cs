@@ -7,13 +7,13 @@ using TechTrioCourses.Shared.Enums;
 
 namespace AccountAPI.Datas;
 
-public partial class AccountContext : DbContext
+public partial class AccountDbContext : DbContext
 {
-    public AccountContext()
+    public AccountDbContext()
     {
     }
 
-    public AccountContext(DbContextOptions<AccountContext> options)
+    public AccountDbContext(DbContextOptions<AccountDbContext> options)
         : base(options)
     {
     }
