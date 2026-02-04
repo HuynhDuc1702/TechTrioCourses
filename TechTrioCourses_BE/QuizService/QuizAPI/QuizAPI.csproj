@@ -8,6 +8,8 @@
 
   <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
+ 
+	  <PackageReference Include="MassTransit.RabbitMQ" Version="8.5.7" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.11" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.11" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.11">
@@ -27,11 +29,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Models\" />
+    <ProjectReference Include="..\..\TechTrioCourses.Shared\TechTrioCourses.Shared.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\TechTrioCourses.Shared\TechTrioCourses.Shared.csproj" />
-  </ItemGroup>
+ 
 
 </Project>
