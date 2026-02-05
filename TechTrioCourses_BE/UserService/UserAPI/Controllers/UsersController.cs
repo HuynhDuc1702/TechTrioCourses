@@ -39,7 +39,7 @@ namespace UserAPI.Controllers
         }
 
 
-        // GET: api/Users/by-account/{accountId}
+        // GET: api/users/by-account/{accountId}
         [HttpGet("by-account/{accountId}")]
         public async Task<ActionResult<UserResponse>> GetUserByAccountId(Guid accountId)
         {

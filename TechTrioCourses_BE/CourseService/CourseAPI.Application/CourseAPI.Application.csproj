@@ -6,4 +6,13 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\TechTrioCourses.Shared\TechTrioCourses.Shared.csproj" />
+    <ProjectReference Include="..\Course.Domain\CourseAPI.Domain\CourseAPI.Domain.csproj" />
+  </ItemGroup>
+
 </Project>

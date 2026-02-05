@@ -28,6 +28,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\TechTrioCourses.Shared\TechTrioCourses.Shared.csproj" />
+    <ProjectReference Include="..\CourseAPI.Application\CourseAPI.Application.csproj" />
+    <ProjectReference Include="..\CourseAPI.Infrastructure\CourseAPI.Infrastructure.csproj" />
   </ItemGroup>
 
 	

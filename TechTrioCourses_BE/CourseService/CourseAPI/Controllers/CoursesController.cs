@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using CourseAPI.Services.Interfaces;
-using CourseAPI.DTOs.Request;
-using static CourseAPI.DTOs.Response.CourseResponse;
-using CourseAPI.DTOs.Response;
+using CourseAPI.Application.Interfaces;
+
+using CourseAPI.Application.DTOs.Response;
+using CourseAPI.Application.DTOs.Request;
 using Microsoft.AspNetCore.Authorization;
 
 namespace CourseAPI.Controllers

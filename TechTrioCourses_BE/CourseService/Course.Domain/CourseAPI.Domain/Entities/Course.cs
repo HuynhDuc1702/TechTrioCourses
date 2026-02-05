@@ -1,0 +1,24 @@
+using TechTrioCourses.Shared.Enums;
+using System;
+using System.Collections.Generic;
+
+namespace CourseAPI.Domain.Entities;
+
+public partial class Course
+{
+    public Guid Id { get; set; }
+
+    public string Title { get; set; } = null!;
+
+    public string? Description { get; set; }
+
+    public Guid? CategoryId { get; set; }
+
+    public Guid? CreatorId { get; set; }
+
+    public PublishStatusEnum Status { get; set; }
+
+    public DateTime? CreatedAt { get; set; }
+
+    public DateTime? UpdatedAt { get; set; }
+}

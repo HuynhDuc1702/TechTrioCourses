@@ -56,7 +56,7 @@ namespace CategoryAPI.Controllers
             return Ok(categories);
         }
 
-        // PUT: api/Categorys/5
+      
         [HttpPut("{id}")]
         //[Authorize(Roles = "Instructor,Admin")]
         public async Task<IActionResult> PutCategory(Guid id, UpdateCategoryRequest request)
