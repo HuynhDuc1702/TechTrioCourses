@@ -27,11 +27,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Models\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\TechTrioCourses.Shared\TechTrioCourses.Shared.csproj" />
+    <ProjectReference Include="..\LessonAPI.Application\LessonAPI.Application.csproj" />
+    <ProjectReference Include="..\LessonAPI.Infrastructure\LessonAPI.Infrastructure.csproj" />
   </ItemGroup>
 
 

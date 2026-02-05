@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using LessonAPI.Datas;
-using LessonAPI.Models;
-using LessonAPI.Services.Interfaces;
-using LessonAPI.DTOs.Response;
-using LessonAPI.DTOs.Request;
+
+using LessonAPI.Domain.Entities;
+using LessonAPI.Application.Interfaces;
+using LessonAPI.Application.DTOs.Response;
+using LessonAPI.Application.DTOs.Request;
 using Microsoft.AspNetCore.Authorization;
 
 namespace LessonAPI.Controllers

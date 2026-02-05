@@ -2,7 +2,7 @@ using TechTrioCourses.Shared.Enums;
 using System;
 using System.Collections.Generic;
 
-namespace LessonAPI.Models;
+namespace LessonAPI.Domain.Entities;
 
 public partial class Lesson
 {

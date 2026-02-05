@@ -1,6 +1,6 @@
 using TechTrioCourses.Shared.Enums;
 
-namespace LessonAPI.DTOs.Request
+namespace LessonAPI.Application.DTOs.Request
 {
     public class CreateLessonRequest
     {

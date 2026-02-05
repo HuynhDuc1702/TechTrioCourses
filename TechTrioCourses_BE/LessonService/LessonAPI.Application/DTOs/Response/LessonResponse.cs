@@ -1,8 +1,8 @@
 using TechTrioCourses.Shared.Enums;
-using LessonAPI.Models;
+using LessonAPI.Domain.Entities;
 
 
-namespace LessonAPI.DTOs.Response
+namespace LessonAPI.Application.DTOs.Response
 {
     
         public class LessonResponse

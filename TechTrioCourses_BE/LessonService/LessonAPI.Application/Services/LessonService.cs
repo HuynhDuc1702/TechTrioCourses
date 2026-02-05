@@ -1,29 +1,32 @@
 using AutoMapper;
-using Azure;
-
-using LessonAPI.Models;
-using LessonAPI.DTOs.Request;
-using LessonAPI.DTOs.Response;
-using LessonAPI.Repositories.Interfaces;
-using LessonAPI.Services.Interfaces;
 using Microsoft.VisualBasic;
 
 using TechTrioCourses.Shared.Enums;
+using LessonAPI.Application.DTOs.Request;
+using LessonAPI.Application.DTOs.Response;
+using LessonAPI.Application.Interfaces;
+using Microsoft.Extensions.Logging;
+using LessonAPI.Domain.Entities;
+using LessonAPI.Application.Interfaces.IExternalServices;
 
-namespace LessonAPI.Services
+namespace LessonAPI.Application.Services
 {
     public class LessonService : ILessonService
     {
-        private readonly ILessonRepo _lessonsRepo;
+        private readonly ILessonRepository _lessonsRepo;
         private readonly IMapper _mapper;
-        private readonly HttpClient _courseAPIClient;
+        private readonly ICourseApiClient _courseAPIClient;
 
         private readonly ILogger<LessonService> _logger;
-        public LessonService(ILessonRepo lessonsRepo, IMapper mapper, IHttpClientFactory httpClientFactory, ILogger<LessonService> logger)
+        public LessonService(ILessonRepository lessonsRepo,
+            IMapper mapper,
+            IHttpClientFactory httpClientFactory,
+            ILogger<LessonService> logger,
+            ICourseApiClient courseApiClient)
         {
             _lessonsRepo = lessonsRepo;
             _mapper = mapper;
-            _courseAPIClient = httpClientFactory.CreateClient("CourseAPI");
+            _courseAPIClient = courseApiClient;
 
             _logger = logger;
         }
@@ -56,28 +59,13 @@ namespace LessonAPI.Services
                 return null;
             }
 
-            string? courseTitle = null;
-
-
-
-            try
-            {
-                var course = await _courseAPIClient.GetFromJsonAsync<CourseResponse>($"api/courses/{lesson.CourseId}");
-                courseTitle = course?.Title;
-            }
-            catch (HttpRequestException ex)
-            {
-                _logger.LogError(ex, "Failed to fetch category with ID {CourseID} from CourseAPI", lesson.CourseId);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Unexpected error while fetching course Title for lesson {LessonId}", lesson.Id);
-            }
 
 
 
             var result = _mapper.Map<LessonResponse>(lesson);
-            result.CourseName = courseTitle;
+
+            var course = await _courseAPIClient.GetCourseByIdAsync(lesson.CourseId);
+            result.CourseName = course?.Title;
 
 
             return result;
@@ -102,7 +90,7 @@ namespace LessonAPI.Services
                 return null;
             }
 
-            // Map only non-null properties from request to existing lesson
+
             if (request.Title != null)
                 existingLesson.Title = request.Title;
 
@@ -148,7 +136,7 @@ namespace LessonAPI.Services
             }
             if (existingLesson.Status == PublishStatusEnum.Hidden)
             {
-                return true; // Already disabled, no need to update
+                return true;
             }
             existingLesson.Status = PublishStatusEnum.Hidden;
             existingLesson.UpdatedAt = DateTime.UtcNow;
@@ -168,9 +156,9 @@ namespace LessonAPI.Services
             }
             if (existingLesson.Status == PublishStatusEnum.Archived)
             {
-                return true; // Already disabled, no need to update
+                return true;
             }
-            existingLesson.Status = TechTrioCourses.Shared.Enums.PublishStatusEnum.Archived;
+            existingLesson.Status = PublishStatusEnum.Archived;
             existingLesson.UpdatedAt = DateTime.UtcNow;
             var updatedLesson = await _lessonsRepo.UpdateAsync(existingLesson);
 

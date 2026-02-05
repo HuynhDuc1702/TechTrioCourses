@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using TechTrioCourses.Shared.Enums;
-using LessonAPI.Models;
+using LessonAPI.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace LessonAPI.Datas;
+namespace LessonAPI.Infrastructure.Data;
 
 public partial class LessonDbContext : DbContext
 {

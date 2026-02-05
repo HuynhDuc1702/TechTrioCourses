@@ -1,4 +1,4 @@
-namespace LessonAPI.DTOs.Response
+namespace TechTrioCourses.Shared.Dtos.Course
 {
     public class CourseResponse
     {

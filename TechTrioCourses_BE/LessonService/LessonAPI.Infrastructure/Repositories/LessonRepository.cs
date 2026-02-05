@@ -1,15 +1,16 @@
-using LessonAPI.Datas;
-using LessonAPI.Models;
-using LessonAPI.Repositories.Interfaces;
-using Microsoft.EntityFrameworkCore;
+using LessonAPI.Infrastructure.Data;
+using LessonAPI.Domain.Entities;
 
-namespace LessonAPI.Repositories
+using Microsoft.EntityFrameworkCore;
+using LessonAPI.Application.Interfaces;
+
+namespace LessonAPI.Infrastructure.Repositories
 {
-    public class LessonRepo : ILessonRepo
+    public class LessonRepository : ILessonRepository
     {
         private readonly LessonDbContext _context;
 
-        public LessonRepo(LessonDbContext context)
+        public LessonRepository(LessonDbContext context)
         {
             _context = context;
         }

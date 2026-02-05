@@ -1,8 +1,8 @@
-using LessonAPI.DTOs.Request;
-using LessonAPI.DTOs.Response;
-using static LessonAPI.DTOs.Response.LessonResponse;
+using LessonAPI.Application.DTOs.Request;
+using LessonAPI.Application.DTOs.Response;
+using static LessonAPI.Application.DTOs.Response.LessonResponse;
 
-namespace LessonAPI.Services.Interfaces
+namespace LessonAPI.Application.Interfaces
 {
     public interface ILessonService
     {

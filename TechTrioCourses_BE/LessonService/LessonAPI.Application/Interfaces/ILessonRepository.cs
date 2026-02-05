@@ -1,8 +1,8 @@
-using LessonAPI.Models;
+using LessonAPI.Domain.Entities;
 
-namespace LessonAPI.Repositories.Interfaces
+namespace LessonAPI.Application.Interfaces
 {
-    public interface ILessonRepo
+    public interface ILessonRepository
     {
         Task<IEnumerable<Lesson>> GetAllAsync();
         Task<IEnumerable<Lesson>> GetAllLessonByCourseAsync(Guid courseId);
