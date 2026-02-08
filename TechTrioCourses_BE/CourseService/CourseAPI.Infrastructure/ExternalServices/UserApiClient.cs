@@ -28,18 +28,18 @@ namespace CourseAPI.Infrastructure.ExternalServices
             _cache = cache;
         }
 
-        public async Task<UserResponse?> GetUserByIdAsync(Guid id)
+        public async Task<UserResponseForCourse?> GetUserByIdAsync(Guid id)
         {
             string cacheKey = $"User_{id}";
 
-            if (_cache.TryGetValue(cacheKey, out UserResponse? cached))
+            if (_cache.TryGetValue(cacheKey, out UserResponseForCourse? cached))
             {
                 return cached;
             }
 
             try
             {
-                var response = await _httpClient.GetFromJsonAsync<UserResponse>(
+                var response = await _httpClient.GetFromJsonAsync<UserResponseForCourse>(
                     $"api/users/{id}");
 
                 if (response != null)
@@ -82,7 +82,7 @@ namespace CourseAPI.Infrastructure.ExternalServices
                 }
 
                 var users = await response.Content
-                    .ReadFromJsonAsync<List<UserResponse>>()
+                    .ReadFromJsonAsync<List<UserResponseForCourse>>()
                     ?? new();
 
                 var result = users.ToDictionary(c => c.Id, c => c.FullName);

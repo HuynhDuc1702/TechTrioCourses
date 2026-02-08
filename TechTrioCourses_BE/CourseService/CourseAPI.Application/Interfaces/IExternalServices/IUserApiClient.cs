@@ -11,7 +11,7 @@ namespace CourseAPI.Application.Interfaces.IExternalServices
 {
     public interface IUserApiClient
     {
-        Task<UserResponse?> GetUserByIdAsync(Guid id);
+        Task<UserResponseForCourse?> GetUserByIdAsync(Guid id);
         Task PopulateCreatorNameAsync(List<CourseResponse> courses);
         Task<Dictionary<Guid, string>> GetCreatorNamesAsync(IEnumerable<Guid> categoryIds);
     }

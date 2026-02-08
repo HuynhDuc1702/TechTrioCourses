@@ -16,7 +16,7 @@ namespace CourseAPI.Application.MappingProfile
             CreateMap<UpdateCourseRequest, Course>()
 .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
             CreateMap<Course, CourseResponse>();
-             
+
         }
     }
 }

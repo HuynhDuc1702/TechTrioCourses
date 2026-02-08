@@ -1,9 +1,10 @@
-using AccountAPI.DTOs.Request;
-using AccountAPI.DTOs.Response;
-using AccountAPI.Services.Interfaces;
+
 using Microsoft.AspNetCore.Authorization;
 using TechTrioCourses.Shared.Enums;
 using Microsoft.AspNetCore.Mvc;
+using AccountAPI.Application.Interfaces;
+using AccountAPI.Application.DTOs.Response;
+using AccountAPI.Application.DTOs.Request;
 
 namespace AccountAPI.Controllers
 {
