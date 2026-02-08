@@ -1,6 +1,6 @@
 ﻿using MassTransit;
-using QuizAPI.DTOs.Request.GradeQuizDTOs;
-using QuizAPI.Services.Interfaces;
+using QuizAPI.Application.DTOs.Request.GradeQuizDTOs;
+using QuizAPI.Application.Interfaces.IServices;
 using TechTrioCourses.Shared.Contracts;
 
 namespace QuizAPI.Consumers

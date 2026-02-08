@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
-using QuizAPI.DTOs.Request.QuestionChoice;
-using QuizAPI.DTOs.Response.QuestionChoice;
-using QuizAPI.Services.Interfaces;
+using QuizAPI.Application.DTOs.Request.QuestionChoice;
+using QuizAPI.Application.DTOs.Response.QuestionChoice;
+using QuizAPI.Application.Interfaces.IServices;
+
 
 namespace QuizAPI.Controllers
 {

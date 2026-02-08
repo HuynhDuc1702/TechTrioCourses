@@ -1,12 +1,9 @@
-using Microsoft.AspNetCore.Http;
+
 using Microsoft.AspNetCore.Mvc;
-using QuizAPI.DTOs.Request.Question;
-using QuizAPI.DTOs.Response.Question;
-using QuizAPI.Services;
-using QuizAPI.Services.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using QuizAPI.Application.DTOs.Request.Question;
+using QuizAPI.Application.DTOs.Response.Question;
+using QuizAPI.Application.Interfaces.IServices;
+
 
 namespace QuizAPI.Controllers
 {
