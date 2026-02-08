@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using UserAPI.DTOs.Request.SubmitQuizDTOs;
-using UserAPI.DTOs.Request.UserQuizzeResult;
-using UserAPI.DTOs.Response.AttemptUserQuizzeResultDetailDTOs;
-using UserAPI.DTOs.Response.UserQuizzeResult;
-using UserAPI.Services;
-using UserAPI.Services.Interfaces;
+using UserAPI.Application.DTOs.Request.SubmitQuizDTOs;
+using UserAPI.Application.DTOs.Request.UserQuizzeResult;
+using UserAPI.Application.DTOs.Response.AttemptUserQuizzeResultDetailDTOs;
+using UserAPI.Application.DTOs.Response.UserQuizzeResult;
+using UserAPI.Application.Interfaces.IServices;
+
 
 namespace UserAPI.Controllers
 {

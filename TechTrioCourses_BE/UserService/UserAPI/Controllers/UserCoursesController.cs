@@ -1,9 +1,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using UserAPI.DTOs.Request.UserCourse;
-using UserAPI.DTOs.Response.UserCourse;
-using UserAPI.Services.Interfaces;
+using UserAPI.Application.DTOs.Request.UserCourse;
+using UserAPI.Application.DTOs.Response.UserCourse;
+using UserAPI.Application.Interfaces.IServices;
+
 
 namespace UserAPI.Controllers
 {

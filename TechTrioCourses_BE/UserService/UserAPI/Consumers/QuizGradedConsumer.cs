@@ -1,11 +1,9 @@
 ﻿using MassTransit;
-using System.Text.Json;
 using TechTrioCourses.Shared.Contracts;
-using TechTrioCourses.Shared.Enums;
-using UserAPI.DTOs.Request.SubmitQuizDTOs;
-using UserAPI.DTOs.Request.UserQuiz;
-using UserAPI.DTOs.Request.UserQuizzeResult;
-using UserAPI.Services.Interfaces;
+using UserAPI.Application.DTOs.Request.UserQuiz;
+using UserAPI.Application.DTOs.Request.UserQuizzeResult;
+using UserAPI.Application.Interfaces.IServices;
+
 
 namespace UserAPI.Consumers
 {

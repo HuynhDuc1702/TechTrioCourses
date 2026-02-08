@@ -1,10 +1,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using UserAPI.DTOs.Request.UserLesson;
-using UserAPI.DTOs.Response.UserLesson;
-using UserAPI.Services.Interfaces;
+
 using TechTrioCourses.Shared.Enums;
+using UserAPI.Application.DTOs.Request.UserLesson;
+using UserAPI.Application.DTOs.Response.UserLesson;
+using UserAPI.Application.Interfaces.IServices;
 namespace UserAPI.Controllers
 {
     [Route("api/[controller]")]

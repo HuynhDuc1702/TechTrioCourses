@@ -1,11 +1,12 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using UserAPI.DTOs.Request.UserQuiz;
-using UserAPI.DTOs.Response.UserQuiz;
-using UserAPI.Services.Interfaces;
+
 using TechTrioCourses.Shared.Enums;
-using UserAPI.DTOs.Request.SubmitQuizDTOs;
+using UserAPI.Application.DTOs.Request.UserQuiz;
+using UserAPI.Application.DTOs.Response.UserQuiz;
+using UserAPI.Application.Interfaces.IServices;
+
 
 namespace UserAPI.Controllers
 {

@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
-using UserAPI.DTOs.Request.UserSelectedChoice;
-using UserAPI.DTOs.Response.UserSelectedChoice;
-using UserAPI.Services.Interfaces;
+using UserAPI.Application.DTOs.Request.UserSelectedChoice;
+using UserAPI.Application.DTOs.Response.UserSelectedChoice;
+using UserAPI.Application.Interfaces.IServices;
+
 
 namespace UserAPI.Controllers
 {

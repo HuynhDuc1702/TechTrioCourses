@@ -17,7 +17,7 @@ namespace CourseAPI.Application.DTOs.Response
             public DateTime? CreatedAt { get; set; }
             public DateTime? UpdatedAt { get; set; }
 
-            // Optional related mapping
+        
             public string? CategoryName { get; set; }
             public string? CreatorName { get; set; }
 

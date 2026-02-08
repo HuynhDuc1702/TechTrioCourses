@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
-using UserAPI.DTOs.Request.UserInputAnswer;
-using UserAPI.DTOs.Response.UserInputAnswer;
-using UserAPI.Services.Interfaces;
+using UserAPI.Application.DTOs.Request.UserInputAnswer;
+using UserAPI.Application.DTOs.Response.UserInputAnswer;
+using UserAPI.Application.Interfaces.IServices;
+
 
 namespace UserAPI.Controllers
 {
