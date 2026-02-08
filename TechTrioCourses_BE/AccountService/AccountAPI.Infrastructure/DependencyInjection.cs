@@ -1,14 +1,15 @@
-﻿
-using AccountAPI.Application.Interfaces;
+﻿using AccountAPI.Application.Interfaces;
 using AccountAPI.Application.Interfaces.IExternalServices;
 using AccountAPI.Infrastructure.Data;
 using AccountAPI.Infrastructure.Repositories;
 using AccountAPI.Infrastructure.ExternalServices;
+using AccountAPI.Infrastructure.Security;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Polly;
 using Polly.Extensions.Http;
+using AccountAPI.Application.Interfaces.ISecurity;
 
 
 namespace AccountAPI.Infrastructure
@@ -28,7 +29,12 @@ namespace AccountAPI.Infrastructure
             services.AddScoped<IUserApiClient, UserApiClient>();
 
 
-            // HTTP Clients with Polly
+            services.AddScoped<IPasswordHasher, PasswordHasher>();
+            services.AddScoped<IJwtTokenService, JwtTokenService>();
+            services.AddScoped<IOtpGenerator, OtpGenerator>();
+            services.AddScoped<IEmailService, EmailService>();
+
+
             var retryPolicy = HttpPolicyExtensions
             .HandleTransientHttpError()
             .WaitAndRetryAsync(3, retryAttempt =>

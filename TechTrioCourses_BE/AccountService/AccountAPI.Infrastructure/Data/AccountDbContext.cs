@@ -19,7 +19,6 @@ public partial class AccountDbContext : DbContext
 
     public virtual DbSet<Account> Accounts { get; set; }
 
-    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasPostgresExtension("uuid-ossp");

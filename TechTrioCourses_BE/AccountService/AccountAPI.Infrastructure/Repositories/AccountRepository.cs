@@ -17,14 +17,12 @@ namespace AccountAPI.Infrastructure.Repositories
         public async Task<Account?> GetByEmailAsync(string email)
         {
             return await _context.Accounts
-                
                 .FirstOrDefaultAsync(a => a.Email == email);
         }
 
         public async Task<Account?> GetByIdAsync(Guid id)
         {
             return await _context.Accounts
-              
                 .FirstOrDefaultAsync(a => a.Id == id);
         }
 
@@ -39,7 +37,6 @@ namespace AccountAPI.Infrastructure.Repositories
 
             return account;
         }
-
 
         public async Task<bool> UpdateAccountAsync(Account account)
         {

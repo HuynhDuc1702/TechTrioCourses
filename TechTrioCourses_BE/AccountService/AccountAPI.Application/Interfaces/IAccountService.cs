@@ -14,7 +14,8 @@ namespace AccountAPI.Application.Interfaces
         Task<bool> VerifyAndActivateAccountAsync(string email, string otp, string storedOtpData);
         string CreateOtpCookieData(string otp, string purpose, int expirationMinutes = 10);
         Task<AccountResponse?> GetUserByEmailAsync(string email);
-        string GenerateOtp();
         Task<AuthResult?> RefreshTokenAsync(RefreshTokenRequest request);
+        string CreateSafeCookieName(string email);
+        Task<string?> SendOtpAsync(string email, string purpose);
     }
 }

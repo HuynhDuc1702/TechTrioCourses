@@ -1,9 +1,9 @@
 using System.Net;
 using System.Net.Mail;
 using Microsoft.Extensions.Configuration;
-using AccountAPI.Application.Interfaces;
+using AccountAPI.Application.Interfaces.IExternalServices;
 
-namespace AccountAPI.Application.Services
+namespace AccountAPI.Infrastructure.ExternalServices
 {
     public class EmailService : IEmailService
     {
@@ -74,11 +74,11 @@ namespace AccountAPI.Application.Services
         <h2 style='color: #333; text-align: center;'>Verification Code</h2>
         <p style='color: #666; font-size: 16px;'>Please use the following code to {purposeText}:</p>
         <div style='background-color: #f8f9fa; padding: 20px; border-radius: 5px; text-align: center; margin: 20px 0;'>
-            <h1 style='color: #007bff; letter-spacing: 8px; margin: 0; font-size: 36px;'>{otp}</h1>
+      <h1 style='color: #007bff; letter-spacing: 8px; margin: 0; font-size: 36px;'>{otp}</h1>
         </div>
         <p style='color: #666; font-size: 14px;'>This code will expire in <strong>10 minutes</strong>.</p>
         <p style='color: #999; font-size: 12px; margin-top: 30px; border-top: 1px solid #eee; padding-top: 20px;'>
-          If you didn't request this code, please ignore this email.
+      If you didn't request this code, please ignore this email.
         </p>
      </div>
     </body>
@@ -86,5 +86,3 @@ namespace AccountAPI.Application.Services
         }
     }
 }
-
-

@@ -1,4 +1,4 @@
-namespace AccountAPI.Application.Interfaces
+namespace AccountAPI.Application.Interfaces.IExternalServices
 {
     public interface IEmailService
     {

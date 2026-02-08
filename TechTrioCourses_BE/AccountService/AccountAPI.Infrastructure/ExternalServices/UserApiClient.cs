@@ -1,14 +1,11 @@
 ﻿using AccountAPI.Application.DTOs.Request;
 using AccountAPI.Application.Interfaces.IExternalServices;
-
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
-
 using System.Text;
 using System.Text.Json;
 using TechTrioCourses.Shared.Dtos.User;
 using TechTrioCourses.Shared.Enums;
-
 
 namespace AccountAPI.Infrastructure.ExternalServices
 {
@@ -19,9 +16,9 @@ namespace AccountAPI.Infrastructure.ExternalServices
         private readonly IMemoryCache _cache;
 
         public UserApiClient(
-            IHttpClientFactory httpClientFactory,
-            ILogger<UserApiClient> logger,
-            IMemoryCache cache)
+        IHttpClientFactory httpClientFactory,
+        ILogger<UserApiClient> logger,
+        IMemoryCache cache)
         {
             _httpClient = httpClientFactory.CreateClient("UserAPI");
             _logger = logger;
@@ -32,20 +29,17 @@ namespace AccountAPI.Infrastructure.ExternalServices
         {
             try
             {
-
                 var createUserRequest = new
                 {
                     AccountId = accountId,
                     request.FullName,
                     request.AvatarUrl,
-
                 };
 
                 var content = new StringContent(
-                  JsonSerializer.Serialize(createUserRequest),
-                 Encoding.UTF8,
-                     "application/json"
-                      );
+                JsonSerializer.Serialize(createUserRequest),
+                          Encoding.UTF8,
+                            "application/json");
 
                 var response = await _httpClient.PostAsync("/api/Users", content);
 
@@ -71,8 +65,6 @@ namespace AccountAPI.Infrastructure.ExternalServices
         {
             try
             {
-
-
                 var response = await _httpClient.GetAsync($"/api/Users/by-account/{accountId}");
 
                 if (response.IsSuccessStatusCode)
@@ -82,7 +74,6 @@ namespace AccountAPI.Infrastructure.ExternalServices
                     {
                         PropertyNameCaseInsensitive = true
                     });
-
 
                     return userDto;
                 }
@@ -95,6 +86,7 @@ namespace AccountAPI.Infrastructure.ExternalServices
                 return null;
             }
         }
+
         public string ConvertRoleToEnumName(UserRoleEnum role)
         {
             return role switch
@@ -105,6 +97,5 @@ namespace AccountAPI.Infrastructure.ExternalServices
                 _ => "Student"
             };
         }
-
     }
 }
