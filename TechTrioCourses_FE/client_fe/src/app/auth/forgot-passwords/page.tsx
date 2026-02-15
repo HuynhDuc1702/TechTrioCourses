@@ -28,7 +28,7 @@ export default function ForgotPasswordPage() {
     try {
        await accountService.sendOtp({ email, purpose: 'PasswordReset' });
       setSuccess(true);
-      // Redirect to OTP verification page after 1 second
+     
       setTimeout( () => {
         
         router.push(`/auth/verify-otp?email=${encodeURIComponent(email)}&purpose=PasswordReset`);

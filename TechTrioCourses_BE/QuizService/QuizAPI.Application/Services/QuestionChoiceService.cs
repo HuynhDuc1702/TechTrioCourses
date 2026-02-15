@@ -1,0 +1,114 @@
+using AutoMapper;
+using QuizAPI.Application.DTOs.Request.GradeQuizDTOs;
+using QuizAPI.Application.DTOs.Request.QuestionChoice;
+using QuizAPI.Application.DTOs.Response.QuestionChoice;
+using QuizAPI.Application.Interfaces.IRepositories;
+using QuizAPI.Application.Interfaces.IServices;
+using QuizAPI.Domain.Entities;
+
+namespace QuizAPI.Application.Services
+{
+    public class QuestionChoiceService : IQuestionChoiceService
+    {
+        private readonly IQuestionChoiceRepository _questionChoiceRepo;
+        private readonly IMapper _mapper;
+
+        public QuestionChoiceService(IQuestionChoiceRepository questionChoiceRepo, IMapper mapper)
+        {
+            _questionChoiceRepo = questionChoiceRepo;
+            _mapper = mapper;
+        }
+
+        public async Task<IEnumerable<QuestionChoiceResponse>> GetAllQuestionChoicesAsync()
+        {
+            var choices = await _questionChoiceRepo.GetAllAsync();
+            return _mapper.Map<IEnumerable<QuestionChoiceResponse>>(choices);
+        }
+
+        public async Task<QuestionChoiceResponse?> GetQuestionChoiceByIdAsync(Guid id)
+        {
+            var choice = await _questionChoiceRepo.GetByIdAsync(id);
+
+            if (choice == null)
+            {
+                return null;
+            }
+
+            return _mapper.Map<QuestionChoiceResponse>(choice);
+        }
+
+        public async Task<IEnumerable<QuestionChoiceResponse>> GetQuestionChoicesByQuestionIdAsync(Guid questionId)
+        {
+            var choices = await _questionChoiceRepo.GetByQuestionIdAsync(questionId);
+            return _mapper.Map<IEnumerable<QuestionChoiceResponse>>(choices);
+        }
+       
+        public async Task<bool> GradeMultipleQuestion(UserQuestionAnswersDtos userAnswers)
+        {
+            var correctChoiceIds = (await
+                GetQuestionChoicesByQuestionIdAsync(userAnswers.QuestionId))
+                .Where(c => c.IsCorrect)
+                .Select(c => c.Id)
+                .ToHashSet();
+
+            var userChoiceIds = userAnswers.SelectedChoices?
+                .ToHashSet() ?? new HashSet<Guid>();
+
+            
+            return correctChoiceIds.SetEquals(userChoiceIds);
+        }
+        public async Task<bool> GradeTrueFalseQuestion(UserQuestionAnswersDtos userAnswers)
+        {
+            var correctChoiceId = (await 
+                GetQuestionChoicesByQuestionIdAsync(userAnswers.QuestionId))
+                .Where(c => c.IsCorrect)
+                .Select(c => c.Id)
+                .Single();
+
+            var userChoiceId = userAnswers.SelectedChoices?
+                .Single();
+
+            return correctChoiceId == userChoiceId;
+        }
+
+        public async Task<QuestionChoiceResponse> CreateQuestionChoiceAsync(CreateQuestionChoiceRequest request)
+        {
+            var choice = _mapper.Map<QuestionChoice>(request);
+
+            var createdChoice = await _questionChoiceRepo.CreateAsync(choice);
+
+            return _mapper.Map<QuestionChoiceResponse>(createdChoice);
+        }
+
+        public async Task<QuestionChoiceResponse?> UpdateQuestionChoiceAsync(Guid id, UpdateQuestionChoiceRequest request)
+        {
+            var existingChoice = await _questionChoiceRepo.GetByIdAsync(id);
+
+            if (existingChoice == null)
+            {
+                return null;
+            }
+
+            // Map only non-null properties from request to existing choice
+            if (request.ChoiceText != null)
+                existingChoice.ChoiceText = request.ChoiceText;
+
+            if (request.IsCorrect.HasValue)
+                existingChoice.IsCorrect = request.IsCorrect.Value;
+
+            var updatedChoice = await _questionChoiceRepo.UpdateAsync(existingChoice);
+
+            if (updatedChoice == null)
+            {
+                return null;
+            }
+
+            return _mapper.Map<QuestionChoiceResponse>(updatedChoice);
+        }
+
+        public async Task<bool> DeleteQuestionChoiceAsync(Guid id)
+        {
+            return await _questionChoiceRepo.DeleteAsync(id);
+        }
+    }
+}
