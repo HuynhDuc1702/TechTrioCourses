@@ -26,25 +26,25 @@ export default function RegisterPage() {
       return;
     }
 
-   const validatePassword = (password: string): string | null => {
-    if (password.length < 8) {
-      return 'Password must be at least 8 characters long';
-    }
-    if (!/[A-Z]/.test(password)) {
-      return 'Password must contain at least one uppercase letter';
-    }
-    if (!/[a-z]/.test(password)) {
-      return 'Password must contain at least one lowercase letter';
-    }
-    if (!/[0-9]/.test(password)) {
-      return 'Password must contain at least one number';
-    }
-    if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
-      return 'Password must contain at least one special character';
-    }
-    return null;
-  };
-   const passwordError = validatePassword(password);
+    const validatePassword = (password: string): string | null => {
+      if (password.length < 8) {
+        return 'Password must be at least 8 characters long';
+      }
+      if (!/[A-Z]/.test(password)) {
+        return 'Password must contain at least one uppercase letter';
+      }
+      if (!/[a-z]/.test(password)) {
+        return 'Password must contain at least one lowercase letter';
+      }
+      if (!/[0-9]/.test(password)) {
+        return 'Password must contain at least one number';
+      }
+      if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+        return 'Password must contain at least one special character';
+      }
+      return null;
+    };
+    const passwordError = validatePassword(password);
     if (passwordError) {
       setError(passwordError);
       return;
@@ -54,9 +54,9 @@ export default function RegisterPage() {
     try {
       const result = await register(email, password, fullName);
       setSuccess(true);
-      // Redirect to OTP verification page after 1 second
+
       setTimeout(() => {
-        router.push(`/auth/verify-otp?email=${encodeURIComponent(email)}`);
+        router.push(`/auth/verify-otp?email=${encodeURIComponent(email)}&purpose=Registration`);
       }, 1000);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Registration failed. Please try again.');
