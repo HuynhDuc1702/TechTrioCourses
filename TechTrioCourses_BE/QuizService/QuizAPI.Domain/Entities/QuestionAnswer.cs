@@ -1,19 +1,18 @@
 using System;
 using System.Collections.Generic;
+using TechTrioCourses.Shared.Abstractions;
 
 namespace QuizAPI.Domain.Entities;
 
-public partial class QuestionAnswer
+public partial class QuestionAnswer : BaseEntity
 {
-    public Guid Id { get; set; }
+
 
     public Guid QuestionId { get; set; }
 
     public string AnswerText { get; set; } = null!;
 
-    public DateTime CreatedAt { get; set; }
-
-    public DateTime UpdatedAt { get; set; }
+    
 
     public virtual Question Question { get; set; } = null!;
 }

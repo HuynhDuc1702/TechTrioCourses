@@ -165,7 +165,7 @@ public partial class UserDbContext : DbContext
                 .HasColumnName("updated_at");
             entity.Property(e => e.UserId).HasColumnName("user_id");
 
-            // Configure foreign key relationship to UserQuiz
+         
             entity.HasOne<UserQuiz>()
                 .WithMany()
                 .HasForeignKey(e => e.UserQuizId)

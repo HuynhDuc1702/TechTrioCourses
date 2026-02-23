@@ -169,7 +169,7 @@ namespace AccountAPI.Application.Services
             account.PasswordHash = _passwordHasher.HashPassword(request.Password);
             account.Status = AccountStatusEnum.Disable;
 
-            var createdAccount = await _accountRepo.CreateAccountAsync(account);
+            var createdAccount = await _accountRepo.CreateAsync(account);
 
             var userResponse = await _userAPIClient.RegisterUser(createdAccount.Id, request);
 
@@ -227,7 +227,8 @@ namespace AccountAPI.Application.Services
             }
 
             account.Status = AccountStatusEnum.Active;
-            return await _accountRepo.UpdateAccountAsync(account);
+            await _accountRepo.UpdateAsync(account);
+            return true;
         }
 
         public async Task<bool> ChangePasswordAsync(ChangePasswordRequest request)
@@ -246,7 +247,8 @@ namespace AccountAPI.Application.Services
 
             account.PasswordHash = _passwordHasher.HashPassword(request.NewPassword);
 
-            return await _accountRepo.UpdateAccountAsync(account);
+            await _accountRepo.UpdateAsync(account);
+            return true;
         }
 
         public async Task<bool> ResetPasswordAsync(string email, ResetPasswordRequest request)
@@ -260,7 +262,8 @@ namespace AccountAPI.Application.Services
 
             account.PasswordHash = _passwordHasher.HashPassword(request.Password);
 
-            return await _accountRepo.UpdateAccountAsync(account);
+            await _accountRepo.UpdateAsync(account);
+            return true;
         }
 
 
