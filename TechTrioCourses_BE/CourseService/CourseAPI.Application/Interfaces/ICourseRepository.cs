@@ -1,14 +1,10 @@
 using CourseAPI.Domain.Entities;
+using TechTrioCourses.Shared.Repositories.Interfaces;
 
 namespace CourseAPI.Application.Interfaces
 {
-    public interface ICourseRepository
+    public interface ICourseRepository : IGenericRepository<Course>
     {
-        Task<IEnumerable<Course>> GetAllAsync();
-        Task<Course?> GetByIdAsync(Guid id);
-        Task<Course> CreateAsync(Course course);
-        Task<Course?> UpdateAsync(Course course);
-        Task<bool> DeleteAsync(Guid id);
-        Task<bool> ExistsAsync(Guid id);
+       
     }
 }

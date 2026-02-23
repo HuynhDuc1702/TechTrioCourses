@@ -1,15 +1,12 @@
-﻿using UserAPI.Domain.Entities;
+﻿using TechTrioCourses.Shared.Repositories.Interfaces;
+using UserAPI.Domain.Entities;
 
 namespace UserAPI.Application.Interfaces.IRepositories
 {
-    public interface IUserRepository
+    public interface IUserRepository :IGenericRepository<User>
     {
-        Task<User?> GetByIdAsync(Guid id);
+    
         Task<User?> GetByAccountIdAsync(Guid accountId);
-        Task<IEnumerable<User>> GetByIdsAsync(List<Guid> ids);
-        Task<User> CreateUserAsync(User user);
-        Task<bool> UpdateUserAsync(User user);
-        Task<bool> UserExistsAsync(Guid accountId);
-        Task<IEnumerable<User>> GetAllAsync();
+    
     }
 }

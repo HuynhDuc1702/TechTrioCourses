@@ -1,10 +1,12 @@
 ﻿
 
+using TechTrioCourses.Shared.Abstractions;
+
 namespace UserAPI.Domain.Entities;
 
-public partial class UserInputAnswer
+public partial class UserInputAnswer : BaseEntity
 {
-    public Guid Id { get; set; }
+
 
     public Guid ResultId { get; set; }
 
@@ -12,7 +14,5 @@ public partial class UserInputAnswer
 
     public string AnswerText { get; set; } = null!;
 
-    public DateTime CreatedAt { get; set; }
-
-    public DateTime UpdatedAt { get; set; }
+ 
 }

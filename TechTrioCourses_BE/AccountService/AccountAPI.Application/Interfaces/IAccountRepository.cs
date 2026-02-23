@@ -1,15 +1,16 @@
 
 using AccountAPI.Domain.Entities;
+using TechTrioCourses.Shared.Repositories.Interfaces;
 
 namespace AccountAPI.Application.Interfaces
 {
-    public interface IAccountRepository
+    public interface IAccountRepository : IGenericRepository<Account>
     {
         Task<Account?> GetByEmailAsync(string email);
-        Task<Account?> GetByIdAsync(Guid id);
-        Task<Account> CreateAccountAsync(Account account);
+    
+  
        
-        Task<bool> UpdateAccountAsync(Account account);
+     
         Task<bool> EmailExistsAsync(string email);
     }
 }

@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
+using TechTrioCourses.Shared.Abstractions;
 
 namespace QuizAPI.Domain.Entities;
 
-public partial class QuestionChoice
+public partial class QuestionChoice : BaseEntity
 {
-    public Guid Id { get; set; }
+  
 
     public Guid QuestionId { get; set; }
 
@@ -13,9 +14,7 @@ public partial class QuestionChoice
 
     public bool IsCorrect { get; set; }
 
-    public DateTime CreatedAt { get; set; }
-
-    public DateTime UpdatedAt { get; set; }
+ 
 
     public virtual Question Question { get; set; } = null!;
 }

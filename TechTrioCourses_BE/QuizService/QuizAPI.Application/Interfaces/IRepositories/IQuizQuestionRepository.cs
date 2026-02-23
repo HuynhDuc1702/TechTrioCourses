@@ -1,8 +1,9 @@
 using QuizAPI.Domain.Entities;
 
+
 namespace QuizAPI.Application.Interfaces.IRepositories
 {
-    public interface IQuizQuestionRepository
+    public interface IQuizQuestionRepository 
     {
         Task<IEnumerable<QuizQuestion>> GetAllAsync();
         Task<QuizQuestion?> GetByIdAsync(Guid quizId, Guid questionId);

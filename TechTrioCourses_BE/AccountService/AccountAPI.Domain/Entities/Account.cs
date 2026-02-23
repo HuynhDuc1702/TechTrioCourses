@@ -1,11 +1,12 @@
 
+using TechTrioCourses.Shared.Abstractions;
 using TechTrioCourses.Shared.Enums;
 
 namespace AccountAPI.Domain.Entities;
 
-public partial class Account
+public partial class Account : BaseEntity
 {
-    public Guid Id { get; set; }
+   
 
     public string Email { get; set; } = null!;
 
@@ -13,7 +14,5 @@ public partial class Account
 
     public AccountStatusEnum Status { get; set; }
 
-    public DateTime? CreatedAt { get; set; }
-
-    public DateTime? UpdatedAt { get; set; }
+    
 }

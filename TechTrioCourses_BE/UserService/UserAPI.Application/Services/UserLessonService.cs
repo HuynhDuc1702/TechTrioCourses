@@ -60,23 +60,18 @@ namespace UserAPI.Application.Services
 
         public async Task<UserLessonResponse?> CreateUserLessonAsync(CreateUserLessonRequest request)
         {
-            // Check if user lesson already exists
-            var existingUserLesson = await _userLessonRepo.GetByUserAndLessonAsync(request.UserId, request.LessonId);
 
-            if (existingUserLesson != null)
+            if (await _userLessonRepo.ExistsAsync(request.UserId, request.LessonId))
             {
-                // Already exists, return existing
-                return _mapper.Map<UserLessonResponse>(existingUserLesson);
+                throw new InvalidOperationException("User already completed this lesson.");
             }
-
-            // Create new user lesson - automatically mark as completed
             var userLesson = _mapper.Map<UserLesson>(request);
             userLesson.Status = UserLessonStatusEnum.Completed;
             userLesson.CompletedAt = DateTime.UtcNow;
 
-            var createdUserLesson = await _userLessonRepo.CreateUserLessonAsync(userLesson);
+            var createdUserLesson = await _userLessonRepo.CreateAsync(userLesson);
 
-            // Trigger progress recalculation
+    
             try
             {
                 await _userCourseProgress.RecaculateCourseProgress(request.CourseId, request.UserId);
@@ -93,7 +88,7 @@ namespace UserAPI.Application.Services
 
         public async Task<bool> DeleteUserLessonAsync(Guid id)
         {
-            return await _userLessonRepo.DeleteUserLessonAsync(id);
+            return await _userLessonRepo.DeleteAsync(id);
         }
 
         public async Task<IEnumerable<UserLessonResponse>> GetUserLessonsByCourseIdAsync(Guid courseId)

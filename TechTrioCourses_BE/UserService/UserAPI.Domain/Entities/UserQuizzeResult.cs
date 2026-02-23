@@ -1,11 +1,12 @@
 ﻿
+using TechTrioCourses.Shared.Abstractions;
 using TechTrioCourses.Shared.Enums;
 
 namespace UserAPI.Domain.Entities;
 
-public partial class UserQuizzeResult
+public partial class UserQuizzeResult : BaseEntity
 {
-    public Guid Id { get; set; }
+
 
     public Guid UserQuizId { get; set; }
 
@@ -29,7 +30,7 @@ public partial class UserQuizzeResult
 
     public string? Metadata { get; set; }
 
-    public DateTime UpdatedAt { get; set; }
+ 
     public virtual ICollection<UserInputAnswer> UserInputAnswers { get; set; }
        = new List<UserInputAnswer>();
 

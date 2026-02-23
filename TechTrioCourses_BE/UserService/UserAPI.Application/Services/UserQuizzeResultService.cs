@@ -92,6 +92,9 @@ namespace UserAPI.Application.Services
             latestQuizzeResult == null
            ? 1
            : latestQuizzeResult.AttemptNumber + 1;
+        
+            quizzeResult.StartedAt = DateTime.UtcNow;
+            quizzeResult.Status = UserQuizResultStatusEnum.In_progress;
 
             var createdResult = await _quizzeResultRepo.CreateAsync(quizzeResult);
             return _mapper.Map<UserQuizzeResultResponse>(createdResult);

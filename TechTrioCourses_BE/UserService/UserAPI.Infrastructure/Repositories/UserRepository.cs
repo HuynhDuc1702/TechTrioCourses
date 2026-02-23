@@ -2,59 +2,29 @@
 using UserAPI.Infrastructure.Data;
 using UserAPI.Domain.Entities;
 using UserAPI.Application.Interfaces.IRepositories;
+using TechTrioCourses.Shared.Repositories;
 
 namespace UserAPI.Infrastructure.Repositories
 {
-    public class UserRepository : IUserRepository
+    public class UserRepository : GenericRepository<User, UserDbContext>,IUserRepository
     {
-        private readonly UserDbContext _context;
+     
 
-        public UserRepository(UserDbContext context)
+        public UserRepository(UserDbContext context):base(context) 
         {
-            _context = context;
+        
         }
+        protected override DbSet<User> DbSet => _context.Users;
 
-        public async Task<User?> GetByIdAsync(Guid id)
-        {
-            return await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
-        }
-        public async Task<IEnumerable<User>> GetAllAsync() 
-        {
-            return await _context.Users.ToListAsync();
-        }
-
+      
         public async Task<User?> GetByAccountIdAsync(Guid accountId)
         {
             return await _context.Users.FirstOrDefaultAsync(u => u.AccountId == accountId);
         }
 
-        public async Task<IEnumerable<User>> GetByIdsAsync(List<Guid> ids)
-        {
-            return await _context.Users
-   .Where(u => ids.Contains(u.Id))
-           .ToListAsync();
-        }
+      
+       
 
-        public async Task<User> CreateUserAsync(User user)
-        {
-            user.Id = Guid.NewGuid();
-            user.CreatedAt = DateTime.UtcNow;
-
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-
-            return user;
-        }
-
-        public async Task<bool> UpdateUserAsync(User user)
-        {
-            _context.Users.Update(user);
-            return await _context.SaveChangesAsync() > 0;
-        }
-
-        public async Task<bool> UserExistsAsync(Guid accountId)
-        {
-            return await _context.Users.AnyAsync(u => u.AccountId == accountId);
-        }
+      
     }
 }

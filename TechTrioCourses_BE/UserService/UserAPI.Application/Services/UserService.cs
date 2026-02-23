@@ -43,14 +43,14 @@ namespace UserAPI.Application.Services
         public async Task<UserResponse?> CreateUserAsync(CreateUserRequest request)
         {
             // Check if user already exists for this account
-            if (await _userRepo.UserExistsAsync(request.AccountId))
+            if (await _userRepo.ExistsAsync(request.AccountId))
             {
                 return null;
             }
 
             // Create user
             var user = _mapper.Map<User>(request);
-            var createdUser = await _userRepo.CreateUserAsync(user);
+            var createdUser = await _userRepo.CreateAsync(user);
 
             return _mapper.Map<UserResponse>(createdUser);
         }
@@ -66,7 +66,7 @@ namespace UserAPI.Application.Services
             // Use AutoMapper to update user - only non-null properties will be mapped
             _mapper.Map(request, user);
 
-            await _userRepo.UpdateUserAsync(user);
+            await _userRepo.UpdateAsync(user);
 
             return _mapper.Map<UserResponse>(user);
         }

@@ -1,12 +1,13 @@
 using TechTrioCourses.Shared.Enums;
 using System;
 using System.Collections.Generic;
+using TechTrioCourses.Shared.Abstractions;
 
 namespace QuizAPI.Domain.Entities;
 
-public partial class Question
+public partial class Question : BaseEntity
 {
-    public Guid Id { get; set; }
+
 
     public Guid UserId { get; set; }
 
@@ -20,9 +21,7 @@ public partial class Question
 
     public double Points { get; set; }
 
-    public DateTime CreatedAt { get; set; }
 
-    public DateTime UpdatedAt { get; set; }
 
     public virtual ICollection<QuestionAnswer> QuestionAnswers { get; set; } = new List<QuestionAnswer>();
 

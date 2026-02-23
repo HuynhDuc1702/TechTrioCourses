@@ -3,27 +3,21 @@ using TechTrioCourses.Shared.Enums;
 using UserAPI.Infrastructure.Data;
 using UserAPI.Domain.Entities;
 using UserAPI.Application.Interfaces.IRepositories;
+using TechTrioCourses.Shared.Repositories;
 
 namespace UserAPI.Infrastructure.Repositories
 {
-    public class UserQuizzeResultRepository : IUserQuizzeResultRepository
+    public class UserQuizzeResultRepository : GenericRepository<UserQuizzeResult, UserDbContext>,IUserQuizzeResultRepository
     {
-        private readonly UserDbContext _context;
 
-        public UserQuizzeResultRepository(UserDbContext context)
+        public UserQuizzeResultRepository(UserDbContext context): base(context)
         {
-            _context = context;
+        
+        
         }
+        protected override DbSet<UserQuizzeResult> DbSet => _context.UserQuizzeResults;
 
-        public async Task<IEnumerable<UserQuizzeResult>> GetAllAsync()
-        {
-            return await _context.UserQuizzeResults.ToListAsync();
-        }
-
-        public async Task<UserQuizzeResult?> GetByIdAsync(Guid id)
-        {
-            return await _context.UserQuizzeResults.FirstOrDefaultAsync(qr => qr.Id == id);
-        }
+       
 
         public async Task<IEnumerable<UserQuizzeResult>> GetByUserIdAsync(Guid userId)
         {
@@ -65,62 +59,7 @@ namespace UserAPI.Infrastructure.Repositories
         }
 
 
-        public async Task<UserQuizzeResult> CreateAsync(UserQuizzeResult quizzeResult)
-        {
-            quizzeResult.Id = Guid.NewGuid();
-            quizzeResult.StartedAt = DateTime.UtcNow;
-            quizzeResult.UpdatedAt = DateTime.UtcNow;
-            quizzeResult.Status = UserQuizResultStatusEnum.In_progress;
-
-            _context.UserQuizzeResults.Add(quizzeResult);
-            await _context.SaveChangesAsync();
-
-            return quizzeResult;
-        }
-
-        public async Task<UserQuizzeResult?> UpdateAsync(UserQuizzeResult quizzeResult)
-        {
-            var existingResult = await _context.UserQuizzeResults.FindAsync(quizzeResult.Id);
-            if (existingResult == null)
-            {
-                return null;
-            }
-
-            quizzeResult.UpdatedAt = DateTime.UtcNow;
-            _context.Entry(existingResult).CurrentValues.SetValues(quizzeResult);
-
-            try
-            {
-                await _context.SaveChangesAsync();
-                return existingResult;
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!await ExistsAsync(quizzeResult.Id))
-                {
-                    return null;
-                }
-                throw;
-            }
-        }
-
-        public async Task<bool> DeleteAsync(Guid id)
-        {
-            var quizzeResult = await _context.UserQuizzeResults.FindAsync(id);
-            if (quizzeResult == null)
-            {
-                return false;
-            }
-
-            _context.UserQuizzeResults.Remove(quizzeResult);
-            await _context.SaveChangesAsync();
-
-            return true;
-        }
-
-        public async Task<bool> ExistsAsync(Guid id)
-        {
-            return await _context.UserQuizzeResults.AnyAsync(qr => qr.Id == id);
-        }
+        
+  
     }
 }

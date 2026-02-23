@@ -1,5 +1,4 @@
-﻿
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using TechTrioCourses.Shared.Enums;
 using UserAPI.Domain.Entities;
 
@@ -51,6 +50,9 @@ public partial class UserDbContext : DbContext
                 .HasConversion<short>()
                 .HasDefaultValue(UserRoleEnum.Student)
                 .HasColumnName("role");
+            entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("(CURRENT_TIMESTAMP AT TIME ZONE 'UTC'::text)")
+                .HasColumnName("updated_at");
         });
         modelBuilder.Entity<UserCourse>(entity =>
         {
@@ -69,6 +71,9 @@ public partial class UserDbContext : DbContext
                 .HasColumnName("id");
             entity.Property(e => e.CompletedAt).HasColumnName("completed_at");
             entity.Property(e => e.CourseId).HasColumnName("course_id");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(CURRENT_TIMESTAMP AT TIME ZONE 'UTC'::text)")
+                .HasColumnName("created_at");
             entity.Property(e => e.EnrolledAt)
                 .HasDefaultValueSql("(CURRENT_TIMESTAMP AT TIME ZONE 'UTC'::text)")
                 .HasColumnName("enrolled_at");
@@ -100,10 +105,13 @@ public partial class UserDbContext : DbContext
                 .HasDefaultValueSql("uuid_generate_v4()")
                 .HasColumnName("id");
             entity.Property(e => e.CompletedAt).HasColumnName("completed_at");
-            entity.Property(e => e.LessonId).HasColumnName("lesson_id");
             entity.Property(e => e.CourseId).HasColumnName("course_id");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(CURRENT_TIMESTAMP AT TIME ZONE 'UTC'::text)")
+                .HasColumnName("created_at");
+            entity.Property(e => e.LessonId).HasColumnName("lesson_id");
             entity.Property(e => e.Status)
-               .HasConversion<short>()
+                .HasConversion<short>()
                 .HasDefaultValue(UserLessonStatusEnum.Not_Started)
                 .HasColumnName("status");
             entity.Property(e => e.UpdatedAt)
@@ -132,6 +140,9 @@ public partial class UserDbContext : DbContext
                 .HasColumnName("attempt_number");
             entity.Property(e => e.CompletedAt).HasColumnName("completed_at");
             entity.Property(e => e.CourseId).HasColumnName("course_id");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(CURRENT_TIMESTAMP AT TIME ZONE 'UTC'::text)")
+                .HasColumnName("created_at");
             entity.Property(e => e.DurationSeconds)
                 .HasDefaultValue(0)
                 .HasColumnName("duration_seconds");
@@ -146,7 +157,7 @@ public partial class UserDbContext : DbContext
                 .HasDefaultValueSql("(CURRENT_TIMESTAMP AT TIME ZONE 'UTC'::text)")
                 .HasColumnName("started_at");
             entity.Property(e => e.Status)
-               .HasConversion<short>()
+                .HasConversion<short>()
                 .HasDefaultValue(UserQuizResultStatusEnum.In_progress)
                 .HasColumnName("status");
             entity.Property(e => e.UpdatedAt)
@@ -154,7 +165,7 @@ public partial class UserDbContext : DbContext
                 .HasColumnName("updated_at");
             entity.Property(e => e.UserId).HasColumnName("user_id");
 
-            // Configure foreign key relationship to UserQuiz
+         
             entity.HasOne<UserQuiz>()
                 .WithMany()
                 .HasForeignKey(e => e.UserQuizId)
@@ -245,9 +256,12 @@ public partial class UserDbContext : DbContext
                 .HasDefaultValue(0)
                 .HasColumnName("attempt_count");
             entity.Property(e => e.BestScore).HasColumnName("best_score");
+            entity.Property(e => e.CourseId).HasColumnName("course_id");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(CURRENT_TIMESTAMP AT TIME ZONE 'UTC'::text)")
+                .HasColumnName("created_at");
             entity.Property(e => e.FirstAttemptAt).HasColumnName("first_attempt_at");
             entity.Property(e => e.LastAttemptAt).HasColumnName("last_attempt_at");
-            entity.Property(e => e.CourseId).HasColumnName("course_id");
             entity.Property(e => e.PassedAt).HasColumnName("passed_at");
             entity.Property(e => e.QuizId).HasColumnName("quiz_id");
             entity.Property(e => e.Status)
