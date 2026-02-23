@@ -80,11 +80,17 @@ namespace UserAPI.Application.Services
                 return null;
             }
 
-          
 
-            await _userCourseRepo.UpdateAsync(userCourse);
 
-            return _mapper.Map<UserCourseResponse>(userCourse);
+            var updatedUserCourse = await _userCourseRepo.UpdateAsync(userCourse);
+
+            if (updatedUserCourse == null)
+            {
+                return null; 
+            }
+
+
+            return _mapper.Map<UserCourseResponse>(updatedUserCourse);
         }
 
         public async Task<bool> DeleteUserCourseAsync(Guid id)

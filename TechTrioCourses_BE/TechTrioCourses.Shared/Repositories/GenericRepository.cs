@@ -14,24 +14,24 @@ namespace TechTrioCourses.Shared.Repositories
 
         protected abstract DbSet<T> DbSet { get; }
 
-        public async Task<IEnumerable<T>> GetAllAsync()
+        public virtual async Task<IEnumerable<T>> GetAllAsync()
         {
             return await DbSet.ToListAsync();
         }
 
-        public async Task<T?> GetByIdAsync(Guid id)
+        public virtual async Task<T?> GetByIdAsync(Guid id)
         {
             return await DbSet.FindAsync(id);
         }
 
-        public async Task<IEnumerable<T>> GetByIdsAsync(List<Guid> ids)
+        public virtual async Task<IEnumerable<T>> GetByIdsAsync(List<Guid> ids)
         {
             return await DbSet
                 .Where(e => ids.Contains(e.Id))
                 .ToListAsync();
         }
 
-        public async Task<T> CreateAsync(T entity)
+        public virtual async Task<T> CreateAsync(T entity)
         {
             entity.Id = Guid.NewGuid();
             entity.CreatedAt = DateTime.UtcNow;
@@ -42,7 +42,7 @@ namespace TechTrioCourses.Shared.Repositories
             return entity;
         }
 
-        public async Task<T?> UpdateAsync(T entity)
+        public virtual async Task<T?> UpdateAsync(T entity)
         {
             var existing = await DbSet.FindAsync(entity.Id);
             if (existing == null) return null;
@@ -55,7 +55,7 @@ namespace TechTrioCourses.Shared.Repositories
             return existing;
         }
 
-        public async Task<bool> DeleteAsync(Guid id)
+        public virtual async Task<bool> DeleteAsync(Guid id)
         {
             var entity = await DbSet.FindAsync(id);
             if (entity == null) return false;
@@ -65,7 +65,7 @@ namespace TechTrioCourses.Shared.Repositories
             return true;
         }
 
-        public async Task<bool> ExistsAsync(Guid id)
+        public virtual async Task<bool> ExistsAsync(Guid id)
         {
             return await DbSet.AnyAsync(e => e.Id == id);
         }
