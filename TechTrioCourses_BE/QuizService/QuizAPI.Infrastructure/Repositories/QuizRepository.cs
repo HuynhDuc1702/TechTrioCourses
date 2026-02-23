@@ -25,8 +25,15 @@ namespace QuizAPI.Infrastructure.Repositories
                 .ToListAsync();
         }
 
-      
 
-      
+
+        public override async Task<IEnumerable<Quiz>> GetAllAsync()
+        {
+            return await _context.Quizzes.Include(q => q.QuizQuestions).ToListAsync();
+        }
+        public override async Task<Quiz?> GetByIdAsync(Guid id)
+        {
+            return await _context.Quizzes.Include(q => q.QuizQuestions).FirstOrDefaultAsync(q => q.Id == id);
+        }
     }
 }

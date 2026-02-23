@@ -85,10 +85,18 @@ namespace UserAPI.Application.Services
             if (request.AnswerText != null)
                 existingAnswer.AnswerText = request.AnswerText;
 
-            await _userInputAnswerRepo.UpdateAsync(existingAnswer);
+
+            var updatedUserInputAnswer = await _userInputAnswerRepo.UpdateAsync(existingAnswer);
 
 
-            return _mapper.Map<UserInputAnswerResponse>(existingAnswer);
+
+            if (updatedUserInputAnswer == null)
+            {
+                return null;
+            }
+
+
+            return _mapper.Map<UserInputAnswerResponse>(updatedUserInputAnswer);
         }
 
         public async Task<bool> DeleteUserInputAnswerAsync(Guid id)

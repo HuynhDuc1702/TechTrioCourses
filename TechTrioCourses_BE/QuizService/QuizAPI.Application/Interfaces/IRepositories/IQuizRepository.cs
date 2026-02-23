@@ -5,7 +5,7 @@ namespace QuizAPI.Application.Interfaces.IRepositories
 {
     public interface IQuizRepository : IGenericRepository <Quiz>
     {
-    
+      
         Task<IEnumerable<Quiz>> GetByCourseIdAsync(Guid courseId);
        
     }

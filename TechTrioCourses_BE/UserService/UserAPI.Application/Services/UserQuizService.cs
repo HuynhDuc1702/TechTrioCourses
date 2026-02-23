@@ -1,4 +1,4 @@
-using AutoMapper;
+﻿using AutoMapper;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using System.Reflection.Metadata.Ecma335;
@@ -133,6 +133,12 @@ namespace UserAPI.Application.Services
 
             var updatedUserQuiz = await _userQuizRepo.UpdateAsync(userQuiz);
 
+          
+
+            if (updatedUserQuiz == null)
+            {
+                return null; 
+            }
 
             return _mapper.Map<UserQuizResponse>(updatedUserQuiz);
         }

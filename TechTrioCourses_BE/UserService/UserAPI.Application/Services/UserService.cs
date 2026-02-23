@@ -42,13 +42,13 @@ namespace UserAPI.Application.Services
 
         public async Task<UserResponse?> CreateUserAsync(CreateUserRequest request)
         {
-            // Check if user already exists for this account
-            if (await _userRepo.ExistsAsync(request.AccountId))
+            var existingUser = await _userRepo.GetByAccountIdAsync(request.AccountId);
+
+            if (existingUser != null)
             {
                 return null;
             }
 
-            // Create user
             var user = _mapper.Map<User>(request);
             var createdUser = await _userRepo.CreateAsync(user);
 
@@ -63,12 +63,16 @@ namespace UserAPI.Application.Services
                 return null;
             }
 
-            // Use AutoMapper to update user - only non-null properties will be mapped
+          
             _mapper.Map(request, user);
 
-            await _userRepo.UpdateAsync(user);
+           var updatedUser= await _userRepo.UpdateAsync(user);
+            if(updatedUser == null)
+            {
+                return null;
+            }
 
-            return _mapper.Map<UserResponse>(user);
+            return _mapper.Map<UserResponse>(updatedUser);
         }
     }
 }
