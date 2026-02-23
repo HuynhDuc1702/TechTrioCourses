@@ -1,16 +1,12 @@
-using System;
-using System.Collections.Generic;
 
+using TechTrioCourses.Shared.Abstractions;
 namespace CategoryAPI.Domain.Entities;
 
-public partial class Category
+public partial class Category : BaseEntity
 {
-    public Guid Id { get; set; }
 
     public string Name { get; set; } = null!;
 
     public string? Description { get; set; }
-    public DateTime? CreatedAt { get; set; }
 
-    public DateTime? UpdatedAt { get; set; }
 }

@@ -1,0 +1,65 @@
+﻿
+
+using Microsoft.EntityFrameworkCore;
+using TechTrioCourses.Shared.Abstractions;
+using TechTrioCourses.Shared.Repositories.Interfaces;
+
+namespace TechTrioCourses.Shared.Repositories
+{
+    public abstract class GenericRepository<T, TContext>(TContext context)
+    : IGenericRepository<T>
+    where T : BaseEntity
+    where TContext : DbContext
+    {
+        protected readonly TContext _context = context;
+
+        protected abstract DbSet<T> DbSet { get; }
+
+        public async Task<IEnumerable<T>> GetAllAsync()
+        {
+            return await DbSet.ToListAsync();
+        }
+
+        public async Task<T?> GetByIdAsync(Guid id)
+        {
+            return await DbSet.FindAsync(id);
+        }
+
+        public async Task<IEnumerable<T>> GetByIdsAsync(List<Guid> ids)
+        {
+            return await DbSet
+                .Where(e => ids.Contains(e.Id))
+                .ToListAsync();
+        }
+
+        public async Task<T> CreateAsync(T entity)
+        {
+            await DbSet.AddAsync(entity);
+            await _context.SaveChangesAsync();
+            return entity;
+        }
+
+        public async Task<T?> UpdateAsync(T entity)
+        {
+            DbSet.Update(entity);
+            await _context.SaveChangesAsync();
+            return entity;
+        }
+
+        public async Task<bool> DeleteAsync(Guid id)
+        {
+            var entity = await GetByIdAsync(id);
+            if (entity == null) return false;
+
+            DbSet.Remove(entity);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> ExistsAsync(Guid id)
+        {
+            return await DbSet
+                .AnyAsync(e => e.Id == id);
+        }
+    }
+}
