@@ -1,6 +1,6 @@
 using AutoMapper;
 using Microsoft.Extensions.Logging;
-
+using TechTrioCourses.Shared.Enums;
 using UserAPI.Application.DTOs.Request.UserCourse;
 using UserAPI.Application.DTOs.Response.UserCourse;
 using UserAPI.Application.Interfaces.IRepositories;
@@ -57,15 +57,17 @@ namespace UserAPI.Application.Services
 
         public async Task<UserCourseResponse?> CreateUserCourseAsync(CreateUserCourseRequest request)
         {
-            // Check if user course already exists
-            if (await _userCourseRepo.UserCourseExistsAsync(request.UserId, request.CourseId))
+            if (await _userCourseRepo.ExistsAsync(request.UserId, request.CourseId))
             {
                 return null;
             }
 
-            // Create user course
+            
             var userCourse = _mapper.Map<UserCourse>(request);
-            var createdUserCourse = await _userCourseRepo.CreateUserCourseAsync(userCourse);
+            userCourse.Progress = 0;
+            userCourse.Status = UserCourseStatusEnum.In_progress;
+            userCourse.EnrolledAt=DateTime.UtcNow;
+            var createdUserCourse = await _userCourseRepo.CreateAsync(userCourse);
 
             return _mapper.Map<UserCourseResponse>(createdUserCourse);
         }
@@ -80,14 +82,14 @@ namespace UserAPI.Application.Services
 
           
 
-            await _userCourseRepo.UpdateUserCourseAsync(userCourse);
+            await _userCourseRepo.UpdateAsync(userCourse);
 
             return _mapper.Map<UserCourseResponse>(userCourse);
         }
 
         public async Task<bool> DeleteUserCourseAsync(Guid id)
         {
-            return await _userCourseRepo.DeleteUserCourseAsync(id);
+            return await _userCourseRepo.DeleteAsync(id);
         }
     }
 }

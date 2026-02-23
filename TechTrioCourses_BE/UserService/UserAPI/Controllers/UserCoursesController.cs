@@ -48,12 +48,12 @@ namespace UserAPI.Controllers
         [Authorize]
         public async Task<ActionResult<IEnumerable<UserCourseResponse>>> GetUserCoursesByUserId()
         {
-            // Get AccountId from Token Claims
+          
             var accountId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(accountId) || !Guid.TryParse(accountId, out var accountGuid))
                 return Unauthorized();
 
-            // Resolve User from AccountId
+          
             var user = await _userService.GetUserByAccountIdAsync(accountGuid);
             if (user == null) return Unauthorized();
 

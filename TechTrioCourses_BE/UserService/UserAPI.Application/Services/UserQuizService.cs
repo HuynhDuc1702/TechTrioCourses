@@ -69,7 +69,7 @@ namespace UserAPI.Application.Services
 
         public async Task<UserQuizResponse?> CreateUserQuizAsync(CreateUserQuizRequest request)
         {
-            if (await _userQuizRepo.UserQuizExistsAsync(request.UserId, request.QuizId))
+            if (await _userQuizRepo.ExistsAsync(request.UserId, request.QuizId))
             {
                 return null;
             }
@@ -83,7 +83,7 @@ namespace UserAPI.Application.Services
             userQuiz.AttemptCount = 1;
             userQuiz.Status = UserQuizStatusEnum.In_progress;
 
-            var createdUserQuiz = await _userQuizRepo.CreateUserQuizAsync(userQuiz);
+            var createdUserQuiz = await _userQuizRepo.CreateAsync(userQuiz);
 
             return _mapper.Map<UserQuizResponse>(createdUserQuiz);
         }
@@ -91,12 +91,7 @@ namespace UserAPI.Application.Services
 
         public async Task<UserQuizResponse?> UpdateUserQuizAsync(Guid id, ApplyQuizGradingResultRequest request)
         {
-            _logger.LogInformation(
-     "Before update UserQuiz: IsPassed{IsPassed}, Score {}",
-     request.IsPassed,
-     request.SubmitScore
-     
- );
+           
             var userQuiz = await _userQuizRepo.GetByIdAsync(id);
             var now= DateTime.UtcNow;
             if (userQuiz == null)
@@ -136,7 +131,7 @@ namespace UserAPI.Application.Services
 
 
 
-            var updatedUserQuiz = await _userQuizRepo.UpdateUserQuizAsync(userQuiz);
+            var updatedUserQuiz = await _userQuizRepo.UpdateAsync(userQuiz);
 
 
             return _mapper.Map<UserQuizResponse>(updatedUserQuiz);
@@ -151,7 +146,7 @@ namespace UserAPI.Application.Services
             userQuiz.AttemptCount += 1;
             userQuiz.LastAttemptAt = DateTime.UtcNow;
 
-            await _userQuizRepo.UpdateUserQuizAsync(userQuiz);
+            await _userQuizRepo.UpdateAsync(userQuiz);
 
             return _mapper.Map<UserQuizResponse>(userQuiz);
         }
@@ -159,7 +154,7 @@ namespace UserAPI.Application.Services
 
         public async Task<bool> DeleteUserQuizAsync(Guid id)
         {
-            return await _userQuizRepo.DeleteUserQuizAsync(id);
+            return await _userQuizRepo.DeleteAsync(id);
         }
     }
 }

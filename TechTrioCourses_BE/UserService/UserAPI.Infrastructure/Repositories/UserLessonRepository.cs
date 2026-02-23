@@ -2,27 +2,19 @@ using Microsoft.EntityFrameworkCore;
 using UserAPI.Infrastructure.Data;
 using UserAPI.Domain.Entities;
 using UserAPI.Application.Interfaces.IRepositories;
+using TechTrioCourses.Shared.Repositories;
 
 namespace UserAPI.Infrastructure.Repositories
 {
-    public class UserLessonRepository : IUserLessonRepository
+    public class UserLessonRepository : GenericRepository<UserLesson, UserDbContext>, IUserLessonRepository
     {
-        private readonly UserDbContext _context;
 
-        public UserLessonRepository(UserDbContext context)
-        {
-            _context = context;
-        }
 
-        public async Task<UserLesson?> GetByIdAsync(Guid id)
+        public UserLessonRepository(UserDbContext context) : base(context)
         {
-            return await _context.Set<UserLesson>().FirstOrDefaultAsync(ul => ul.Id == id);
-        }
 
-        public async Task<IEnumerable<UserLesson>> GetAllAsync()
-        {
-            return await _context.Set<UserLesson>().ToListAsync();
         }
+        protected override DbSet<UserLesson> DbSet => _context.UserLessons;
 
         public async Task<IEnumerable<UserLesson>> GetByUserIdAsync(Guid userId)
         {
@@ -44,37 +36,10 @@ namespace UserAPI.Infrastructure.Repositories
              .FirstOrDefaultAsync(ul => ul.UserId == userId && ul.LessonId == lessonId);
         }
 
-        public async Task<UserLesson> CreateUserLessonAsync(UserLesson userLesson)
-        {
-            userLesson.Id = Guid.NewGuid();
-            userLesson.UpdatedAt = DateTime.UtcNow;
-
-            _context.Set<UserLesson>().Add(userLesson);
-            await _context.SaveChangesAsync();
-
-            return userLesson;
-        }
-
-        public async Task<bool> UpdateUserLessonAsync(UserLesson userLesson)
-        {
-            userLesson.UpdatedAt = DateTime.UtcNow;
-            _context.Set<UserLesson>().Update(userLesson);
-            return await _context.SaveChangesAsync() > 0;
-        }
-
-        public async Task<bool> DeleteUserLessonAsync(Guid id)
-        {
-            var userLesson = await GetByIdAsync(id);
-            if (userLesson == null)
-            {
-                return false;
-            }
-
-            _context.Set<UserLesson>().Remove(userLesson);
-            return await _context.SaveChangesAsync() > 0;
-        }
-
-        public async Task<bool> UserLessonExistsAsync(Guid userId, Guid lessonId)
+      
+      
+      
+        public async Task<bool> ExistsAsync(Guid userId, Guid lessonId)
         {
             return await _context.Set<UserLesson>()
         .AnyAsync(ul => ul.UserId == userId && ul.LessonId == lessonId);

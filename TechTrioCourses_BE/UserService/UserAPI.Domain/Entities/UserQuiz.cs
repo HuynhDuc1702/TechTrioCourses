@@ -1,11 +1,12 @@
 ﻿
+using TechTrioCourses.Shared.Abstractions;
 using TechTrioCourses.Shared.Enums;
 
 namespace UserAPI.Domain.Entities;
 
-public partial class UserQuiz
+public partial class UserQuiz : BaseEntity
 {
-    public Guid Id { get; set; }
+
 
     public Guid UserId { get; set; }
 
@@ -24,5 +25,5 @@ public partial class UserQuiz
 
     public DateTime? LastAttemptAt { get; set; }
 
-    public DateTime UpdatedAt { get; set; }
+ 
 }

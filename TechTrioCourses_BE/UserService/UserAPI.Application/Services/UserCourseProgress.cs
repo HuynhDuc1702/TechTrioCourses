@@ -82,7 +82,7 @@ namespace UserAPI.Application.Services
                 userCourse.Progress = 0;
             }
 
-            await _userCourseRepo.UpdateUserCourseAsync(userCourse);
+            await _userCourseRepo.UpdateAsync(userCourse);
 
             _logger.LogInformation("Course progress recalculated for UserId: {UserId}, CourseId: {CourseId}, Progress: {Progress}%",
    userId, courseId, userCourse.Progress);

@@ -1,11 +1,11 @@
 ﻿
+using TechTrioCourses.Shared.Abstractions;
 using TechTrioCourses.Shared.Enums;
 
 namespace UserAPI.Domain.Entities;
 
-public partial class UserCourse
+public partial class UserCourse : BaseEntity
 {
-    public Guid Id { get; set; }
 
     public Guid UserId { get; set; }
 
@@ -19,5 +19,4 @@ public partial class UserCourse
 
     public DateTime? CompletedAt { get; set; }
 
-    public DateTime UpdatedAt { get; set; }
 }

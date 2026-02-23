@@ -81,7 +81,7 @@ namespace UserAPI.Application.Services
                 return null;
             }
 
-            // Map only non-null properties from request to existing answer
+         
             if (request.AnswerText != null)
                 existingAnswer.AnswerText = request.AnswerText;
 

@@ -1,11 +1,12 @@
 ﻿
+using TechTrioCourses.Shared.Abstractions;
 using TechTrioCourses.Shared.Enums;
 
 namespace UserAPI.Domain.Entities;
 
-public partial class User
+public partial class User : BaseEntity
 {
-  public Guid Id { get; set; }
+
 
     public Guid AccountId { get; set; }
 
@@ -15,5 +16,5 @@ public partial class User
 
     public UserRoleEnum Role { get; set; }
 
-    public DateTime? CreatedAt { get; set; }
+  
 }

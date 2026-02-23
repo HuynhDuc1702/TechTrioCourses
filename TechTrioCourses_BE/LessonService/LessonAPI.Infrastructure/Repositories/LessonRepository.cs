@@ -1,6 +1,5 @@
 using LessonAPI.Infrastructure.Data;
 using LessonAPI.Domain.Entities;
-
 using Microsoft.EntityFrameworkCore;
 using LessonAPI.Application.Interfaces;
 using TechTrioCourses.Shared.Repositories;
