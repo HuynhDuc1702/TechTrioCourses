@@ -26,13 +26,13 @@ export default function Header() {
     if (user.role === UserRoleEnum.Student) {
       links.push({ href: "/student", label: "Student", show: true });
     }
-    
+
     // Instructor: show Student and Instructor links
     if (user.role === UserRoleEnum.Instructor) {
       links.push({ href: "/student", label: "Student", show: true });
       links.push({ href: "/instructor", label: "Instructor", show: true });
     }
-    
+
     // Admin: show all links
     if (user.role === UserRoleEnum.Admin) {
       links.push({ href: "/student", label: "Student", show: true });
@@ -53,33 +53,33 @@ export default function Header() {
         </Link>
 
         <nav className="flex items-center gap-6">
-          
+
 
           {/* Role-based navigation links */}
           {roleLinks && roleLinks.map((link) => (
-            <Link 
+            <Link
               key={link.href}
-              href={link.href} 
+              href={link.href}
               className="text-gray-700 hover:text-indigo-600 transition-colors font-medium"
             >
               {link.label}
             </Link>
           ))}
-          
+
           <div className="flex items-center gap-4">
             {isAuthenticated && user ? (
               <>
                 <Link
-        href="shared/Users/Profile"
-        className="flex items-center gap-3 hover:opacity-80 transition"
-      >
-        <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold">
-          {user.fullName.charAt(0).toUpperCase()}
-        </div>
-        <span className="text-gray-700 font-medium">
-          {user.fullName}
-        </span>
-      </Link>
+                  href="/shared/Users/Profile"
+                  className="flex items-center gap-3 hover:opacity-80 transition"
+                >
+                  <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold">
+                    {user.fullName.charAt(0).toUpperCase()}
+                  </div>
+                  <span className="text-gray-700 font-medium">
+                    {user.fullName}
+                  </span>
+                </Link>
                 <button
                   onClick={handleLogout}
                   className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 border border-gray-300 rounded-lg hover:bg-gray-50 transition-all"

@@ -35,12 +35,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const syncUserSession = (userData: User, refreshTokenExpiresAt?: string) => {
 
     setUser(userData);
-
-
     localStorage.setItem('user', JSON.stringify(userData));
-
-
-
 
     const refreshTokenExpiresAtStr = Cookies.get('refreshTokenExpiresAt');
     let expiresOpt: Date | number = 7;
@@ -103,22 +98,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (email: string, password: string) => {
     try {
-      console.log('DEBUG] Login attempt:', { email });
+
       const authResult: AuthResult = await accountService.login({ email, password });
-      console.log('DEBUG] Login successful, tokens received');
+
 
       const tokenPayload = JSON.parse(atob(authResult.accessToken.split('.')[1]));
-
-      const accountId = tokenPayload.sub ||
+      // .NET may emit the account ID under different claim names depending on configuration.
+      // Priority: sub (JWT standard) → nameid (short form) → long URI form
+      const accountId =
+        tokenPayload.sub ||
         tokenPayload.accountId ||
         tokenPayload.nameid ||
         tokenPayload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'];
-      console.log('[DEBUG] Token payload:', tokenPayload);
-      console.log('[DEBUG] Decoded accountId from token:', accountId);
+
+      if (!accountId) throw new Error('Invalid token: account ID claim not found');
+
+
 
 
       const userInfo = await userAPI.getUserByAccountId(accountId);
-      console.log('[DEBUG] User info fetched:', userInfo);
+
 
       const userData: User = {
         accountId: userInfo.accountId,
@@ -130,14 +129,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         createdAt: userInfo.createdAt,
       };
 
-      console.log('[DEBUG] Setting user data:', userData);
+
 
       syncUserSession(userData, authResult.refreshTokenExpiresAt);
 
-      console.log('[DEBUG] Login complete, user data saved');
+
     } catch (error: any) {
-      console.error('[DEBUG] Login error:', error);
-      console.error('[DEBUG] Error response:', error.response?.data);
+      console.error('Login error:', error);
+      console.error('Error response:', error.response?.data);
       throw error;
     }
   };

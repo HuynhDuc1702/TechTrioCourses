@@ -12,12 +12,12 @@ namespace TechTrioCourses.Shared.Extensions
                     {
                         policy.WithOrigins(
                     "http://localhost:3000",
-             "https://localhost:3000",
-   "http://localhost:5173"
-       )
-      .AllowAnyHeader()
-        .AllowAnyMethod()
-          .AllowCredentials();
+                    "https://localhost:3000",
+                    "http://localhost:5173"
+                     )
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials();
                     });
             });
 
